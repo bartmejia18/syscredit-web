@@ -74,10 +74,15 @@ class CobradorMovilController extends Controller
                     $pagohoy = false;
                     foreach ($registros as $item) {                        
                             $detailsPayments = $this->getDetailsPayments($item->id);   
+                            $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
+                            $item['saldo'] = number_format($item->saldo, 2, '.', '');
+                            $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', ',');
+                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');
                             $item['cantidad_cuotas_pagadas'] = $detailsPayments->totalFees;
+                            $item['cuotas_pendientes'] = $detailsPayments->pendingFees;
                             $item['monto_abonado'] = $detailsPayments->paymentPaid;                    
-                            $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d-m-Y');
-                            $item['fecha_limite'] = \Carbon\Carbon::parse($item->fecha_limite)->format('d-m-Y');
+                            $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');
                             $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $hoy);                    
                             $item['nombre_completo'] = $item->cliente->nombre.' '.$item->cliente->apellido;
                             $totalacobrar = $totalacobrar + $item->cuota_diaria;
@@ -85,8 +90,8 @@ class CobradorMovilController extends Controller
                             $cantidadclientes = $cantidadclientes + 1;                       
                     }
                     $datos = [];
-                    $datos['total_cobrar'] = $totalacobrar;
-                    $datos['total_minimo'] = $totalminimocobrar;                             
+                    $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
+                    $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');                             
                     $datos['registros'] = $registros;
                     
                     $this->statusCode   = 200;

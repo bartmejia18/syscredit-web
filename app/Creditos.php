@@ -7,7 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Creditos extends Model
 {
     protected $table = 'creditos';
-	protected $fillable = ['clientes_id','planes_id','montos_prestamo_id','usuarios_creo','usuarios_cobrador','sucursal_id','saldo','interes','deudatotal','cuota_diaria','cuota_minima','fecha_inicio','fecha_fin','estado'];
+	protected $fillable = [
+		'clientes_id',
+		'planes_id',
+		'montos_prestamo_id',
+		'usuarios_creo',
+		'usuarios_cobrador',
+		'sucursal_id',
+		'saldo',
+		'interes',
+		'deudatotal',
+		'cuota_diaria',
+		'cuota_minima',
+		'fecha_inicio',
+		'fecha_fin',
+		'estado'];
 
 	public function planes()
 	{

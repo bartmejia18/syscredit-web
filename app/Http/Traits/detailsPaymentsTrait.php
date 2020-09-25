@@ -17,6 +17,7 @@ trait detailsPaymentsTrait {
                 $detailPayment->allPayments = $detailsPayments; 
                 $detailPayment->totalPayment = $detailsPayments->sum('abono');
                 $detailPayment->totalFees =  intval($detailPayment->totalPayment/$credit->cuota_diaria);   
+                $detailPayment->pendingFees = $credit->planes->dias - $detailPayment->totalFees; 
                 $paymentPaid = $detailPayment->totalPayment % $credit->cuota_diaria;
                 if ($paymentPaid != 0) { 
                     $detailPayment->paymentPaid = $paymentPaid;
@@ -28,6 +29,7 @@ trait detailsPaymentsTrait {
                 $detailPayment->allPayments = [];
                 $detailPayment->totalPayment = 0;
                 $detailPayment->totalFees = 0;
+                $detailPayment->pendingFees = $credit->planes->dias;
                 $detailPayment->paymentPaid = 0;
                 $detailPayment->paymentPercentage = 0;
             }
