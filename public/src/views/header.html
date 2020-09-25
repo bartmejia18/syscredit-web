@@ -1,0 +1,40 @@
+<ul class="list-unstyled left-elems">
+	<!-- nav trigger/collapse -->
+	<li>
+		<a href class="nav-trigger ion ion-drag" ng-click="toggleNav()"></a>
+		<!-- <md-switch class="nav-trigger" ng-model="navHorizontal" style="margin: 0" ng-change="toggleNav()"> -->
+	</li>
+	<!-- #end nav-trigger -->
+
+	<!-- site-logo for mobile nav -->
+	<li>
+		<div class="site-logo visible-xs">
+			<a href="#/dashboard" class="text-uppercase h3">
+				<span class="text">Rapicredit</span>
+			</a>
+		</div>
+	</li> <!-- #end site-logo -->
+
+	<!-- fullscreen -->
+	<li class="fullscreen hidden-xs" ng-click="goFullScreen()">
+		<a href><i class="ion ion-qr-scanner"></i></a>
+
+	</li>	<!-- #end fullscreen -->
+</ul>
+
+<ul class="list-unstyled right-elems">
+	<!-- profile drop -->
+	<li class="profile-drop hidden-xs dropdown" dropdown>
+		<a href dropdown-toggle>
+			<img src="images/admin.jpg" alt="admin-pic">
+		</a>
+		<ul class="dropdown-menu dropdown-menu-right"><!-- 
+			<li><a href="javascript:;"><span class="ion ion-person">&nbsp;&nbsp;</span>Profile</a></li>
+			<li><a href="javascript:;"><span class="ion ion-settings">&nbsp;&nbsp;</span>Settings</a></li>
+			<li class="divider"></li>
+			<li><a href="javascript:;"><span class="ion ion-lock-combination">&nbsp;&nbsp;</span>Lock Screen</a></li> -->
+			<li ng-click="cerrarSesion()"><a href="javascript:;"><span class="ion ion-power">&nbsp;&nbsp;</span>Cerrar sesión</a></li>
+		</ul>
+	</li>
+	<!-- #end profile-drop -->
+</ul>

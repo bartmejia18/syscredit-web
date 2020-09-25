@@ -1,0 +1,18 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">		
+		<h4 ng-if="accion == 'eliminar'" class="modal-title">Eliminar pago</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<div class="row form-group" ng-if="accion == 'eliminar'">
+			<h3>¿Realmente desea eliminar el pago seleccionado?</h3>
+		</div>
+		<form class="form-horizontal" name="form" ng-if="accion == 'eliminar'" action="javascript:;">	
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">					
+					<button class="btn btn-danger" ng-if="accion == 'eliminar'" ng-click="saveData(record)">Confirmar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

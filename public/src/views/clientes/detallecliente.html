@@ -1,0 +1,195 @@
+<div class="page">
+	<div class="page-wrap">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading"><h4>Detalle del crédito(s) de: <strong>{{nombre_completo}}</strong></h4></div>
+					<div class="panel-body">					
+						<div class="row">
+							<div class="form-horizontal">
+								<div class="form-group">
+
+									<label class="col-md-2 control-label">PDI:</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control" ng-model="dpi" disabled>
+									</div>
+
+									<label class="col-md-2 control-label">Teléfono:</label>
+									<div class="col-md-3">
+										<input type="text" class="form-control" ng-model="telefono" disabled>
+									</div>
+
+									<br>
+									<br>
+
+									<label class="col-md-2 control-label">Género:</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control" ng-model="sexo" disabled>
+									</div>
+									
+									<label class="col-md-2 control-label">Estado civil:</label>
+									<div class="col-md-3">
+										<input type="text" class="form-control" ng-model="estado_civil" disabled>
+									</div>
+
+									<br>
+									<br>
+
+									<label class="col-md-2 control-label">Dirección:</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control" ng-model="direccion" disabled>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="panel-heading"><h4>Crédito(s) otorgado(s)</h4></div>
+					<div class="panel-body">
+						<div ng-show="showInputSelect">							
+							<div class="panel-body">
+								<div class="row">
+									<div class="form-horizontal">
+										<div class="form-group">
+											<label class="col-md-2 control-label">Creditos:</label>
+											<div class="col-md-4">								
+												<select class="form-control" 
+														ng-model="itemCredit"  
+														ng-options="item as (
+															item.planes.descripcion + 
+															' - Q.' + 
+															item.montos.monto + 
+															'\n\n(' + 
+															item.statusText +
+															') ') 
+															for item in listCredito" 
+														ng-change="creditSelected(itemCredit)">
+												</select>							
+											</div>
+											<h4><span ng-if="status_credit == 1" class="label label-success">CRÉDITO ACTIVO</span></h4>
+											<h4><span ng-if="status_credit == 0" class="label label-info">CRÉDITO COMPLETADO</span></h4>
+											<h4><span ng-if="status_credit == 2" class="label label-danger">CRÉDITO ELIMINADO</span></h4>																						
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+						<div class="form-horizontal">
+							<div class="form-group">
+
+								<label class="col-md-2 control-label">Plan:</label>
+								<div class="col-md-4">
+									<input type="text" class="form-control" ng-model="plan" disabled>
+								</div>
+
+								<label class="col-md-2 control-label">Monto total:</label>
+								<div class="col-md-3">
+									<input type="text" class="form-control" ng-model="monto_total" disabled>
+								</div>
+
+								<br>
+								<br>
+
+								<label class="col-md-2 control-label">Fecha de inicio:</label>
+								<div class="col-md-4">
+									<input type="text" class="form-control" ng-model="fecha_inicio" disabled>
+								</div>
+								<label class="col-md-2 control-label">Fecha de Finalización:</label>
+								<div class="col-md-3">
+									<input type="text" class="form-control" ng-model="fecha_fin" disabled>
+								</div>
+
+								<br>
+								<br>
+
+								<label class="col-md-2 control-label">Cobrador:</label>
+								<div class="col-md-4">
+									<input type="text" class="form-control" ng-model="cobrador" disabled>
+								</div>
+								<label class="col-md-2 control-label">Cuota diaria:</label>
+								<div class="col-md-3">
+									<input type="text" class="form-control" ng-model="cuota_diaria" disabled>
+								</div>
+
+							</div>
+						</div>
+						</div>
+						<br>						
+						<span class="clearfix"></span>
+						<div class="row">						
+						<div class="col-md-2 col-md-offset-3">
+							<div class="panel panel-default mb20 mini-box panel-hovered">
+								<div class="panel-body">
+									<div class="clearfix">
+										<div class="info left">
+											<h3 class="mt0 text-danger text-bold">{{saldo_pendiente}}</h3>
+										</div>
+									</div>
+								</div>
+								<div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
+									<p class="mt0 mb0 left">Monto pendiente a cancelar</p>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-2">
+							<div class="panel panel-default mb20 mini-box panel-hovered">
+								<div class="panel-body">
+									<div class="clearfix">
+										<div class="info left">
+											<h3 class="mt0 text-success text-bold">{{total_cancelado}}</h3>
+										</div>
+									</div>
+								</div>
+								<div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+									<p class="mt0 mb0 left">Monto cancelado</p>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-2">
+							<div class="panel panel-default mb20 mini-box panel-hovered">
+								<div class="panel-body">
+									<div class="clearfix">
+										<div class="info left">
+											<h3 class="mt0 text-info text-bold">{{cuotas_pagadas}}</h3>
+										</div>
+									</div>
+								</div>
+								<div class="panel-footer clearfix panel-footer-sm panel-footer-info">
+									<p class="mt0 mb0 left">Cuotas pagadas</p>
+								</div>
+							</div>
+						</div>							
+						</div>
+						<br>
+						<br>
+						<div class="row">
+						<div class="col-md-1"></div>
+						<div class="col-md-10">
+							<progressbar class="progress-striped" value="porcentaje" type="success">{{porcentaje}}%</progressbar>
+							<!-- <progressbar class="progress-striped" ng-model="cliente.porcentaje" type="primary">{{cliente.porcentaje}}</progressbar> -->
+						</div>
+						</div>
+						<br>
+						<br>
+						<div class="row">						
+						<div class="col-sm-12 text-center">
+							<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
+							<a type="button" class="btn btn-success btn-rounded" href="#/abonos?name={{nombre}}&lastname={{apellido}}">Abonar cuotas</a>
+							<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
+						</div>
+						</div>
+						<br>
+						<br>
+					</div>					
+				</div>
+			</div>
+		</div>
+		<div class="toast toast-{{positionModel}}">
+			<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+				<div ng-bind-html="toast.msg"></div>
+			</alert>
+		</div>
+	</div> <!-- #end page-wrap -->
+</div>

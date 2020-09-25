@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <!-- <base href="/"> -->
+  <title>Inicio de sesión</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="fonts/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="fonts/font-awesome/css/font-awesome.min.css">
+
+  <!-- Css/Less Stylesheets -->
+  <!-- build:css styles/angular-material.min.css -->
+  <link rel="stylesheet" href="styles/vendors/angular-material.min.css">
+  <!-- /build -->
+  <!-- build:css styles/bootstrap.min.css -->
+  <link rel="stylesheet" href="styles/vendors/bootstrap.min.css">
+  <!-- /build -->
+  <!-- build:css styles/main.min.css -->
+  <link rel="stylesheet/less" href="styles/main.less">
+  <!-- /build -->
+
+  <!-- <link rel="stylesheet" href="styles/vendors/bootstrap.min.css"> -->
+  <!-- <link rel="stylesheet" href="_tmp/main.min.css"> -->
+
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,300' rel='stylesheet' type='text/css'>
+
+  <!-- Match Media polyfill for IE9 -->
+  <!--[if IE 9]> <script src="scripts/ie/matchMedia.js"></script>  <![endif]-->
+</head>
+
+<body ng-app="login" ng-controller="LoginController">
+  <div class="page page-auth">
+    <div class="auth-container">
+      <div class="form-head mb20">
+        <h1 class="site-logo h2 mb5 mt5 text-center text-uppercase text-bold">RAPICREDIT</h1>
+        <h5 class="text-normal h5 text-center">Inicia sesión</h5>
+      </div>
+      <div class="form-container">
+        <form class="form-horizontal" action="javascript:;">
+          <md-input-container>
+            <label>Usuario</label>
+            <input type="text" ng-model="item.user" id="usuario">
+          </md-input-container>
+          <md-input-container>
+            <label>Contraseña</label>
+            <input type="password" ng-model="item.password" id="password">
+          </md-input-container>
+          <div class="clearfix">
+            <div class="ui-checkbox ui-checkbox-primary right">
+            </div>
+          </div>
+          <div class="btn-group btn-group-justified mb15">
+            <div class="btn-group">
+              <button type="submit" class="btn btn-success" ng-click="loginUsuario(item)">Ingresar</button>
+            </div>
+          </div>
+          <div class="clearfix text-center small">
+          </div>
+        </form>
+      </div>
+      <div class="toast toast-{{positionModel}}">
+        <alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+          <div ng-bind-html="toast.msg"></div>
+        </alert>
+      </div>
+    </div> <!-- #end signin-container -->
+  </div>
+  <!-- #settings -->
+  <!-- Dev only -->
+  <!-- build:remove -->
+  <script src="scripts/dev/less.min.js"></script>
+  <!-- /build -->
+
+  <!-- build:js scripts/vendors.js -->
+  <!-- Vendors -->
+  <script src="scripts/vendors/jquery.min.js"></script>
+  <!-- load before angular -->
+  <script src="scripts/vendors/angular.min.js"></script>
+  <!-- /build -->
+
+  <!-- build:js scripts/plugins.js -->
+  <!-- Plugins -->
+  <script src="scripts/plugins/angular-route.min.js"></script>
+  <script src="scripts/plugins/angular-animate.min.js"></script>
+  <script src="scripts/plugins/angular-aria.min.js"></script>
+  <script src="scripts/plugins/angular-sanitize.min.js"></script>
+  <script src="scripts/plugins/ui-bootstrap-tpls.min.js"></script>
+  <script src="scripts/plugins/angular-material.min.js"></script>
+  <script src="scripts/plugins/ocLazyLoad.min.js"></script>
+  <script src="scripts/plugins/loading-bar.min.js"></script>
+  <script src="scripts/plugins/angular-fullscreen.js"></script>
+  <script src="scripts/plugins/perfect-scrollbar.min.js"></script>
+  <!-- /build -->
+
+  <!-- build:js scripts/app.js -->
+  <!-- Custom scripts -->
+  <script src="scripts/app.js"></script>
+  <script src="scripts/shared/app.ctrls.js"></script>
+  <script src="scripts/shared/app.directives.js"></script>
+  <script src="scripts/shared/app.services.js"></script>
+  <script src="scripts/ui/app.ui.ctrls.js"></script>
+  <script src="scripts/ui/app.ui.directives.js"></script>
+  <script src="scripts/forms/app.form.ctrls.js"></script>
+  <script src="scripts/tables/app.table.ctrls.js"></script>
+  <script src="scripts/email/app.email.ctrls.js"></script>
+  <script src="scripts/todo/app.todo.js"></script>
+  <script src="scripts/constants/app.constants.js"></script>
+  <!-- /build -->
+
+  <script src="../bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+  <script src="scripts/lazyload/controllers/LoginController.js"></script>
+</body>
+
+</html>

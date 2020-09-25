@@ -1,0 +1,86 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 ng-if="accion == 'crear'" class="modal-title">Nuevo cliente</h4>
+		<h4 ng-if="accion == 'info'" class="modal-title">Crédito</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">		
+		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'info'" action="javascript:;" novalidate>			
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>DPI</label>				
+					<input type="number" class="form-control" ng-if="accion == 'crear'" ng-model="cliente.dpi" ng-change="findUser(cliente.dpi)" required maxlength="13">
+					<input type="text" class="form-control" ng-if="accion == 'info'" ng-model="cliente.dpi" required>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Nombre</label>
+					<input type="text" class="form-control" ng-model="cliente.nombre" required>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Apellido</label>
+					<input type="text" class="form-control" ng-model="cliente.apellido" required>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Dirección</label>
+					<input type="text" class="form-control" ng-model="cliente.direccion" required>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label>Teléfono</label>
+					<input type="number" class="form-control" ng-model="cliente.telefono" required maxlength="8">
+				</div>
+				<div class="col-sm-6">
+					<label class="control-label">Género</label>
+					<select class="form-control" ng-model="cliente.sexo" required>
+						<option value="1">Masculino</option>
+						<option value="2">Femenino</option>
+					</select>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label class="control-label">Estado civil</label>
+					<select class="form-control" ng-model="cliente.estado_civil" required>
+						<option value="1">Soltero (a)</option>
+						<option value="2">Casado (a)</option>
+					</select>
+				</div>
+			</div>
+			<br>
+			<div ng-show="cliente.statusCredit != 0">
+				<div class="row form-group">
+					<div class="col-sm-12">
+						<div class="alert alert-danger">
+							<div ng-if="cliente.statusCredit == 1"><strong>Estado de cliente!</strong> El cliente ya existe en el sistema, pero no tiene crédito asignado. ¿Desea asignarle crédito?</div>
+							<div ng-if="cliente.statusCredit == 2"><strong>Estado de cliente!</strong> El cliente actualmente ya cuenta con crédito y tiene saldo pendiente. ¿Desea agregar otro crédito?</div>
+							<div ng-if="cliente.statusCredit == 3"><strong>Estado de cliente!</strong> El cliente ha completado todos sus créditos. ¿Desea agregar otro crédito?</div>
+							<div ng-if="cliente.statusCredit == 4"><strong>Estado de cliente!</strong> El cliente se encuentra eliminado. ¿Desea activar y asignarle crédito? </div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">
+					<div ng-show="cliente.statusCredit == 0">
+						<button class="btn-new-customer btn btn-success" ng-if="accion == 'crear'" ng-click="saveDataNewClient(cliente)" ng-disabled="form.$invalid">Registrar</button>
+					</div>
+					<div ng-show="cliente.statusCredit != 0">						
+						<button class="btn-new-customer btn btn-success" ng-show="cliente.statusCredit == 1" ng-click="addCredit(cliente)">Confirmar</button>
+						<button class="btn-new-customer btn btn-success" ng-show="cliente.statusCredit == 2" ng-click="addNewCredit(cliente)">Confirmar</button>
+						<button class="btn-new-customer btn btn-success" ng-show="cliente.statusCredit == 3" ng-click="addCredit(cliente)">Confirmar</button>
+						<button class="btn-new-customer btn btn-success" ng-show="cliente.statusCredit == 4" ng-click="addCredit(cliente)">Confirmar</button>
+						<button class="btn btn-danger" ng-click="modalClose()">Cancelar</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

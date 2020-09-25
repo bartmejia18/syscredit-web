@@ -1,0 +1,111 @@
+<div class="page">
+	<div class="page-wrap">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading"><h4>Nuevo crédito</h4></div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal" ng-submit="validarCliente(search_client)">
+							<div class="form-group">
+								<label class="col-sm-1 control-label">Número de DPI:</label>
+								<div class="col-md-5">
+									<input type="number" id="customerDpi" class="form-control" ng-model="search_client.dpi">
+								</div>
+								<div class="col-md-1">
+									<button type="button" class="btn btn-info ion ion-plus" ng-click="modalCreateOpen()" md-ink-ripple></button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row hidden" id="row-detalle">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+				<div class="panel-heading">Detalle del crédito</div>
+				<form class="form-horizontal" name="form" action="javascript:;" novalidate>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-sm-4">
+								<label>Nombre</label>
+								<input type="text" class="form-control" ng-model="detalle_cliente.nombre" disabled>
+							</div>
+							<div class="col-sm-4">
+								<label>Dirección</label>
+								<input type="text" class="form-control" ng-model="detalle_cliente.direccion" disabled>
+							</div>
+							<div class="col-sm-4">
+								<label>Teléfono</label>
+								<input type="text" class="form-control" ng-model="detalle_cliente.telefono" disabled>
+							</div>
+						</div>
+						<br>
+						<div class="row">
+							<div class="col-sm-4">
+								<label>Plan de préstamo</label>
+								<select class="form-control" ng-model="detalle_cliente.planes_id" ng-options="item as item.descripcion for item in planes" ng-change="calcularInteresCuota(detalle_cliente.planes_id)" required></select>
+							</div>
+							<div class="col-sm-4">
+								<label>Monto</label>
+								<select class="form-control" ng-model="detalle_cliente.monto_id" ng-options="item as item.monto for item in montosprestamo" ng-change="calcularInteresCuota(detalle_cliente.planes_id)" required></select>
+							</div>
+							<div class="col-sm-4">
+								<label>Interés</label>
+								<input type="text" class="form-control" ng-model="detalle_cliente.interes | number : 2" disabled>
+							</div>
+						</div>
+						<br>
+						<div class="row">
+							<div class="col-sm-4">
+								<label>Cuota diaria</label>
+								<input type="text" class="form-control" ng-model="detalle_cliente.cuota_diaria | number : 2" disabled>
+							</div>
+							<div class="col-sm-4">
+								<label>Fecha inicio</label>
+								<div class="input-group date" >
+									<input  type="text" id="fechainicio" class="form-control" ng-model="detalle_cliente.fecha_inicio" ng-change="getEndDate(detalle_cliente.planes_id)" required>
+									<div class="input-group-addon" >
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>	
+							</div>
+							<div class="col-sm-4">
+								<label>Fecha fin</label>
+								<input type="text" class="form-control" ng-model="detalle_cliente.fecha_fin" disabled>
+							</div>
+						</div>
+						<br>
+						<div class="row">
+							<div class="col-sm-4">
+								<label>Cobrador</label>
+								<div ng-if="detalle_cliente.credito == 1">
+									<input type="text" class="form-control" ng-model="detalle_cliente.usuarios_cobrador.nombre" disabled>									
+								</div>
+								<div ng-if="detalle_cliente.credito == 0">
+									<select class="form-control"  ng-model="detalle_cliente.usuarios_cobrador"  ng-options="item as item.nombre for item in usuarios_cobrador" required></select>
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="row">
+							<div class="col-md-12 col-md-offset-5">
+								<button align="center" type="button" class="btn btn-success btn-rounded" ng-click="saveData(detalle_cliente)" ng-disabled="form.$invalid">Guardar nuevo crédito</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				</div>
+			</div>
+		</div>
+		<div class="toast toast-{{positionModel}}">
+			<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+				<div ng-bind-html="toast.msg"></div>
+			</alert>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('.input-group.date').datepicker({format: "dd-mm-yyyy"}); 
+</script>

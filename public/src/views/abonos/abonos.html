@@ -1,0 +1,167 @@
+<div class="page">
+	<div class="page-wrap">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading"><h4>Abonar a crédito</h4></div>
+					<div class="panel-body">
+						<form role="form" class="form-horizontal" ng-submit="validarCliente()">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Nombre de cliente:</label>
+								<div class="col-md-6">
+									<input type="text" id="customerName" class="form-control" ng-model="search_client.nameCustomer" list="listCustomers">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row hidden row-detalle">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+				<div class="panel-heading">Detalle del crédito</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="form-horizontal">
+								<div class="form-group">
+									<label class="col-md-1 control-label">Nombre del cliente:</label>
+									<div class="col-md-5">
+										<input type="text" class="form-control" ng-model="detalle_cliente.nombre" disabled>
+									</div>
+
+									<label class="col-md-2 control-label">Cuota diaria:</label>
+									<div class="col-md-2">
+										<input type="text" class="form-control" ng-model="detalle_cliente.cuota_diaria" disabled>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-horizontal">
+								<div class="form-group">
+									<label class="col-md-1 control-label">Cobrador asignado:</label>
+									<div class="col-md-5">
+										<input type="text" class="form-control" ng-model="detalle_cliente.cobrador" disabled>
+									</div>
+
+									<label class="col-md-2 control-label">Monto total del préstamo:</label>
+									<div class="col-md-2">
+										<input type="text" class="form-control" ng-model="detalle_cliente.monto_total" disabled>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+								<div class="form-horizontal">
+									<div class="form-group">
+										<label class="col-md-1 control-label">Plan de Préstamo:</label>
+										<div class="col-md-5">
+											<input type="text" class="form-control" ng-model="detalle_cliente.plan_prestamo" disabled>
+										</div>
+									</div>
+								</div>
+							</div>
+						<br>
+						<br>
+						<div class="row">
+							<div class="col-md-2  col-md-offset-2">
+								<div class="panel panel-default mb20 mini-box panel-hovered">
+									<div class="panel-body">
+										<div class="clearfix">
+											<div class="info left">
+												<h3 class="mt0 text-danger text-bold">{{credito.total}}</h3>
+											</div>
+										</div>
+									</div>
+									<div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
+										<p class="mt0 mb0 left">Total pendiente de deuda</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-sm-2">
+								<div class="panel panel-default mb20 mini-box panel-hovered">
+									<div class="panel-body">
+										<div class="clearfix">
+											<div class="info left">
+												<h3 class="mt0 text-success text-bold">{{credito.saldo}}</h3>
+											</div>
+										</div>
+									</div>
+									<div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+										<p class="mt0 mb0 left">Total cancelado</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-2">
+								<div class="panel panel-default mb20 mini-box panel-hovered">
+									<div class="panel-body">
+										<div class="clearfix">
+											<div class="info left">
+												<h3 class="mt0 text-info text-bold">{{credito.cuotas_pagados}}</h3>
+											</div>
+										</div>
+									</div>
+									<div class="panel-footer clearfix panel-footer-sm panel-footer-info">
+										<p class="mt0 mb0 left">Cuota completadas</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-2">
+								<div class="panel panel-default mb20 mini-box panel-hovered">
+									<div class="panel-body">
+										<div class="clearfix">
+											<div class="info left">
+												<h3 class="mt0 text-warning text-bold">{{credito.saldo_abonado}}</h3>
+											</div>
+										</div>
+									</div>
+									<div class="panel-footer clearfix panel-footer-sm panel-footer-warning">
+										<p class="mt0 mb0 left">Saldo Abonado a cuota</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<br>
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row hidden row-detalle">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading">Registrar nuevo abono</div>
+					<div class="panel-body">
+						<div class="form-horizontal">
+							<div class="form-group">
+								<label class="col-md-4 control-label">Cantidad a abonar</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<span class="input-group-addon">Q</span>
+										<input type="number" class="form-control" ng-model="cantidad_ingresada" autofocus>
+										<span class="input-group-addon">.00</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8">
+								<div class="clearfix right">
+									<button class="btn btn-primary mr5 btn-rounded" ng-click="modalcuotas(cantidad_ingresada)">Aceptar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="toast toast-{{positionModel}}">
+			<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+				<div ng-bind-html="toast.msg"></div>
+			</alert>
+		</div>
+	</div>
+	<datalist id="listCustomers">
+		<option data-name="{{customer.nombre}}" data-lastname="{{customer.apellido}}" data-ng-repeat="customer in customers" value="{{customer.nombre + ' ' + customer.apellido}}"> 
+	</datalist>
+</div>

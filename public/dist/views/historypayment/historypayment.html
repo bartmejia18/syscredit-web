@@ -1,0 +1,122 @@
+<div class="page">
+	<div class="page-wrap">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading"><h4>Historial de cobros</h4></div>
+					<div ng-if="usuario.tipo_usuarios_id != 4">
+						<div class="panel-body">
+							<form role="form" class="form-horizontal" ng-submit="validarCliente(search_client)">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Nombre del cobrador:</label>
+									<div class="col-md-6">									
+										<select class="form-control" ng-model="history.collectors" ng-options="item as item.nombre for item in collectors" ng-change="selectCollector(history.collectors)"></select>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" ng-show="existhistory()"> 
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading">
+						<br>
+						<form class="form-inline">
+							<div class="form-group">								
+								<label>Fecha de cobro: </label>
+								<div class="input-group date" >
+									<input  type="text" id="fechainicio" class="form-control">
+									<div class="input-group-addon" >
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>						
+								<label>&nbsp &nbsp &nbsp</label>	
+								<button align="center" type="button" class="btn btn-success btn-rounded" ng-click="findRecords()" ng-disabled="form.$invalid">Buscar</button>									
+							</div>	
+						</form>
+						<br>
+					</div>
+					<div class="panel-body">						
+						<div class="col-sm-12">
+						<div class="row">
+							<div class="small text-bold left mt5">
+							Mostrar&nbsp;
+							<select data-ng-model="numPerPage" data-ng-options="num for num in numPerPageOpts" data-ng-change="onNumPerPageChange()">
+							</select>
+							&nbsp;entradas
+							</div>
+							<form class="form-horizontal right col-lg-4">
+							<input type="text" class="form-control input-sm" placeholder="Ingrese texto para búsqueda" data-ng-model="searchKeywords"
+								data-ng-keyup="search()">
+							</form>
+						</div>
+						<br>		  
+						<!-- data table -->
+						<table class="table table-bordered table-striped">
+						<thead>
+							<tr>
+							<th>#
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('id') " ng-class="{active: row == 'id'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-id') " ng-class="{active: row == '-id'}"></i>
+								</div>
+							</th>
+							<th>
+								Cliente
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') " ng-class="{active: row == 'nombre'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') " ng-class="{active: row == '-nombre'}"></i>
+								</div>
+							</th>
+							<th>
+								Cantidad abonado
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') " ng-class="{active: row == 'nombre'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') " ng-class="{active: row == '-nombre'}"></i>
+								</div>
+							</th>						
+							<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="data in currentPageStores track by $index">
+							<td>{{ $index + 1 }}</td>
+							<td>{{ data.customer.nombre + " " + data.customer.apellido }}</td>
+							<td>Q. {{ data.abono | number: "2"}}</td>							
+							<td>
+								<div class="btn-group">
+								<button type="button" class="btn btn-danger ion ion-close" ng-click="modalDeleteOpen(data)" md-ink-ripple></button>
+								</div>
+							</td>
+							</tr>
+						</tbody>
+						</table>
+						<!-- #end row -->
+						<div class="panel-footer clearfix">
+						<p class="left mt15 small">
+							Mostrando {{currentPageStores.length*(currentPage - 1) + 1}} a {{currentPageStores.length*currentPage}} de {{datas.length}}
+							registro(s)
+						</p>
+						<pagination boundary-links="true" total-items="filteredData.length" ng-model="currentPage" class="pagination-sm right" max-size="5"
+							ng-change="select(currentPage)" items-per-page="numPerPage" rotate="false" previous-text="&lsaquo;" next-text="&rsaquo;"
+							first-text="&laquo;" last-text="&raquo;"></pagination>
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="toast toast-{{positionModel}}">
+			<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+				<div ng-bind-html="toast.msg"></div>
+			</alert>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('.input-group.date').datepicker({format: "yyyy-mm-dd"}); 
+</script>

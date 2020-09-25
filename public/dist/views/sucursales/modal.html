@@ -1,0 +1,38 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 ng-if="accion == 'crear'" class="modal-title">Nueva sucursal</h4>
+		<h4 ng-if="accion == 'editar'" class="modal-title">Editar sucursal</h4>
+		<h4 ng-if="accion == 'eliminar'" class="modal-title">Eliminar sucursal</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<div class="row form-group" ng-if="accion == 'eliminar'">
+			<h3>¿Realmente desea eliminar esta sucursal?</h3>
+		</div>
+		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'editar'" action="javascript:;">
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label>Nombre de sucursal</label>
+					<input type="text" class="form-control" ng-model="sucursal.descripcion" required>
+				</div>
+				<div class="col-sm-6">
+					<label>Dirección</label>
+					<input type="text" class="form-control" min="1" ng-model="sucursal.direccion" required>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label>Teléfono</label>
+					<input type="text" class="form-control" min="0" ng-model="sucursal.telefono" required>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">
+					<button class="btn btn-success" ng-if="accion == 'crear'" ng-click="saveData(sucursal)" ng-disabled="form.$invalid">Registrar</button>
+					<button class="btn btn-success" ng-if="accion == 'editar'" ng-click="saveData(sucursal)" ng-disabled="form.$invalid">Actualizar</button>
+					<button class="btn btn-danger" ng-if="accion == 'eliminar'" ng-click="saveData(sucursal)">Confirmar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

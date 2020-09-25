@@ -1,0 +1,40 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Créditos de {{name_customer}}</h4>	
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<br>
+	<div class="modal-body">
+		<div class="row form-group">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Plan crédito</th>
+						<th>Monto de crédito</th>
+						<th>Fecha de inicio</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>					
+					<tr ng-repeat="credit in credits track by $index">
+						<td>{{ $index + 1 }}</td>
+						<td>{{ credit.planes.descripcion }}</td>
+						<td>Q. {{ credit.deudatotal | number: "2"}}</td>
+						<td>{{ credit.fecha_inicio }}</td>
+						<td>
+							<div class="btn-group">
+								<button type="button" class="btn btn-info ion ion-checkmark" ng-click="showCredit(credit, name_customer)" md-ink-ripple></button>								
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+		<div class="row form-group">
+			<div class="col-sm-12 text-right">
+				<button class="btn btn-danger" ng-click="cancel()" >Cancelar</button>
+			</div>
+		</div>			
+	</div>
+</div>

@@ -1,0 +1,35 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Confirmación de abono</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<div class="row">
+			<div class="form-horizontal">
+				<div class="form-group">
+					<label class="col-md-4 control-label">Cantidad a abonar:</label>
+					<div class="col-md-5">
+						<input type="text" class="form-control" ng-model="resumen.cantidadabonada" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-4 control-label">Cantidad de cuotas:</label>
+					<div class="col-md-5">
+						<input type="text" class="form-control" ng-model="resumen.cantidadcuotas" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-4 control-label">Abono a saldo:</label>
+					<div class="col-md-5">
+						<input type="text" class="form-control" ng-model="resumen.abonocapital" disabled>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row form-group">
+			<div class="col-sm-12 text-right">
+				<button class="btn btn-success btn-set-payment" ng-click="registrarAbono(resumen.cantidadabonada)">Registrar</button>
+			</div>
+		</div>
+	</div>
+</div>

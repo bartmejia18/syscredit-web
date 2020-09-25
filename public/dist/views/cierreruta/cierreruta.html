@@ -1,0 +1,146 @@
+<div class="page">
+	<div class="page-wrap">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading"><h4>CIERRE DE RUTA</h4></div>
+				</div>
+			</div>
+		</div>
+		<div class="row"> 
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading">
+						<br>
+						<form class="form-inline">
+							<div class="form-group">								
+								<label>Fecha de cobro: </label>
+								<div class="input-group date" >
+									<input  type="text" ng-model="dateRouteClosure" class="form-control">
+									<div class="input-group-addon" >
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>						
+								<label>&nbsp &nbsp &nbsp</label>	
+								<button align="center" type="button" class="btn btn-success btn-rounded" ng-click="findRecordsDate()" ng-disabled="form.$invalid">Buscar</button>									
+							</div>	
+						</form>
+						<br>
+					</div>
+					<div class="panel-body">						
+						<div class="col-sm-12">
+						<div class="row">
+							<div class="small text-bold left mt5">
+							Mostrar&nbsp;
+							<select data-ng-model="numPerPage" data-ng-options="num for num in numPerPageOpts" data-ng-change="onNumPerPageChange()">
+							</select>
+							&nbsp;entradas
+							</div>
+							<form class="form-horizontal right col-lg-4">
+							<input type="text" class="form-control input-sm" placeholder="Ingrese texto para búsqueda" data-ng-model="searchKeywords"
+								data-ng-keyup="search()">
+							</form>
+						</div>
+						<br>		  
+						<!-- data table -->
+						<table class="table table-bordered table-striped">
+						<thead>
+							<tr>
+							<th>#
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('id') " ng-class="{active: row == 'id'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-id') " ng-class="{active: row == '-id'}"></i>
+								</div>
+							</th>
+							<th>
+								Cobrador
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('cobrador') " ng-class="{active: row == 'cobrador'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-cobrador') " ng-class="{active: row == '-cobrador'}"></i>
+								</div>
+							</th>
+							<th>
+								Monto
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('monto') " ng-class="{active: row == 'monto'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-monto') " ng-class="{active: row == '-monto'}"></i>
+								</div>
+							</th>
+							<th>
+								Fecha de Ruta
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('fecha') " ng-class="{active: row == 'fecha'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-fecha') " ng-class="{active: row == '-fecha'}"></i>
+								</div>
+							</th>
+							<th>
+								Fecha Cerrada
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('fecha') " ng-class="{active: row == 'fecha'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-fecha') " ng-class="{active: row == '-fecha'}"></i>
+								</div>
+							</th>				
+							<th>
+								Hora
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('estado') " ng-class="{active: row == 'estado'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-estado') " ng-class="{active: row == '-estado'}"></i>
+								</div>
+							</th>
+							<th>
+								Estado
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('hora') " ng-class="{active: row == 'hora'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-hora') " ng-class="{active: row == '-hora'}"></i>
+								</div>
+							</th>										
+							<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="data in currentPageStores track by $index">
+							<td>{{ $index + 1 }}</td>
+							<td>{{ data.cobrador.nombre }}</td>
+							<td>Q. {{ data.monto_cierre | number: "2"}}</td>							
+							<td>{{ data.fecha_cierre }}</td>
+							<td>{{ data.fecha_cerrado }}</td>							
+							<td>{{ data.hora }}</td>							
+							<td>
+								<label ng-if="data.estado == 1" class="label label-danger mr5">Cerrado</label>
+								<label ng-if="data.estado == 2" class="label label-success mr5">Habilitado</label>
+							</td>							
+							<td>
+								<div class="btn-group">
+									<button ng-if="data.estado == 1" type="button" class="btn btn-danger ion ion-close" ng-click="modalOpenConfirme(data)" md-ink-ripple></button>							
+									<button ng-if="data.estado == 1" type="button" class="btn btn-success ion ion-clipboard" ng-click="printInfoClosure(data.id)" md-ink-ripple></button>							
+								</div>
+							</td>
+							</tr>
+						</tbody>
+						</table>
+						<!-- #end row -->
+						<div class="panel-footer clearfix">
+						<p class="left mt15 small">
+							Mostrando {{currentPageStores.length*(currentPage - 1) + 1}} a {{currentPageStores.length*currentPage}} de {{datas.length}}
+							registro(s)
+						</p>
+						<pagination boundary-links="true" total-items="filteredData.length" ng-model="currentPage" class="pagination-sm right" max-size="5"
+							ng-change="select(currentPage)" items-per-page="numPerPage" rotate="false" previous-text="&lsaquo;" next-text="&rsaquo;"
+							first-text="&laquo;" last-text="&raquo;"></pagination>
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="toast toast-{{positionModel}}">
+			<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+				<div ng-bind-html="toast.msg"></div>
+			</alert>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('.input-group.date').datepicker({format: "yyyy-mm-dd"}); 
+</script>

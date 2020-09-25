@@ -1,0 +1,21 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">		
+		<h4 ng-if="accion == 'confirmar'" class="modal-title">Confirmar cierre ruta</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<div class="row form-group" ng-if="accion == 'confirmar'">
+			<h5>Cobrador: <strong>{{ routeClosure.collectorName }}</strong></h5>
+			<h5>Monto: <strong>Q. {{ routeClosure.closingAmount | number: "2"}}</strong></h5>
+			<br>
+			<h5>¿Realmente desea cerrar la ruta de este cobrador?</h5>
+		</div>
+		<form class="form-horizontal" name="form" ng-if="accion == 'confirmar'" action="javascript:;">	
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">					
+					<button class="btn btn-danger" ng-if="accion == 'confirmar'" ng-click="confirmRouteClosure(routeClosure)">Confirmar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
