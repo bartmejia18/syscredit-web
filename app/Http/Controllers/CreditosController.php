@@ -134,8 +134,7 @@ class CreditosController extends Controller
                 $cuotas = 0;
                 foreach ($registro as $keyRegistro => $valRegistro) {
 
-                    if( $valRegistro['estado'] == 1 )
-                    {
+                    if( $valRegistro['estado'] == 1 ) {
                         $cuotas = $cuotas + 1;
                     }
                 }
