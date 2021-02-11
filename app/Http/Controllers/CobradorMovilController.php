@@ -65,15 +65,14 @@ class CobradorMovilController extends Controller
                 $registros = Creditos::where("usuarios_cobrador", $request->input("idusuario"))
                                         ->where("estado",1)
                                         ->where("fecha_inicio", "<=", $hoy)
-                                        ->with("cliente")                                    
+                                        ->with("cliente", "planes")                                    
                                         ->get();
                 if ($registros) {
                     $totalacobrar = 0;
                     $totalminimocobrar = 0;
-                    $cantidadclientes = 0;
                     $pagohoy = false;
                     foreach ($registros as $item) {                        
-                            $detailsPayments = $this->getDetailsPayments($item->id);   
+                            $detailsPayments = $this->getDetailsPayments($item);   
                             $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                             $item['saldo'] = number_format($item->saldo, 2, '.', '');
                             $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', ',');
@@ -86,8 +85,7 @@ class CobradorMovilController extends Controller
                             $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $hoy);                    
                             $item['nombre_completo'] = $item->cliente->nombre.' '.$item->cliente->apellido;
                             $totalacobrar = $totalacobrar + $item->cuota_diaria;
-                            $totalminimocobrar = $totalminimocobrar + $item->cuota_minima;
-                            $cantidadclientes = $cantidadclientes + 1;                       
+                            $totalminimocobrar = $totalminimocobrar + $item->cuota_minima;                       
                     }
                     $datos = [];
                     $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');

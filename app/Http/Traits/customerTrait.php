@@ -20,7 +20,7 @@ trait customerTrait {
             $startDate = \Carbon\Carbon::parse($item->fecha_inicio);
             $days = $today->diffInDays($startDate);
             $minimumPayment = ($days - 3) * $item->cuota_diaria;            
-            $totalPayment = $this->getDetailsPayments($item->id)->totalPayment; 
+            $totalPayment = $this->getDetailsPayments($item)->totalPayment; 
 
             if($totalPayment)
                 if($totalPayment > $minimumPayment)
@@ -40,7 +40,7 @@ trait customerTrait {
             $startDate = \Carbon\Carbon::parse($item->fecha_inicio);
             $days = $today->diffInDays($startDate);
             $minimumPayment = ($days - 3) * $item->cuota_diaria;            
-            $totalPayment = $this->getDetailsPayments($item->id)->totalPayment; 
+            $totalPayment = $this->getDetailsPayments($item)->totalPayment; 
 
             if($totalPayment)
                 if($totalPayment > $minimumPayment)
@@ -60,7 +60,7 @@ trait customerTrait {
             $today = \Carbon\Carbon::now();
             $startDate = \Carbon\Carbon::parse($credit->fecha_inicio);
             $days = $today->diffInDays($startDate);
-            $totalFees = $this->getDetailsPayments($item->id)->totalFees; 
+            $totalFees = $this->getDetailsPayments($item)->totalFees; 
             if($totalFees)
                 $totalDays = $days - $totalFees;
             else
