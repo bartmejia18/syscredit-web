@@ -4,8 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Creditos extends Model
-{
+class Creditos extends Model {
     protected $table = 'creditos';
 	protected $fillable = [
 		'clientes_id',
