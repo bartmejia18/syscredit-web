@@ -66,5 +66,5 @@ Route::group(['prefix' => 'ws'], function() {
 Route::group(['prefix' => 'ws/movil'], function()
 {	
 	Route::any('login',				'CobradorMovilController@loginMovil');
-	Route::any('listaclientes',		'CobradorMovilController@listadoClientesCobrador');
+	Route::any('listaclientes',		'CobradorMovilController@clientesActivos');
 });

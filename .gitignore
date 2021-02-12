@@ -6,3 +6,4 @@ Homestead.json
 public/node_modules
 /storage
 composer.phar
+.env

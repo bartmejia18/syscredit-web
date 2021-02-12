@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Usuarios;
@@ -14,8 +12,7 @@ use App\CierreRuta;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCustomerTrait;
 
-class CobradorController extends Controller
-{
+class CobradorController extends Controller {
     public $statusCode  = 200;
     public $result      = false;
     public $message     = "";
@@ -24,36 +21,33 @@ class CobradorController extends Controller
     use detailsPaymentsTrait;
     use detailsCustomerTrait;
 
-    public function listCustomers(Request $request)
-    {
+    public function listCustomers(Request $request) {
         try {
             $hoy = date('Y-m-d');
-            $registros = Creditos::with("cliente")
+            $registros = Creditos::with("cliente", "planes")
                                 ->where("usuarios_cobrador", $request->input("idusuario"))
                                 ->where('estado', 1)
                                 ->where("fecha_inicio", "<=", $request->input('fecha'))
                                 ->get();
 
-            $registroextra = Creditos::with(["cliente","detallePagos"])
-                                ->whereHas('detallePagos', function($q) use ($request) {                                        
-                                    $q->where('estado', 1)->where('fecha_pago', $request->input('fecha'));
-                                    })
-                                ->where("usuarios_cobrador", $request->input("idusuario"))
-                                ->where('estado', 0)
-                                ->get();
+            $registroExtra = Creditos::with("cliente", "planes")
+                                    ->where("usuarios_cobrador", $request->input("idusuario"))
+                                    ->where("fecha_finalizado", $request->input('fecha'))
+                                    ->where('estado', 0)
+                                    ->get();
             
-            if($registroextra->count() > 0){
-                $registros = $registros->merge($registroextra);
+            if ($registroExtra->count() > 0) {
+                $registros = $registros->merge($registroExtra);
             }
 
-            if( $registros ){
+            if ($registros) {
                 $totalacobrar = 0;
                 $totalminimocobrar = 0;
                 $cantidadclientes = 0;
                 $pagohoy = false;
                 
                 foreach ($registros as $item) {                
-                    $detailsPayments = $this->getDetailsForCollector($item->id, $request->input('fecha'));   
+                    $detailsPayments = $this->getDetailsForCollector($item, $request->input('fecha'));   
                     $item['cantidad_cuotas_pagadas'] = $detailsPayments->totalFees;
                     $item['monto_abonado'] = $detailsPayments->paymentPaid;
                     $item['monto_pagado'] = $detailsPayments->totalPayment;
@@ -70,64 +64,57 @@ class CobradorController extends Controller
                 $datos['total_cobrar'] = $totalacobrar;
                 $datos['total_minimo'] = $totalminimocobrar;                             
                 $datos['registros'] = $registros;
-                
 
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registros consultados exitosamente";
                 $this->records      = $datos;
-            }
-            else
+            } else {
                 throw new \Exception("No se encontraron registros");
-                
+            }   
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los registros";
-        }
-        finally{
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
 
     public function generatePdf(Request $request){
-
         $collector = Usuarios::find($request->input("idusuario"));
         $branch = Sucursales::find($collector->sucursales_id);
 
         $hoy = date('Y-m-d');
-        $registros = Creditos::with("cliente")
+        $registros = Creditos::with("cliente", "planes")
                                 ->where("usuarios_cobrador", $request->input("idusuario"))
                                 ->where('estado', 1)
                                 ->where("fecha_inicio", "<=", $request->input('fecha'))
                                 ->get();
 
-        $registroextra = Creditos::with(["cliente","detallePagos"])
-                            ->whereHas('detallePagos', function($q) use ($request) {                                        
-                                $q->where('estado', 1)->where('fecha_pago', $request->input('fecha'));
-                                })
-                            ->where("usuarios_cobrador", $request->input("idusuario"))
-                            ->where('estado', 0)
-                            ->get();
+        $registroExtra = Creditos::with("cliente", "planes")
+                                ->where("usuarios_cobrador", $request->input("idusuario"))
+                                ->where('estado', 0)
+                                ->where("fecha_finalizado", $request->input('fecha'))
+                                ->get();
         
-        if($registroextra->count() > 0){
-            $registros = $registros->merge($registroextra);
+        if ($registroExtra->count() > 0) {
+            $registros = $registros->merge($registroExtra);
         }
 
-        if( $registros ){
+        if ($registros) {
             $totalacobrar = 0;
             $totalminimocobrar = 0;
             $cantidadclientes = 0;
             $pagohoy = false;
             
             foreach ($registros as $item) {                
-                $detailsPaymentsForDay = $this->getDetailsForCollector($item->id, $request->input('fecha'));
+                $detailsPaymentsForDay = $this->getDetailsForCollector($item, $request->input('fecha'));
                 $detailsPaymentsGeneral = $this->getDetailsPaymentsForReportCollector($item->id);   
                 $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees;
                 $item['total_cuotas'] = $item->planes->dias;
