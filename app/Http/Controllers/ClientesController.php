@@ -295,7 +295,7 @@ class ClientesController extends Controller {
                 if ($creditoCliente->creditos->count() > 0) {
                     $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
                                                     if ($item->estado == 1) {
-                                                        $detailsPayments = $this->getDetailsPayments($item->id);                                    
+                                                        $detailsPayments = $this->getDetailsPayments($item);                                    
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
@@ -341,7 +341,7 @@ class ClientesController extends Controller {
                 if ($creditoCliente->creditos->count() > 0) {                                                                                
                     $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key){
                                                     if($item->estado == 1){                                                    
-                                                        $detailsPayments = $this->getDetailsPayments($item->id);                                    
+                                                        $detailsPayments = $this->getDetailsPayments($item);                                    
                                                         //$item->allPayments = $detailsPayments->allPayments;
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;

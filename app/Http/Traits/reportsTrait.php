@@ -111,7 +111,7 @@ trait reportsTrait {
             $startDate = \Carbon\Carbon::parse($item->fecha_inicio);
             $days = $today->diffInDays($startDate);
             $minimumPayment = ($days - 3) * $item->cuota_diaria;            
-            $totalPayment = $this->getDetailsPayments($item->id)->totalPayment; 
+            $totalPayment = $this->getDetailsPayments($item)->totalPayment; 
 
             if($totalPayment)
                 if($totalPayment > $minimumPayment)

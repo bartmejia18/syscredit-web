@@ -27,56 +27,44 @@ class CreditosController extends Controller
     use detailsPaymentsTrait;
     use generateArrayForTicketTrait;
 
-    public function index()
-    {
+    public function index() {
         try {
             $registros = Creditos::with('cliente','planes','montos','usuariocobrador','detallePagos')->get();
             
-            if( $registros ) {
+            if ( $registros ) {
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registros consultados exitosamente";
                 $this->records      = $registros;   
-            }
-            else
+            } else {
                 throw new \Exception("No se encontraron registros");
-                
-            
+            }
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;  
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los registros"; 
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
 
-    public function create()
-    {
-        //
-    }
+    public function create(){}
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         try {
-
             $plan = Planes::find($request->input('idplan'));
-            
-            if($plan->domingo == "1"){
+            if ($plan->domingo == "1") {
                 $lastDate = $this->getLastDayWithoutSunday(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
             } else {
                 $lastDate = $this->getLastDay(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
             }
 
-            $nuevoRegistro = \DB::transaction( function() use ($request, $lastDate){
+            $nuevoRegistro = \DB::transaction( function() use ($request, $lastDate) {
                                 $nuevoRegistro = Creditos::create([
                                                     'clientes_id'           => $request->input('idcliente'),
                                                     'planes_id'             => $request->input('idplan'),
@@ -106,15 +94,11 @@ class CreditosController extends Controller
             $this->message      = "Registro creado exitosamente";
             $this->records      = $nuevoRegistro;
                 
-        } 
-        catch (\Exception $e) 
-        {
+        } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al crear el registro";
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
@@ -134,8 +118,7 @@ class CreditosController extends Controller
                 $cuotas = 0;
                 foreach ($registro as $keyRegistro => $valRegistro) {
 
-                    if( $valRegistro['estado'] == 1 )
-                    {
+                    if( $valRegistro['estado'] == 1 ) {
                         $cuotas = $cuotas + 1;
                     }
                 }
@@ -183,16 +166,15 @@ class CreditosController extends Controller
         //
     }
 
-    public function payments(Request $request){
+    public function payments(Request $request) {
         try {
             $credito = Creditos::where('id', $request->input('idcredito'))->with('planes','montos')->first();
-            
-            if($credito){
+            if ($credito) {
                 $detallePagos = DetallePagos::where('credito_id', $credito->id)->where('estado', 1)->get();
 
-                if($detallePagos->count() > 0){
+                if ($detallePagos->count() > 0) {
                     $totalPayment = $detallePagos->sum('abono') + $request->input('abono');
-                    if($totalPayment > $credito->deudatotal){
+                    if ($totalPayment > $credito->deudatotal) {
                         throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
                     } else {
                         $detallePagos = new DetallePagos;
@@ -202,7 +184,7 @@ class CreditosController extends Controller
                         $detallePagos->estado = 1;                        
                     }
                 } else {
-                    if($request->input('abono') > $credito->deudatotal){
+                    if ($request->input('abono') > $credito->deudatotal) {
                         throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
                     } else {
                         $detallePagos = new DetallePagos;
@@ -213,12 +195,13 @@ class CreditosController extends Controller
                     }
                 }
 
-                if($detallePagos->save()){
-                    $detailPayment = $this->getDetailsPayments($credito->id);     
+                if ($detallePagos->save()) {
+                    $detailPayment = $this->getDetailsPayments($credito);     
                     $balance = $credito->deudatotal - $detailPayment->totalPayment;           
                     
-                    if($balance == 0){
+                    if ($balance == 0) {
                         $credito->saldo = $balance;
+                        $credito->fecha_finalizado = \Carbon\Carbon::parse(date('Y-m-d'));
                         $credito->estado = 0;
                     } else {
                         $credito->saldo = $balance;
