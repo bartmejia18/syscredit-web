@@ -20,7 +20,7 @@ class CobradorMovilController extends Controller {
     public $statusCode  = 200;
     public $result      = false;
     public $message     = "";
-    public $records     = [];
+    public $records     = null;
     
     use detailsPaymentsTrait;
 
