@@ -79,6 +79,7 @@ class CobradorMovilController extends Controller {
                         $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
                         $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
                         $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
+                        $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                         $totalacobrar = $totalacobrar + $item->cuota_diaria;
                     }
 
