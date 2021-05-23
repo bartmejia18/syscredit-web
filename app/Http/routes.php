@@ -67,4 +67,5 @@ Route::group(['prefix' => 'ws/movil'], function()
 {	
 	Route::any('login',				'CobradorMovilController@loginMovil');
 	Route::any('listaclientes',		'CobradorMovilController@clientesActivos');
+	Route::get('getHistoryPayments',		'HistorialPagosController@historyForCustomer');
 });

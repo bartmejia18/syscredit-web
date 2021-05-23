@@ -129,4 +129,39 @@ class HistorialPagosController extends Controller
             return response()->json($response, $this->statusCode);
         }
     }
+
+    public function historyForCustomer(Request $request) {
+        try {
+            $records = DetallePagos::where('credito_id', $request->input('credito_id'))
+                                        ->where('estado', 1)
+                                        ->get();
+
+            if ($records) {
+                $colletion = collect($records);
+                $colletion->map(function ($item, $key){
+                    return $item->fecha_pago = \Carbon\Carbon::parse($item->fecha_pago)->format('d/m/Y');
+                });
+
+                $this->statusCode   = 200;
+                $this->result       = true;
+                $this->message      = "Registro consultados exitosamente";
+                $this->records      = $records;
+            } else {
+                throw new \Exception("No se encontraron registros");
+            }   
+        } 
+        catch (\Exception $e) {
+            $this->statusCode = 200;
+            $this->result = false;
+            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
+            
+        } finally {
+            $response = [
+                'result'    => $this->result,
+                'message'   => $this->message,
+                'records'   => $this->records,
+            ];
+            return response()->json($response, $this->statusCode);
+        }
+    }
 }

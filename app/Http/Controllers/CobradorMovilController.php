@@ -20,7 +20,7 @@ class CobradorMovilController extends Controller {
     public $statusCode  = 200;
     public $result      = false;
     public $message     = "";
-    public $records     = [];
+    public $records     = null;
     
     use detailsPaymentsTrait;
 
@@ -76,15 +76,17 @@ class CobradorMovilController extends Controller {
                         $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');
                         $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
                         $item['cantidad_cuotas_pagadas'] =  $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;
-                        $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? ($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
-                        $item['monto_abonado'] = $item->monto_abonado == null ? 0 : $item->monto_abonado;
+                        $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
+                        $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
                         $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
+                        $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                         $totalacobrar = $totalacobrar + $item->cuota_diaria;
                     }
 
                     $datos = [];
                     $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
-                    $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');                             
+                    $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');     
+                    $datos['total_cobrado'] = number_format($this->getTotalPaymentCollector($request->input('idusuario'), $hoy), 2, '.', ',');                         
                     $datos['registros'] = $registros;
 
                     $this->statusCode   = 200;
@@ -149,7 +151,7 @@ class CobradorMovilController extends Controller {
                     }
                     $datos = [];
                     $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
-                    $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');                             
+                    $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');                            
                     $datos['registros'] = $registros;
                     
                     $this->statusCode   = 200;
