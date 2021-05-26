@@ -9,15 +9,13 @@ use App\Http\Controllers\Controller;
 use App\Permisos;
 use Exception;
 
-class PermisosController extends Controller
-{
+class PermisosController extends Controller {
     public $statusCode  = 200;
     public $result      = false;
-    public $message     = "";
+    public $message     = "afadf";
     public $records     = null;
     
-    public function getPermission()
-    {
+    public function getPermission() {
         try {
             $permiso = Permisos::first();            
             

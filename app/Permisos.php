@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Planes extends Model
+class Permisos extends Model
 {
     protected $table = 'permisos';
 	protected $fillable = ['acceso'];
