@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Permisos;
 use Exception;
 
-class PlanesController extends Controller
+class PermisosController extends Controller
 {
     public $statusCode  = 200;
     public $result      = false;
