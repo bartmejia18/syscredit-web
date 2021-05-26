@@ -7,6 +7,7 @@ class ClientesActivos extends Model {
     protected $table = 'vista_clientes_activos';
     protected $fillable = [
         'clientes_id',
+        'planes_id',
         'usuarios_cobrador',
         'saldo',
         'deudatotal',

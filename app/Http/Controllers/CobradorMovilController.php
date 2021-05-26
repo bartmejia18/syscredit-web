@@ -11,10 +11,12 @@ use App\Creditos;
 use App\DetallePagos;
 use App\CierreRuta;
 use App\ClientesActivos;
+use App\Planes;
 use Auth;
 use DB;
 use Session;
 use App\Http\Traits\detailsPaymentsTrait;
+use App\Http\Traits\countDaysTrait;
 
 class CobradorMovilController extends Controller {
     public $statusCode  = 200;
@@ -23,6 +25,7 @@ class CobradorMovilController extends Controller {
     public $records     = null;
     
     use detailsPaymentsTrait;
+    use countDaysTrait;
 
     public function loginMovil (Request $request) {
         try {
@@ -67,16 +70,22 @@ class CobradorMovilController extends Controller {
                     $totalacobrar = 0;
                     $totalminimocobrar = 0;
                     $pagohoy = false;
-                    foreach ($registros as $item) {                        
+                    foreach ($registros as $item) {     
+                        
+                        $plan =  Planes::find($item->planes_id);      
+                        $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
+                        $cuotas_atrasadas = $this->getTotalDaysArrears($item->fecha_inicio, $cuotas_pagadas, $plan->domingo);   
+
                         $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                         $item['saldo'] = number_format($item->saldo, 2, '.', '');
                         $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', ',');
                         $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
                         $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d/m/Y');
-                        $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');
+                        $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
                         $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
-                        $item['cantidad_cuotas_pagadas'] =  $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;
+                        $item['cantidad_cuotas_pagadas'] = $cuotas_pagadas; 
                         $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
+                        $item['cuotas_atrasadas'] = $cuotas_atrasadas;
                         $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
                         $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
                         $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
