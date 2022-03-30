@@ -20,7 +20,7 @@ class UsuariosController extends Controller
     protected $status_code = 200;
     protected $result = false;
     protected $message = "Ocurrió un problema con tu transacción, intenta más tarde";
-    protected $records = [];
+    protected $records = null;
     protected $sessionKey = 'usuario';
 
     public function index(Request $request)

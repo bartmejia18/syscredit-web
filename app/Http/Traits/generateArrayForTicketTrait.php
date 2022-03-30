@@ -19,10 +19,6 @@ trait generateArrayForTicketTrait {
         
         $totalDays = ($totalDays % 2 == 0 ? $totalDays : $totalDays + 1) / 2; 
 
-        $dateInit = new \DateTime($dateInitial);
-        $timestamp = $dateInit->getTimestamp();
-        $seconds = 0;
-
         $countSundayTemporal = 0;
         for ($i=0; $i<$totalDays; $i++)  {  
             $dateTemporal = strtotime ( '+'.$i.' day' , strtotime ( $dateInitial) ) ;
@@ -96,7 +92,6 @@ trait generateArrayForTicketTrait {
         
         $totalDays = ($totalDays % 2 == 0 ? $totalDays : $totalDays + 1) / 2; 
         
-        $dateInit = new \DateTime($dateInitial);
         $row = array();
         $countOne = 0;
         $countTwo = $totalDays;
