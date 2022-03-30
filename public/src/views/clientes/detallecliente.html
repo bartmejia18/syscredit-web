@@ -65,9 +65,13 @@
 														ng-change="creditSelected(itemCredit)">
 												</select>							
 											</div>
-											<h4><span ng-if="status_credit == 1" class="label label-success">CRÉDITO ACTIVO</span></h4>
-											<h4><span ng-if="status_credit == 0" class="label label-info">CRÉDITO COMPLETADO</span></h4>
-											<h4><span ng-if="status_credit == 2" class="label label-danger">CRÉDITO ELIMINADO</span></h4>																						
+											<div style="display: flex; align-items: center;">
+												<div style="margin-right: 2em;">
+													<h4><span ng-if="status_credit == 1" class="label label-success">CRÉDITO ACTIVO</span></h4>
+													<h4><span ng-if="status_credit == 0" class="label label-info">CRÉDITO COMPLETADO</span></h4>
+													<h4><span ng-if="status_credit == 2" class="label label-danger">CRÉDITO ELIMINADO</span></h4>	
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -177,13 +181,14 @@
 						<div class="col-sm-12 text-center">
 							<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
 							<a type="button" class="btn btn-success btn-rounded" href="#/abonos?name={{nombre}}&lastname={{apellido}}">Abonar cuotas</a>
+							<button type="button" class="btn btn-danger btn-rounded" ng-click="modalDeleteOpen()">Eliminar crédito</button>
 							<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
 						</div>
 						</div>
 						<br>
 						<br>
-					</div>					
-				</div>
+					</div>				
+				</div>	
 			</div>
 		</div>
 		<div class="toast toast-{{positionModel}}">

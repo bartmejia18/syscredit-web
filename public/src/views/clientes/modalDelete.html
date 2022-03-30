@@ -1,0 +1,23 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Eliminar crédito</h4>
+		<span class="close ion ion-android-close" ng-click="modalDeleteClose()"></span>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal" name="form" action="javascript:;" novalidate>
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Ingrese la contraseña de eliminación para poceder: </label>
+					<input type="password" class="form-control" ng-model="item.password" id="password" required>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">
+					<button class="btn btn-info" ng-click="modalDeleteClose()">Cancelar</button>
+					<button class="btn btn-danger" ng-click="validatePassword(item)" ng-disabled="form.$invalid">Confirmar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

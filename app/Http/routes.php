@@ -32,6 +32,7 @@ Route::group(['prefix' => 'ws'], function() {
 	Route::resource('referenciasclientes',	'ReferenciasPersonalesClientesController');
 	Route::resource('creditos',				'CreditosController');
 	Route::resource('usuarios',				'UsuariosController');
+	Route::resource('creditoeliminado',     'CreditosEliminadosController');
 	Route::post('login',					'UsuariosController@login');
 	Route::resource('cierreruta',			'CierreRutaController');
 	Route::get('validatecierreruta', 		'CierreRutaController@validatecierreruta');
@@ -56,6 +57,7 @@ Route::group(['prefix' => 'ws'], function() {
 	Route::get('reportdates',				'ReportsController@dates');
 	Route::get('printinfoclosure',			'CierreRutaController@printReportClosure');
 	Route::get('printaccountstatus',		'ClientesController@printPDFAccountStatus');
+	Route::post('accessdelete', 			'ClientesController@accessForDelete');
 
 	Route::get('logout',function() {
 		Auth::logout();

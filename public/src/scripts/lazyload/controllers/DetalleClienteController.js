@@ -7,9 +7,12 @@
 	.controller("DetalleClienteController", ["$scope", "$routeParams", "$filter", "$http", "$modal", "$interval", "API_URL", function($scope, $routeParams, $filter, $http, $modal, $timeout, API_URL)  {	
 		
 		var customer = {};
+		var modal
+
 		$scope.listCredito = [];
 		$scope.itemCredit = "";
 		$scope.showInputSelect = false
+		$scope.toasts = [];
 
 		$scope.datosCliente = function(id) {
 			$http({
@@ -103,5 +106,54 @@
 					return ""
 			}
 		}
+
+		$scope.validatePassword = function (item) {
+			$http({
+			  method: 'POST',
+			  url: API_URL + 'accessdelete',
+			  data: {
+				password: item.password
+			  }
+			}).then(function succesCallback(response) {
+			  if (response.data == true) {
+				console.log(response)
+			  } else {
+				modal.close();
+				$scope.createToast("danger", "<strong>Error:</strong> La contraseña ingresa es incorrecta.");
+				$timeout(function () { $scope.closeAlert(0); }, 5000);
+			  }
+			}, function errorCallback(response) {
+			  console.log(response)
+			})
+		  }
+
+		//#region "modal"
+		$scope.modalDeleteOpen = function() {
+			modal = $modal.open({
+				templateUrl: "views/clientes/modalDelete.html",
+				scope: $scope,
+				size: "md",
+				resolve: function(){},
+				windowClass: "default"
+			})
+		}
+
+		$scope.modalDeleteClose = function() {
+			modal.close()
+		}
+		//#endregion
+		//#region "Toast"
+		$scope.createToast = function (tipo, mensaje) {
+			$scope.toasts.push({
+				anim: "bouncyflip",
+				type: tipo,
+				msg: mensaje
+			});
+		}
+
+		$scope.closeAlert = function (index) {
+			$scope.toasts.splice(index, 1);	
+		}
+		//#endregion
 	}])
 }())

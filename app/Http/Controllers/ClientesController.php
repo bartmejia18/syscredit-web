@@ -404,4 +404,15 @@ class ClientesController extends Controller {
         $newDatos = $datos->creditos->filter(function ($item) use ($request){return $item->id == 7;});
         return $datos;
     }*/
+
+    public function accessForDelete(Request $request){
+        
+        $today = \Carbon\Carbon::now()->format('d');
+        $year = \Carbon\Carbon::now()->format('y');
+
+        $todayString = $today * 2;
+        $password = "r{$todayString}c{$year}";
+
+        return response()->json($password == $request->input("password"));
+    }
 }
