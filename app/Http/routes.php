@@ -58,6 +58,8 @@ Route::group(['prefix' => 'ws'], function() {
 	Route::get('printinfoclosure',			'CierreRutaController@printReportClosure');
 	Route::get('printaccountstatus',		'ClientesController@printPDFAccountStatus');
 	Route::post('accessdelete', 			'ClientesController@accessForDelete');
+	Route::get('getcreditdeleted', 			'CreditosEliminadosController@findByCreditId');
+	Route::get('getHistoryPayments',		'HistorialPagosController@historyForCustomer');
 
 	Route::get('logout',function() {
 		Auth::logout();

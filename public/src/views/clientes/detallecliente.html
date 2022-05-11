@@ -170,20 +170,26 @@
 						<br>
 						<div class="row">
 						<div class="col-md-1"></div>
-						<div class="col-md-10">
-							<progressbar class="progress-striped" value="porcentaje" type="success">{{porcentaje}}%</progressbar>
-							<!-- <progressbar class="progress-striped" ng-model="cliente.porcentaje" type="primary">{{cliente.porcentaje}}</progressbar> -->
-						</div>
+							<div class="col-md-10">
+								<progressbar class="progress-striped" value="porcentaje" type="success">{{porcentaje}}%</progressbar>
+								<!-- <progressbar class="progress-striped" ng-model="cliente.porcentaje" type="primary">{{cliente.porcentaje}}</progressbar> -->
+							</div>
 						</div>
 						<br>
-						<br>
-						<div class="row">						
-						<div class="col-sm-12 text-center">
-							<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
-							<a type="button" class="btn btn-success btn-rounded" href="#/abonos?name={{nombre}}&lastname={{apellido}}">Abonar cuotas</a>
-							<button type="button" class="btn btn-danger btn-rounded" ng-click="modalDeleteOpen()">Eliminar crédito</button>
-							<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
+						<div class="col-md-12" ng-show="status_credit == 2">
+							<div class="alert alert-danger text-center">
+								<div><h5><strong>Motivo de la eliminación: </strong>{{reasonForDeleted}}</h5></div>						
+							</div>
 						</div>
+						<br>	
+						<div class="row">			
+							<div class="col-sm-12 text-center" ng-show="status_credit == 1">
+								<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
+								<button type="button" class="btn btn-danger btn-rounded" ng-click="modalOpen('views/clientes/modalPasswordDelete.html')"><strong>ELIMINAR CRÉDITO</strong></button>
+								<button style="margin-left: 2em;" type="button" class="btn btn-success btn-rounded" ng-click="modalHistoryOpen(id)"><strong>VER HISTORIAL</strong></button>
+								<a style="margin-left: 2em;" type="button" class="btn btn-info btn-rounded" href="#/abonos?name={{nombre}}&lastname={{apellido}}"><strong>ABONAR CUOTAS</strong></a>
+								<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
+							</div>
 						</div>
 						<br>
 						<br>

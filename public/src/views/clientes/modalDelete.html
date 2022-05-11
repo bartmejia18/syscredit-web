@@ -1,21 +1,43 @@
 <div class="modal-style">
 	<div class="modal-header clearfix">
-		<h4 class="modal-title">Eliminar crédito</h4>
-		<span class="close ion ion-android-close" ng-click="modalDeleteClose()"></span>
+		<h4 class="modal-title">Eliminar crédito de {{dataCustomer.nombre}}</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
 	</div>
 	<div class="modal-body">
 		<form class="form-horizontal" name="form" action="javascript:;" novalidate>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Ingrese la contraseña de eliminación para poceder: </label>
-					<input type="password" class="form-control" ng-model="item.password" id="password" required>
+					<label><h4>Datos del crédito a eliminar:</h4></label>
+					<br>
+					<h5>Plan: <b>{{dataCustomer.plan}}</b></h5>
+					<h5>Monto total: <b>{{dataCustomer.monto_total}}</b></h5>
+					<h5>Fecha de inicio: <b>{{dataCustomer.fecha_inicio}}</b></h5>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Motivo de la eliminación: </label>
+					<input type="text" class="form-control" ng-model="data.motivo" required>
+				</div>
+			</div>
+
+			<br>
+
+			<div ng-show="infoResult != 0">
+				<div class="row form-group">
+					<div class="col-sm-12">
+						<div ng-if="infoResult == 1" class="alert alert-danger">
+							<div><strong>Error!</strong> Ha ocurrido en error al intentar eliminar el crédito.</div>						
+						</div>
+					</div>
 				</div>
 			</div>
 
 			<div class="row form-group">
 				<div class="col-sm-12 text-right">
-					<button class="btn btn-info" ng-click="modalDeleteClose()">Cancelar</button>
-					<button class="btn btn-danger" ng-click="validatePassword(item)" ng-disabled="form.$invalid">Confirmar</button>
+					<button class="btn btn-info" ng-click="modalClose()">Cancelar</button>
+					<button class="btn btn-danger" ng-click="creditToDelete(data)" ng-disabled="form.$invalid">Confirmar</button>
 				</div>
 			</div>
 		</form>

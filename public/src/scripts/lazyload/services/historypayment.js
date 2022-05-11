@@ -14,4 +14,8 @@ history_payment_service.service('historyPaymentService', ['$http', 'API_URL', fu
     this.deleteHistory = function(id){
         return $http.get(API_URL+'deletepayment?detalle_id='+id);
     }
+
+    this.historyForCredit = function(id) {
+        return $http.get(API_URL+'getHistoryPayments?credito_id='+id);
+    }
 }]);

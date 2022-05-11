@@ -133,6 +133,10 @@
 				{
                     name: "app.service.cierreruta",
                     files: ["scripts/lazyload/services/cierreruta.js"]
+                },
+				{
+                    name: "app.service.deletecredit",
+                    files: ["scripts/lazyload/services/deletecredit.js"]
                 }
 			]
 		})

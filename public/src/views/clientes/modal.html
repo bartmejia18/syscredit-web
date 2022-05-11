@@ -8,17 +8,19 @@
 	<div class="modal-body">
 		<div class="row form-group" ng-if="accion == 'eliminar'">
 			<div ng-show="cliente.statusCredit == 2">
-				<h4><font color="red">El cliente que desea eliminar tiene créditos pendientes de cancelar.</font></h4>
+				<h4><font color="red">No se puede eliminar el cliente <strong>{{cliente.nombre}} {{cliente.apellido}}</strong> porque tiene créditos activos. Para poder eliminar este cliente correctamente debe de completar todos los créditos o eliminar los créditos activos</font></h4>
 			</div>
-			<br>
-			<h4>¿Realmente desea eliminar este cliente?</h4>
+			<div ng-show="cliente.statusCredit != 2">
+				<h4><font color="red">¿Realmente desea eliminar a {{cliente.nombre}} {{cliente.apellido}}?</font></h4>
+			</div>
+			
 		</div>
 		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'editar'" action="javascript:;" novalidate>
 			<input type="hidden" class="form-control"  ng-model="cliente.credito">
 			<div class="row form-group">
 				<div class="col-sm-12">
 					<label>DPI</label>
-					<input type="number" class="form-control" ng-model="cliente.dpi" required maxlength="13">
+					<input type="number" class="form-control" ng-model="cliente.dpi" required maxlength="13" ng-change="findUser(cliente.dpi)">
 				</div>
 			</div>
 			<div class="row form-group">
@@ -74,7 +76,9 @@
 		</form>
 		<div class="row form-group" ng-if="accion == 'eliminar'">
 			<div class="col-sm-12 text-right">
-				<button class="btn btn-danger" ng-click="saveData(cliente)">Confirmar</button>
+				<button ng-if="cliente.statusCredit != 2" class="btn btn-info" ng-click="modalClose()"><strong>No</strong></button>
+				<button ng-if="cliente.statusCredit != 2" class="btn btn-danger" ng-click="saveData(cliente)"><strong>Si</strong></button>
+				<button ng-if="cliente.statusCredit == 2" class="btn btn-danger" ng-click="modalClose()">Aceptar</button>
 			</div>
 		</div>
 	</div>
