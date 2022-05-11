@@ -18,7 +18,7 @@
       $scope.toasts = [];
 
       $scope.buttonColor = "btn-danger"
-      $scope.buttonText = "Mostrar clientes eliminados y completados"
+      $scope.buttonText = "Mostrar clientes eliminados"
 
       var modal
       var flagShowCustomersActive = true
@@ -51,9 +51,9 @@
         .then(function successCallback(response) {
           response.data.records.forEach(function (item) {
             if (item.sucursal_id == branch_selectd) {      
-                if (flagShowCustomersActive && item.statusCredit == 2)
+                if (flagShowCustomersActive && (item.statusCredit == 2 || item.statusCredit == 3))
                   $scope.datas.push(item)            
-                else if (!flagShowCustomersActive && item.statusCredit != 2)
+                else if (!flagShowCustomersActive && item.statusCredit == 4)
                   $scope.datas.push(item)            
             }
           })
@@ -127,11 +127,28 @@
         }
       }
 
+      $scope.findUser = function(dpi) {                      
+        if ( dpi != undefined && dpi.toString().length == 13) {       
+          console.log("entra") 
+          $http({
+            method: 'GET',
+            url: API_URL + 'buscarcliente',
+            params: {dpi:dpi}
+          }).then(function successCallback(response) {
+            if ( response.data.result ) {                                     
+              $scope.cliente = response.data.records               
+            } else {
+              $scope.cliente.statusCredit = 0
+            }
+          })
+        }
+      }
+
       $scope.showActiveCustomers = function() {
         flagShowCustomersActive = !flagShowCustomersActive
         if (flagShowCustomersActive) {
           $scope.buttonColor = "btn-danger"
-          $scope.buttonText = "Mostrar clientes eliminados y completados"
+          $scope.buttonText = "Mostrar clientes eliminados"
         } else {
           $scope.buttonColor = "btn-info"
           $scope.buttonText = "Mostrar clientes activos"

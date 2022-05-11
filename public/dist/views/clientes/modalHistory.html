@@ -1,0 +1,91 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Historial de pagos: {{plan}} - Monto crédito: {{monto_total}}</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal" name="form" action="javascript:;" novalidate>
+			<div class="row form-group">
+				<div class="row col-md-12">
+					<div class="col-md-6" style="padding-left: 5%;">
+						Saldo: <div class="text-danger text-bold">{{saldo_pendiente}}</div>
+					</div>
+					<div class="col-md-6">
+						Cancelado: <div class="text-success text-bold">{{total_cancelado}}</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel-body">
+						<div class="row">
+							<div class="small text-bold left mt5">
+								Mostrar&nbsp;
+								<select data-ng-model="numPerPage" data-ng-options="num for num in numPerPageOpts"
+									data-ng-change="onNumPerPageChange()">
+								</select>
+								&nbsp;entradas
+							</div>
+						</div>
+					</div>
+					<!-- data table -->
+					<table class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>#
+									<div class="th">
+										<i class="fa fa-caret-up icon-up" ng-click=" order('id') "
+											ng-class="{active: row == 'id'}"></i>
+										<i class="fa fa-caret-down icon-down" ng-click=" order('-id') "
+											ng-class="{active: row == '-id'}"></i>
+									</div>
+								</th>
+								<th>
+									Fecha
+									<div class="th">
+										<i class="fa fa-caret-up icon-up" ng-click=" order('fecha_pago') "
+											ng-class="{active: row == 'fecha_pago'}"></i>
+										<i class="fa fa-caret-down icon-down" ng-click=" order('-fecha_pago') "
+											ng-class="{active: row == '-fecha_pago'}"></i>
+									</div>
+								</th>
+								<th>
+									Monto
+									<div class="th">
+										<i class="fa fa-caret-up icon-up" ng-click=" order('abono') "
+											ng-class="{active: row == 'abono'}"></i>
+										<i class="fa fa-caret-down icon-down" ng-click=" order('-abono') "
+											ng-class="{active: row == '-abono'}"></i>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="historyCredit in currentPageStores track by $index">
+								<td>{{ $index + 1 }}</td>
+								<td>{{ historyCredit.fecha_pago }}</td>
+								<td>Q. {{ historyCredit.abono }}</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- #end data table -->
+					<div class="panel-footer clearfix">
+						<p class="left mt15 small">
+							Mostrando {{currentPageStores.length*(currentPage - 1) + 1}} a
+							{{currentPageStores.length*currentPage}} de {{historyCredit.length}}
+							registro(s)
+						</p>
+						<pagination boundary-links="true" total-items="filteredData.length" ng-model="currentPage"
+							class="pagination-sm right" max-size="5" ng-change="select(currentPage)"
+							items-per-page="numPerPage" rotate="false" previous-text="&lsaquo;" next-text="&rsaquo;"
+							first-text="&laquo;" last-text="&raquo;"></pagination>
+					</div>
+				</div>
+
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">
+					<button class="btn btn-info" ng-click="modalClose()">Cerrar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

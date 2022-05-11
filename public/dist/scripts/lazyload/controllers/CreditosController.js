@@ -173,7 +173,8 @@
       }
 
       $scope.findUser = function(dpi) {                      
-        if ( dpi != undefined && dpi.length == 13) {        
+        if ( dpi != undefined && dpi.toString().length == 13) {       
+          console.log("entra") 
           $http({
             method: 'GET',
             url: API_URL + 'buscarcliente',

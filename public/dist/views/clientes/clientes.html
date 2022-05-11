@@ -186,9 +186,9 @@
 								</td>-->
 								<td>
 									<div class="btn-group btn-group-sm">
-					                    <button ng-show="data.statusCredit != 4 && data.statusCredit != 3" type="button" class="btn btn-info ion ion-edit" ng-click="modalEditOpen(data)" md-ink-ripple></button>
+					                    <button ng-show="data.statusCredit != 4" type="button" class="btn btn-info ion ion-edit" ng-click="modalEditOpen(data)" md-ink-ripple></button>
 					                    <button ng-show="data.statusCredit != 4" type="button" class="btn btn-danger ion ion-trash-a" ng-click="modalDeleteOpen(data)" md-ink-ripple></button>
-					                    <a ng-show="data.statusCredit == 2" type="button" class="btn btn-success ion ion-calculator" href="#/detallecliente/{{ data.id }}" md-ink-ripple></a>
+					                    <a ng-show="data.statusCredit == 2 || data.statusCredit == 3" type="button" class="btn btn-success ion ion-calculator" href="#/detallecliente/{{ data.id }}" md-ink-ripple></a>
 					                </div>
 								</td>
 							</tr>
