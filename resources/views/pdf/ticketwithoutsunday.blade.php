@@ -26,10 +26,11 @@
 		}
 		div.title {
 			font-family: 'Roboto', sans-serif;
-			text-align: center;
+			text-align: left;
 			height: 18px;
-			font-size: 15px;
-			color: black;
+			font-size: 20px;
+			color: #1A4F83;
+			font-weight: bold;
 		}
 		table{
 			width: 100%;
@@ -57,12 +58,14 @@
 			border-collapse: collapse;
 		}
 		thead.pago{
-			background: #134794;
+			background: #1A4F83;
+			border: 1px solid black;
 		}
 		td.columna{
 			width: 25%;
 			text-align: center;
 			color: #ffffff;
+			border: 1px solid black;
 		}
 		tr.primeracolumna{
 			width: 50%;
@@ -73,14 +76,15 @@
 			height: 15px;
 			border: 1px solid black;
 			font-size: 11px;
-			text-align: center;	
+			text-align: center;
+				
 		}
 		td.rowfirm{
 			height: 70px;
 			border-bottom: 1px solid black;
 		}
 		td.fingerprint{
-			height: 70px;
+			height: 90px;
 			border: 2px solid black;
 		}
 		td.rowfirmlabel{
@@ -90,13 +94,17 @@
 
 	</style>
 	<body class="body-width">
-		<div class="title">BOLETA DE CONTROL DE PAGO</div>	
-		<br>
+		<table>
+		<tr>
+			<td style="width:15px"><img src="{{ public_path('images/logo_rapicredit.jpg') }}" height="65px"></td>
+			<td><div class="title" style="margin-left: 70px">CONTROL DE PAGOS</div></td>
+		</tr>
+	</table>
 		<table>
 			<tr>
 				<td class="firstcolumnlabel">Nombre Cliente:</td>
 				<td class="firstcolumninfo">
-					<span><strong>{!! $data->name !!}</strong></span>
+					<span><strong><i>{!! $data->name !!}</i></strong></span>
 				</td>
 				<td class="secundcolumnlabel">DPI:</td>
 				<td class="secundcolumninfo">
@@ -151,19 +159,19 @@
 				@foreach($data->arrayQuota as $quota)
 				<tr class="primeracolumna">
 					@if($quota->sundayFirst == "N")
-						<td class="columnapago">{!!$quota->indexFirst!!}</td>
+						<td class="columnapago" bgcolor="#E4E2E1">{!!$quota->indexFirst!!}</td>
 						<td class="columnapago">Q. {!!number_format((float)($quota->amountFirst), 2, '.', '')!!}</td>
 						<td class="columnapago">{!!$quota->dateFirst!!}</td>
 					@else
-						<td class="columnapago" colspan="3"><strong>DOMINGO</strong></td>		
+						<td class="columnapago" bgcolor="#C1C1C1" colspan="3"><strong>DOMINGO</strong></td>		
 					@endif
 					@if($quota->indexSecond <= $data->days)
 						@if($quota->sundaySecond == "N")
-							<td class="columnapago">{!!$quota->indexSecond!!}</td>
+							<td class="columnapago" bgcolor="#E4E2E1">{!!$quota->indexSecond!!}</td>
 							<td class="columnapago">Q. {!!number_format((float)($quota->amountSecond), 2, '.', '')!!}</td>
 							<td class="columnapago">{!!$quota->dateSecond!!}</td>
 						@else
-							<td class="columnapago" colspan="3"><strong>DOMINGO</strong></td>		
+							<td class="columnapago" bgcolor="#C1C1C1" colspan="3"><strong>DOMINGO</strong></td>		
 						@endif
 					@else
 						<td class="columnapago" colspan="3"><strong></strong></td>		
@@ -172,21 +180,18 @@
 				@endforeach	
 			</tbody>
 		</table>
-		<span class="note"><strong>Nota: </strong>SE COBRARÁ Q. {!!number_format((float)($data->amountDefault), 2, '.', '')!!} DE MORA POR DÍA ATRASADO</span>
+		<span class="note"><strong>Nota: </strong><i>SE COBRARÁ Q. {!!number_format((float)($data->amountDefault), 2, '.', '')!!} DE MORA POR DÍA ATRASADO</i></span>
 		<table>
 			<tr>
-				<td class="rowfirm"></td>
-				<td class="rowfirm"></td>
-				<td class="rowfirm"></td>
 				<td class="fingerprint"></td>
+				<td class="rowfirm"></td>
+				<td class="rowfirm"></td>
 			</tr>
 			<tr>
-				<td class="rowfirmlabel">F. Préstamos</td>
-				<td class="rowfirmlabel">F. Encargada de grupo</td>
-				<td class="rowfirmlabel">F. Cliente</td>
 				<td class="rowfirmlabel">Huella</td>
+				<td class="rowfirmlabel">Asesor</td>
+				<td class="rowfirmlabel">Cliente</td>
 			</tr>
-		
 		</table>
 
 	</body>

@@ -29,7 +29,8 @@
 			text-align: center;
 			height: 18px;
 			font-size: 15px;
-			color: black;
+			color: #1A4F83;
+			font-weight: bold;
 		}
 		table{
 			width: 100%;
@@ -57,12 +58,14 @@
 			border-collapse: collapse;
 		}
 		thead.pago{
-			background: #134794;
+			background: #1A4F83;
+			border: 1px solid black;
 		}
 		td.columna{
 			width: 25%;
 			text-align: center;
 			color: #ffffff;
+			border: 1px solid black;
 		}
 		tr.primeracolumna{
 			width: 50%;
@@ -72,7 +75,7 @@
 		td.columnapago{
 			height: 11px;
 			border: 1px solid black;
-			font-size: 9px;
+			font-size: 8px;
 			text-align: center;	
 		}
 		td.rowfirm{
@@ -80,23 +83,28 @@
 			border-bottom: 1px solid black;
 		}
 		td.fingerprint{
-			height: 80px;
-			border: 2px solid black;
+			height: 40px;
+			border-bottom: 1px solid black;
 		}
 		td.rowfirmlabel{
-			font-size: 12px;
+			font-size: 8px;
 			text-align: center;	
 		}
 
 	</style>
 
 	<body class="body-width">	
-		<div class="title">BOLETA DE CONTROL DE PAGO</div>
+		<table>
+			<tr>
+				<td style="width:15px"><img src="{{ public_path('images/logo_rapicredit.jpg') }}" height="45px"></td>
+				<td><div class="title" style="margin-left: 90px">CONTROL DE PAGOS</div></td>
+			</tr>
+		</table>
 		<table>
 			<tr>
 				<td class="firstcolumnlabel">Nombre Cliente:</td>
 				<td class="firstcolumninfo">
-					<span><strong>{!! $data->name !!}</strong></span>
+					<span><strong><i>{!! $data->name !!}</i></strong></span>
 				</td>
 				<td class="secundcolumnlabel">DPI:</td>
 				<td class="secundcolumninfo">
@@ -149,13 +157,13 @@
 				@foreach($data->arrayQuota as $quota)
 				<tr class="primeracolumna">
 					
-						<td class="columnapago">{!!$quota->indexFirst!!}</td>
+						<td class="columnapago" bgcolor="#E4E2E1">{!!$quota->indexFirst!!}</td>
 						<td class="columnapago">Q. {!!number_format((float)($quota->amountFirst), 2, '.', '')!!}</td>
 						<td class="columnapago">{!!$quota->dateFirst!!}</td>
 					
 					@if($quota->indexSecond <= $data->days)
 						
-							<td class="columnapago">{!!$quota->indexSecond!!}</td>
+							<td class="columnapago" bgcolor="#E4E2E1">{!!$quota->indexSecond!!}</td>
 							<td class="columnapago">Q. {!!number_format((float)($quota->amountSecond), 2, '.', '')!!}</td>
 							<td class="columnapago">{!!$quota->dateSecond!!}</td>
 						

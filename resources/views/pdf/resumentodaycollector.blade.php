@@ -22,7 +22,7 @@
             border-collapse: collapse;
         }
         thead.head-payment{
-			background: #134794;            
+			background: #LA4F83;            
             border: 1px solid black;
 		}
         th.head-column{			

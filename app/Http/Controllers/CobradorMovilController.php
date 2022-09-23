@@ -54,7 +54,7 @@ class CobradorMovilController extends Controller {
     }
 
     public function clientesActivos(Request $request) {
-        try {
+        try {        
             $hoy = date('Y-m-d');
             $routeClosure = CierreRuta::where('cobrador_id', $request->input('idusuario'))
                                 ->where('fecha_cierre', $hoy)
@@ -78,7 +78,7 @@ class CobradorMovilController extends Controller {
 
                         $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                         $item['saldo'] = number_format($item->saldo, 2, '.', '');
-                        $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', ',');
+                        $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
                         $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
                         $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d/m/Y');
                         $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
@@ -123,7 +123,7 @@ class CobradorMovilController extends Controller {
     }
 
     public function listadoClientesCobrador(Request $request) {
-        try {
+        try {       
             $hoy = date('Y-m-d');
 
             $routeClosure = CierreRuta::where('cobrador_id', $request->input('idusuario'))
