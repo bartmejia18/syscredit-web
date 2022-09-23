@@ -199,7 +199,11 @@ class UsuariosController extends Controller
     public function login(Request $request)
     {
         try{
-            if (Auth::attempt(['user'=> $request->input('user'),'password'=> $request->input('password'), "estado" => 1])) {
+            if (Auth::attempt([
+                'user'=> $request->input('user'),
+                'password'=> $request->input('password'), 
+                'estado' => 1
+                ]) && Auth::user()->tipo_usuarios_id != 4) {
             
                 //Session::push($this->sessionKey, Auth::user());
                 Session::put($this->sessionKey, Auth::user());
