@@ -17,7 +17,9 @@ class CierreRutaController extends Controller
 
     public function index(Request $request){
         try {
-            $registros = CierreRuta::where('fecha_cerrado', $request->input('fecha_cerrado'))->with('cobrador')->get();
+            $registros = CierreRuta::where('fecha_cerrado', $request->input('fecha_cerrado'))
+                                    ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
+                                    ->with('cobrador')->get();
 
             if ( $registros ) {
                 $this->statusCode   = 200;
