@@ -177,18 +177,14 @@
 		<span class="note"><strong>Nota: </strong>SE COBRARÁ <strong>Q. {!!number_format((float)($data->amountDefault), 2, '.', '')!!}</strong> DE MORA POR DÍA ATRASADO</span>
 		<table>
 			<tr>
-				<td class="rowfirm"></td>
-				<td class="rowfirm"></td>
-				<td class="rowfirm"></td>
 				<td class="fingerprint"></td>
+				<td class="rowfirm"></td>
+				<td class="rowfirm"></td>
 			</tr>
 			<tr>
-				<td class="rowfirmlabel">F. Préstamos</td>
-				<td class="rowfirmlabel">F. Encargada de grupo</td>
-				<td class="rowfirmlabel">F. Cliente</td>
 				<td class="rowfirmlabel">Huella</td>
+				<td class="rowfirmlabel">Firma Cliente</td>
+				<td class="rowfirmlabel">Firma Préstamo</td>
 			</tr>
-		
 		</table>
-
 	</body>

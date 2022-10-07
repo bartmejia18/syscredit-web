@@ -56,57 +56,66 @@ class CobradorMovilController extends Controller {
     public function clientesActivos(Request $request) {
         try {        
             $hoy = date('Y-m-d');
-            $routeClosure = CierreRuta::where('cobrador_id', $request->input('idusuario'))
+            $usuarioCobrador = Usuarios::where('id', $request->input('idusuario'))
+                                    ->where('estado',1)
+                                    ->first();
+            if ($usuarioCobrador) {
+                
+                $routeClosure = CierreRuta::where('cobrador_id', $request->input('idusuario'))
                                 ->where('fecha_cierre', $hoy)
                                 ->where('estado', 1)
                                 ->whereOr('estado', 2)
                                 ->first();
-            if (!$routeClosure) {
-                $registros = ClientesActivos::where("usuarios_cobrador", $request->input("idusuario"))
-                                            ->where("fecha_inicio", "<=", $hoy)
-                                            ->with("cliente")                                    
-                                            ->get();
-                if ($registros) {    
-                    $totalacobrar = 0;
-                    $totalminimocobrar = 0;
-                    $pagohoy = false;
-                    foreach ($registros as $item) {     
-                        
-                        $plan =  Planes::find($item->planes_id);      
-                        $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
-                        $cuotas_atrasadas = $this->getTotalDaysArrears($item->fecha_inicio, $cuotas_pagadas, $plan->domingo);   
+                
+                if (!$routeClosure) {
+                    $registros = ClientesActivos::where("usuarios_cobrador", $request->input("idusuario"))
+                                                ->where("fecha_inicio", "<=", $hoy)
+                                                ->with("cliente")                                    
+                                                ->get();
+                    if ($registros) {    
+                        $totalacobrar = 0;
+                        $totalminimocobrar = 0;
+                        $pagohoy = false;
+                        foreach ($registros as $item) {     
+                            
+                            $plan =  Planes::find($item->planes_id);      
+                            $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
+                            $cuotas_atrasadas = $this->getTotalDaysArrears($item->fecha_inicio, $cuotas_pagadas, $plan->domingo);   
 
-                        $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
-                        $item['saldo'] = number_format($item->saldo, 2, '.', '');
-                        $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
-                        $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
-                        $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d/m/Y');
-                        $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
-                        $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
-                        $item['cantidad_cuotas_pagadas'] = $cuotas_pagadas; 
-                        $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
-                        $item['cuotas_atrasadas'] = $cuotas_atrasadas;
-                        $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
-                        $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
-                        $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
-                        $totalacobrar = $totalacobrar + $item->cuota_diaria;
+                            $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
+                            $item['saldo'] = number_format($item->saldo, 2, '.', '');
+                            $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
+                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
+                            $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $item['fecha_fin'] = \Carbon\Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
+                            $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
+                            $item['cantidad_cuotas_pagadas'] = $cuotas_pagadas; 
+                            $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
+                            $item['cuotas_atrasadas'] = $cuotas_atrasadas;
+                            $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
+                            $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
+                            $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
+                            $totalacobrar = $totalacobrar + $item->cuota_diaria;
+                        }
+
+                        $datos = [];
+                        $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
+                        $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');     
+                        $datos['total_cobrado'] = number_format($this->getTotalPaymentCollector($request->input('idusuario'), $hoy), 2, '.', ',');                         
+                        $datos['registros'] = $registros;
+
+                        $this->statusCode   = 200;
+                        $this->result       = true;
+                        $this->message      = "Registros consultados exitosamente";
+                        $this->records      = $datos;
+                    } else {
+                        throw new \Exception("No se encontraron registros");
                     }
-
-                    $datos = [];
-                    $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
-                    $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');     
-                    $datos['total_cobrado'] = number_format($this->getTotalPaymentCollector($request->input('idusuario'), $hoy), 2, '.', ',');                         
-                    $datos['registros'] = $registros;
-
-                    $this->statusCode   = 200;
-                    $this->result       = true;
-                    $this->message      = "Registros consultados exitosamente";
-                    $this->records      = $datos;
                 } else {
-                    throw new \Exception("No se encontraron registros");
+                    throw new \Exception("La ruta del día de hoy ha sido cerrada");
                 }
             } else {
-                throw new \Exception("La ruta del día de hoy ha sido cerrada");
+                throw new \Exception("Lo sentimos ha ocurrido un problema!");
             }
         } catch (\Exception $e) {
             $this->statusCode   = 200;

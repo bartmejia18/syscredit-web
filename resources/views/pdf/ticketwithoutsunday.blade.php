@@ -189,8 +189,8 @@
 			</tr>
 			<tr>
 				<td class="rowfirmlabel">Huella</td>
-				<td class="rowfirmlabel">Asesor</td>
-				<td class="rowfirmlabel">Cliente</td>
+				<td class="rowfirmlabel">Firma Cliente</td>
+				<td class="rowfirmlabel">Firma Préstamo</td>
 			</tr>
 		</table>
 
