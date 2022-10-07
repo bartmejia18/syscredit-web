@@ -29,7 +29,10 @@ class CobradorMovilController extends Controller {
 
     public function loginMovil (Request $request) {
         try {
-            $usuario = Usuarios::where("user", $request->input("user"))->first();
+            $usuario = Usuarios::where("user", $request->input("user"))
+                            ->where("estado", 1)
+                            ->first();
+            
             if ( $usuario ) {
                 if( \Hash::check($request->input("password"),  $usuario->password)){
                     $this->result   = true;

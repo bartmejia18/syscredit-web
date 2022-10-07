@@ -175,7 +175,8 @@ class UsuariosController extends Controller
         try {
             $deleteRegistro = \DB::transaction( function() use ($id) {
                                 $registro = Usuarios::find( $id );
-                                $registro->delete();
+                                $registro->estado = 2;
+                                $registro->save();
                             });
 
             $this->status_code   = 200;
