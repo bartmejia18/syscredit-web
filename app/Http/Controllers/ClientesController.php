@@ -170,11 +170,9 @@ class ClientesController extends Controller {
             
             if($credit->count() > 0){
                 $credit->map(function ($item, $key) use ($request){   
-                    if ($request->input('collector') != 0)
+                    if ($request->input('collector') != 0) {
                         $item->usuarios_cobrador = $request->input('collector', $item->usuarios_cobrador);
-                    else
-                        $item->usuarios_cobrador = $item->usuarios_cobrador;
-                    $item->save();
+                    }
                     return $item;
                 });
             }
@@ -246,7 +244,10 @@ class ClientesController extends Controller {
 
     public function buscarCliente(Request $request) {
         try {
-            $cliente = Clientes::where('dpi', $request->input('dpi') )->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)->first();
+            $cliente = Clientes::where('dpi', $request->input('dpi') )
+                            ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
+                            ->first();
+                            
             if ($cliente) {
                 if ($cliente->status == 1) {
                     $detailCredits = $this->getStatusCredits($cliente->id);
@@ -264,7 +265,6 @@ class ClientesController extends Controller {
                 $this->result       = true;
                 $this->message      = "Registro consultado exitosamente";
                 $this->records      = $cliente;
-                
             } else
                 throw new \Exception("El cliente ingresado no se encuentra en el sistema, revise los datos y vuelva a intentarlo. ");
         } catch (\Exception $e) {
