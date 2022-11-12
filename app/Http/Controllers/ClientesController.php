@@ -167,12 +167,12 @@ class ClientesController extends Controller {
             $registro->status       = $request->input('status', 1);
             
             $credit = Creditos::where("clientes_id", $id)->where("estado","!=",2)->get();
-            
             if($credit->count() > 0){
                 $credit->map(function ($item, $key) use ($request){   
                     if ($request->input('collector') != 0) {
                         $item->usuarios_cobrador = $request->input('collector', $item->usuarios_cobrador);
-                    }
+                        $item->save();
+                    } 
                     return $item;
                 });
             }

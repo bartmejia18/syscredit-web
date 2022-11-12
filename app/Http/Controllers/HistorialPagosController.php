@@ -35,7 +35,10 @@ class HistorialPagosController extends Controller
             if($items){
                 $colletion = collect($items);
                 $colletion->map(function ($item, $key){
-                    return $item->customer = Clientes::find($item->clientes_id);
+                    $dateTime = explode(" ", $item->created_at);
+                    $item->hour_payment = $dateTime[1];
+                    $item->customer = Clientes::find($item->clientes_id);
+                    return $item;
                 });
 
                 $this->statusCode   = 200;
