@@ -20,7 +20,7 @@
 			<div class="row form-group">
 				<div class="col-sm-12">
 					<label>DPI</label>
-					<input type="number" class="form-control" ng-model="cliente.dpi" required maxlength="13" ng-change="findUser(cliente.dpi)">
+					<input type="number" class="form-control" ng-model="cliente.dpi" required minlength="13" maxlength="13" ng-change="findUser(cliente.dpi)">
 				</div>
 			</div>
 			<div class="row form-group">
@@ -42,7 +42,7 @@
 			<div class="row form-group">
 				<div class="col-sm-6">
 					<label>Teléfono</label>
-					<input type="number" class="form-control" ng-model="cliente.telefono" required maxlength="8">
+					<input type="text" class="form-control" ng-model="cliente.telefono" required>
 				</div>
 				<div class="col-sm-6">
 					<label class="control-label">Género</label>
@@ -62,7 +62,7 @@
 				</div>
 			</div>
 			<div class="row form-group" ng-if="accion == 'editar'">
-				<div class="col-sm-12">
+				<div class="col-sm-6">
 					<label>Cobrador:</label>
 					<select class="form-control" ng-model="cliente.collector" ng-options="item.id as item.nombre for item in usuarios_cobrador"></select>
 				</div>

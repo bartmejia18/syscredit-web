@@ -129,7 +129,6 @@
 
       $scope.findUser = function(dpi) {                      
         if ( dpi != undefined && dpi.toString().length == 13) {       
-          console.log("entra") 
           $http({
             method: 'GET',
             url: API_URL + 'buscarcliente',
@@ -224,6 +223,7 @@
       $scope.modalEditOpen = function (data) {
         $scope.accion = 'editar';
         $scope.cliente = data;
+        $scope.cliente.dpi = parseInt(data.dpi)
 
         modal = $modal.open({
           templateUrl: "views/clientes/modal.html",

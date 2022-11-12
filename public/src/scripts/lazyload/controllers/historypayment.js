@@ -51,7 +51,7 @@
 
 		function loadPayments(collectorId, selectedDate) {
 			historyPaymentService.historylist(collectorId, selectedDate)
-				.then(function successCallback(response){									
+				.then(function successCallback(response){	
 					$scope.datas = response.data.records;
 					$scope.search();
 					$scope.select($scope.currentPage);
