@@ -17,6 +17,7 @@
         initLoadInfo();
 
         function initLoadInfo() {
+            console.log("--->", "intLoadInfo")
             if ($scope.usuario.tipo_usuarios_id == 1) {
                 loadBranches()
             } else {
@@ -76,7 +77,8 @@
             var dateInit = $("#date_init").val()
             var dateFinal = $("#date_fin").val()
             var plan = $scope.plan == undefined ? "" : $scope.plan;        
-            var branch = $scope.usuario.tipo_usuarios_id == 1 ? branchSelected : $scope.usuario.sucursales_id                        
+            var branch = $scope.usuario.tipo_usuarios_id == 1 ? branchSelected : $scope.usuario.sucursales_id   
+            console.log("--->","aquí");                     
             switch (typeView) {
                 case "dates" :     
                     
@@ -114,6 +116,9 @@
                         $timeout(function () { $scope.closeAlert(0); }, 5000);
                     }
                     break
+                case "credits" :
+                    
+                    break
                 default:
                     break
             }
@@ -135,6 +140,7 @@
         }
 
         $scope.generateReport = function() {
+            console.log("--->","generateReport")
             typeView = $("#view").val()
             generateReport(typeView)
         }

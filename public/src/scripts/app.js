@@ -340,6 +340,19 @@
 			}
 		});
 
+		$routeProvider.when("/reports/credits", {
+			templateUrl: "views/reports/credits.html",
+			controller: "ReportsController",
+			resolve: {
+				deps: ["$ocLazyLoad", function(a) {
+					return a.load({
+						name: "app.reports",
+						files: ["scripts/lazyload/controllers/reports.js"]
+					})
+				}]
+			}
+		});
+
 		$routeProvider.when("/reports/collectors", {
 			templateUrl: "views/reports/collectors.html",
 			controller: "ReportsController",

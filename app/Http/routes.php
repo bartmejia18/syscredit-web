@@ -60,6 +60,7 @@ Route::group(['prefix' => 'ws'], function() {
 	Route::post('accessdelete', 			'ClientesController@accessForDelete');
 	Route::get('getcreditdeleted', 			'CreditosEliminadosController@findByCreditId');
 	Route::get('getHistoryPayments',		'HistorialPagosController@historyForCustomer');
+	Route::get('reportcredits',				'ReportsController@credits');
 
 	Route::get('logout',function() {
 		Auth::logout();

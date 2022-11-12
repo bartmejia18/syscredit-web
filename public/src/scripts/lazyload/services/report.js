@@ -12,4 +12,7 @@ report_service.service('reportService', ['$http', 'API_URL', function($http, API
     this.general = function (branch) {
         return $http.get(API_URL+'reportgeneral?collector=&date-init=&date-final=&branch='+branch);
     };
+    this.credits = function (status, collector, dateInit, dateFinal, plan, branch) {
+        return $http.get(API_URL+'reportgeneral?status='+status+'&collector='+collector+'&date-init='+dateInit+'&date-final='+dateFinal+'&plan='+plan+'&branch='+branch);
+    };
 }]);

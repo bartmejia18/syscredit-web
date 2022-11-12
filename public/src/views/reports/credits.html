@@ -1,0 +1,82 @@
+<div class="page">
+	<div class="page-wrap">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default panel-hovered panel-stacked mb20">
+					<div class="panel-heading"><h4>Reporte de créditos</h4></div>
+					<input type="hidden" id="view" value="credits">
+					<div class="panel-heading">
+						<br>
+						
+						<form role="form" class="form-horizontal" action="javascript:;" novalidate>							
+							<div class="form-group" ng-if="usuario.tipo_usuarios_id == 1">								
+								<label class="col-sm-1  col-md-offset-1 control-label">Sucursal:</label>
+								<div class="col-md-5">
+									<select class="form-control" ng-model="branch" ng-options="item.id as item.descripcion for item in branchs" ng-change="branchSelected(branch)"></select>
+								</div>
+							</div>		
+							<div class="form-group">								
+								<label class="col-sm-2  col-md-offset-1 control-label">Estado de créditos:</label>
+								<div class="col-md-2">
+									<select class="form-control" ng-model="status_credit">
+										<option value="1">Nuevos créditos</option>
+										<option value="2">Créditos completados</option>
+										<option value="3">Créditos eliminados</option>
+									</select>
+								</div>
+							</div>					
+							<div class="form-group">
+								<div class="col-sm-1"></div>
+								<label class="col-sm-1  col-md-offset-1 control-label">Fecha de inicio:</label>
+								<div class="col-md-2">
+									<div class="input-group date" >
+										<input  type="text" id="date_init" class="form-control" required>
+										<div class="input-group-addon" >
+											<i class="ion ion-android-calendar"></i>
+										</div>
+									</div>	
+								</div>
+								<label class="col-sm-1 control-label">Fecha de Final:</label>
+								<div class="col-md-2">
+									<div class="input-group date" >
+										<input  type="text" id="date_fin" class="form-control" required>
+										<div class="input-group-addon" >
+											<i class="ion ion-android-calendar"></i>
+										</div>
+									</div>	
+								</div>
+							</div>	
+							<div class="form-group" ng-if="status_credit != 3">								
+								<label class="col-sm-2  col-md-offset-1 control-label">Nombre cobrador:</label>
+								<div class="col-md-4">
+									<select class="form-control" ng-model="collector" ng-options="item.id as item.nombre for item in collectors" required></select>
+								</div>
+								<label class="col-sm-1 control-label">Plan de crédito:</label>
+								<div class="col-md-2">
+									<select class="form-control" ng-model="plan" ng-options="item.id as item.descripcion for item in plans"></select>
+								</div>
+							</div>	
+							<div class="form-group">	
+								<div class="col-sm-4"></div>
+								<div class="col-sm-3 text-center">
+									<button class="btn btn-success btn-rounded" ng-click="generateReport()" ng-disabled="form.$invalid">Generar reporte</button>
+								</div>
+							</div>			
+						</form>
+						<br>
+					</div>
+					<div class="panel-body">
+					</div>
+				</div>
+				<div class="toast toast-{{positionModel}}">
+					<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+						<div ng-bind-html="toast.msg"></div>
+					</alert>
+				</div>
+			</div>
+		</div>
+	</div> <!-- #end page-wrap -->
+</div>
+<script>
+	$('.input-group.date').datepicker({format: "dd-mm-yyyy"}); 
+</script>
