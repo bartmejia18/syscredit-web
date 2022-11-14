@@ -72,13 +72,14 @@
             });
         }
 
-        function generateReport(typeView){              
+        function generateReport(typeView){   
+            var statusCredit = $scope.statusCredit           
             var collector =  $scope.collector
             var dateInit = $("#date_init").val()
             var dateFinal = $("#date_fin").val()
             var plan = $scope.plan == undefined ? "" : $scope.plan;        
             var branch = $scope.usuario.tipo_usuarios_id == 1 ? branchSelected : $scope.usuario.sucursales_id   
-            console.log("--->","aquí");                     
+                     
             switch (typeView) {
                 case "dates" :     
                     
@@ -117,7 +118,14 @@
                     }
                     break
                 case "credits" :
-                    
+                    console.log("--->", "status", statusCredit, "cobrador", $scope.collector, "final", dateFinal, "inicio", dateInit, "plan", plan, "branch", branch)
+                    reportService.credits(statusCredit, collector, dateInit, dateFinal, plan, branch)
+                        .then(function(response){
+                            console.log("--->", response.data.result)
+                            if (response.data.result) {
+
+                            }
+                        })
                     break
                 default:
                     break
