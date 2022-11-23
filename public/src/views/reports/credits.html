@@ -3,73 +3,205 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="panel panel-default panel-hovered panel-stacked mb20">
-					<div class="panel-heading"><h4>Reporte de créditos</h4></div>
+					<div class="panel-heading">
+						<h4>Reporte de créditos</h4>
+					</div>
 					<input type="hidden" id="view" value="credits">
 					<div class="panel-heading">
-						<br>
-						
-						<form role="form" class="form-horizontal" action="javascript:;" novalidate>							
-							<div class="form-group" ng-if="usuario.tipo_usuarios_id == 1">								
+						<form role="form" class="form-horizontal" action="javascript:;" novalidate>
+							<div class="form-group" ng-if="usuario.tipo_usuarios_id == 1">
 								<label class="col-sm-1  col-md-offset-1 control-label">Sucursal:</label>
 								<div class="col-md-5">
-									<select class="form-control" ng-model="branch" ng-options="item.id as item.descripcion for item in branchs" ng-change="branchSelected(branch)"></select>
+									<select class="form-control" ng-model="branch"
+										ng-options="item.id as item.descripcion for item in branchs"
+										ng-change="branchSelected(branch)"></select>
 								</div>
-							</div>		
-							<div class="form-group">								
+							</div>
+							<div class="form-group">
 								<label class="col-sm-2  col-md-offset-1 control-label">Estado de créditos:</label>
 								<div class="col-md-2">
-									<select class="form-control" ng-model="statusCredit">
-										<option value="1">Nuevos créditos</option>
-										<option value="2">Créditos completados</option>
-										<option value="3">Créditos eliminados</option>
+									<select class="form-control" ng-model="data.statusCredit">
+										<option value="" disabled>Seleccione...</option>
+										<option value="1" selected>Nuevos créditos</option>
+										<option value="0">Créditos completados</option>
+										<option value="2">Créditos eliminados</option>
 									</select>
 								</div>
-							</div>					
+							</div>
 							<div class="form-group">
 								<div class="col-sm-1"></div>
 								<label class="col-sm-1  col-md-offset-1 control-label">Fecha de inicio:</label>
 								<div class="col-md-2">
-									<div class="input-group date" >
-										<input  type="text" id="date_init" class="form-control" required>
-										<div class="input-group-addon" >
-											<i class="ion ion-android-calendar"></i>
+									<div class="input-group date">
+										<input type="text" id="date_init" class="form-control" required>
+										<div class="input-group-addon">
+											<i class=" ion ion-calendar"></i>
 										</div>
-									</div>	
+									</div>
 								</div>
 								<label class="col-sm-1 control-label">Fecha de Final:</label>
 								<div class="col-md-2">
-									<div class="input-group date" >
-										<input  type="text" id="date_fin" class="form-control" required>
-										<div class="input-group-addon" >
+									<div class="input-group date">
+										<input type="text" id="date_fin" class="form-control" required>
+										<div class="input-group-addon">
 											<i class="ion ion-android-calendar"></i>
 										</div>
-									</div>	
+									</div>
 								</div>
-							</div>	
-							<div class="form-group" ng-if="status_credit != 3">								
+							</div>
+							<div class="form-group" ng-if="status_credit != 3">
 								<label class="col-sm-2  col-md-offset-1 control-label">Nombre cobrador:</label>
 								<div class="col-md-4">
-									<select class="form-control" ng-model="collector" ng-options="item.id as item.nombre for item in collectors" required></select>
+									<select class="form-control" ng-model="data.collector" ng-options="item.id as item.nombre for item in collectors" required>
+										<option value="" disabled>Seleccione...</option>
+									</select>
 								</div>
 								<label class="col-sm-1 control-label">Plan de crédito:</label>
 								<div class="col-md-2">
-									<select class="form-control" ng-model="plan" ng-options="item.id as item.descripcion for item in plans"></select>
+									<select class="form-control" ng-model="data.plan"
+										ng-options="item.id as item.descripcion for item in plans">
+										<option value="" disabled>Seleccione...</option>
+									</select>
 								</div>
-							</div>	
-							<div class="form-group">	
+							</div>
+							<div class="form-group">
 								<div class="col-sm-4"></div>
 								<div class="col-sm-3 text-center">
-									<button class="btn btn-success btn-rounded" ng-click="generateReport()" ng-disabled="form.$invalid">Generar reporte</button>
+									<button class="btn btn-success btn-rounded" ng-click="generateReport()"
+										ng-disabled="form.$invalid">Generar reporte</button>
 								</div>
-							</div>			
+							</div>
 						</form>
-						<br>
 					</div>
-					<div class="panel-body">
+					<div class="panel-body hidden panel-detalle">
+						<div class="col-sm-9">
+							<div class="row">
+								<div class="small text-bold left mt5">
+									Mostrar&nbsp;
+									<select data-ng-model="numPerPage" data-ng-options="num for num in numPerPageOpts"
+										data-ng-change="onNumPerPageChange()"></select>
+									&nbsp;entradas
+								</div>
+								<form class="form-horizontal right col-lg-4">
+									<input type="text" class="form-control input-sm"
+										placeholder="Ingrese texto para búsqueda" data-ng-model="searchKeywords"
+										data-ng-keyup="search()" />
+								</form>
+							</div>
+							<br />
+							<!-- data table -->
+							<table class="table table-bordered table-striped">
+								<thead>
+									<tr>
+										<th>
+											#
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('id') "
+													ng-class="{active: row == 'id'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-id') "
+													ng-class="{active: row == '-id'}"></i>
+											</div>
+										</th>
+										<th>
+											Cliente
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+										<th>
+											Monto
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+										<th>
+											Plan
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+										<th>
+											Fecha de inicio
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+										<th>
+											Cobrador
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="data in currentPageStores track by $index">
+										<td>{{ $index + 1 }}</td>
+										<td>
+											{{ data.cliente.nombre + " " + data.cliente.apellido }}
+										</td>
+										<td>Q. {{ data.montos.monto | number: "2"}}</td>
+										<td>{{ data.planes.descripcion }}</td>
+										<td>{{ data.fecha_inicio }}</td>
+										<td>{{ data.usuariocobrador.nombre }}</td>
+									</tr>
+								</tbody>
+							</table>
+							<!-- #end row -->
+							<div class="panel-footer clearfix">
+								<p class="left mt15 small">
+									Mostrando {{currentPageStores.length*(currentPage - 1) + 1}} a
+									{{currentPageStores.length*currentPage}} de {{datas.length}}
+									registro(s)
+								</p>
+								<pagination boundary-links="true" total-items="filteredData.length"
+									ng-model="currentPage" class="pagination-sm right" max-size="5"
+									ng-change="select(currentPage)" items-per-page="numPerPage" rotate="false"
+									previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;"
+									last-text="&raquo;"></pagination>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="panel panel-default mb20 mini-box panel-hovered">
+								<div class="panel-body">
+									<div class="clearfix">
+										<div class="info left">
+											<h4 class="mt0 text-success text-bold">Suma total de créditos</h4>
+											<h2 class="text-light mb0">Q. {{ sumAmountCredits | number: "2"}}</h2>
+										</div>
+										<div class="right ion ion-cash icon"></div>
+									</div>
+								</div>
+								<div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+									<p class="mt0 mb0 left"></p>
+									<span sparkline class="right" type="bar" bar-color="#fff" width="1.15em"
+										height="1.15em"></span>
+								</div>
+							</div>
+							<div class="col-sm-12 text-center">
+								<button class="btn btn-info btn-rounded" ng-click="printResume()">IMPRIMIR REPORTE</button>
+							  </div>
+						</div>
 					</div>
 				</div>
 				<div class="toast toast-{{positionModel}}">
-					<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
+					<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)"
+						class="toast-{{toast.anim}}">
 						<div ng-bind-html="toast.msg"></div>
 					</alert>
 				</div>
@@ -78,5 +210,5 @@
 	</div> <!-- #end page-wrap -->
 </div>
 <script>
-	$('.input-group.date').datepicker({format: "dd-mm-yyyy"}); 
+	$('.input-group.date').datepicker({ format: "dd-mm-yyyy" }); 
 </script>

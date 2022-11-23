@@ -197,8 +197,7 @@ class UsuariosController extends Controller
         }
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         try{
             if (Auth::attempt([
                 'user'=> $request->input('user'),

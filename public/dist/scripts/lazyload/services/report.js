@@ -13,6 +13,6 @@ report_service.service('reportService', ['$http', 'API_URL', function($http, API
         return $http.get(API_URL+'reportgeneral?collector=&date-init=&date-final=&branch='+branch);
     };
     this.credits = function (statusCredit, collector, dateInit, dateFinal, plan, branch) {
-        return $http.get(API_URL+'reportgeneral?status='+statusCredit+'&collector='+collector+'&date-init='+dateInit+'&date-final='+dateFinal+'&plan='+plan+'&branch='+branch);
+        return $http.get(API_URL+'reportcredits?status='+statusCredit+'&collector='+collector+'&dateInit='+dateInit+'&dateFinal='+dateFinal+'&plan='+plan+'&branch='+branch);
     };
 }]);

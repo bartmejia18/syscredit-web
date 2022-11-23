@@ -1,8 +1,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<head>
 	<style>
         <?php 	include( public_path() . '/css/fonts-roboto.css' );?>
     </style>
-    <style type="text/css">
+    <style type="text/css" media="all">
         div.title {
 			font-family: 'Roboto', sans-serif;
 			text-align: center;
@@ -22,7 +23,7 @@
             border-collapse: collapse;
         }
         thead.head-payment{
-			background: #LA4F83;            
+			background: #21618C;            
             border: 1px solid black;
 		}
         th.head-column{			
@@ -49,6 +50,7 @@
 			font-size: 11px;
 		}
 	</style>
+	</head>
 	<body class="body-width">
 		<div class="title"><strong>RESUMEN DE COBRO</strong></div>	
 		<br>

@@ -144,21 +144,22 @@ class CobradorController extends Controller {
             
         }
         if (intval($request->input("closure_id")) != 0 ) {
+
             $routeClosure = CierreRuta::find($request->input("closure_id"));
             
             if ($routeClosure) {
                 $routeClosure->info_closure = json_encode($datos);
                 
                 if ($routeClosure->save() ) {
-                    $pdf = \App::make('dompdf');        
-                    $pdf = \PDF::loadView('pdf.resumentodaycollector', ['data' => $datos])->setPaper('legal', 'portrait');
+                    $pdf = \App::make('dompdf.wrapper');        
+                    $pdf = \PDF::loadView('pdf.resumentodaycollector', ['data' => $datos])->setPaper('legal', 'portrait')->render();
                     return $pdf->download($collector->nombre.'.pdf');
                 }
             } else {                
                 return null;
             }
         } else {            
-            $pdf = \App::make('dompdf');        
+            $pdf = \App::make('dompdf.wrapper');        
             $pdf = \PDF::loadView('pdf.resumentodaycollector', ['data' => $datos])->setPaper('legal', 'portrait');
             return $pdf->download($collector->nombre.'.pdf');
         }

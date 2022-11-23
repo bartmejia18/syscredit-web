@@ -105,48 +105,10 @@ class ReportsController extends Controller
 
     public function credits(Request $request) {
         try {
-
-            if ($request->input('date-init') != null && $request->input('date-final') != null) {
-                $dateInit = \Carbon\Carbon::parse($request->input('date-init'))->format('Y-m-d');
-                $dateFin = \Carbon\Carbon::parse($request->input('date-final'))->format('Y-m-d');
-            } else {
-                $dateInit = "";
-                $dateFin = "";
-            }
-
-            $credits = "";   
-            $plan = $request->input('plan');
-
-            if ($request->input('collector') != "") {
-                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                    ->where('sucursal_id', $request->input('branch'))
-                                    ->where('estado', $request->input('status'))
-                                    ->where('usuarios_cobrador', $request->input('collector'))
-                                    ->whereBetween('created_at', [$dateInit, $dateFin])
-                                    ->get();
-            } else {
-                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                    ->where('sucursal_id', $request->input('branch'))
-                                    ->where('estado', $request->input('status'))
-                                    ->whereBetween('created_at', [$dateInit, $dateFin])
-                                    ->get();
-            }
-
-            if ($plan != "" && $plan != 0) {
-                $this->records = $credits->filter(function ($item) use ($plan){ 
-                    return $item->planes_id == $plan;   
-                });
-            } else {
-                $this->records      = $credits;   
-            }
-
-            if ($credits) {
-                $this->statusCode   = 200;
-                $this->result       = true;
-                $this->message      = "Registros consultados exitosamente";
-            } else {
-                throw new \Exception("No se encontraron registros");
-            }
+            $this->statusCode   = 200;
+            $this->result       = true;
+            $this->message      = "Registros consultados exitosamente";
+            $this->records      = $this->getCredits($request);
         } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
@@ -159,5 +121,33 @@ class ReportsController extends Controller
             ];
             return response()->json($response, $this->statusCode);
         }
+    }
+
+    public function reportCreditsPDF(Request $request){
+
+        $datos = new \stdClass();   
+        
+        switch ($request->status) {
+            case 0:
+                $datos->status = "Completados";
+                break;
+            case 1:
+                $datos->status = "Nuevos";
+                break;
+            case 2:
+                $datos->status = "Eliminados";
+                break;
+        }
+
+        $datos->fecha_inicio = \Carbon\Carbon::parse($request->input('dateInit'))->format('d-m-Y');
+        $datos->fecha_fin = \Carbon\Carbon::parse($request->input('dateFinal'))->format('d-m-Y');
+        $datos->credits = $this->getCredits($request);
+
+        $today = \Carbon\Carbon::parse(\Carbon\Carbon::now())->format('d-m-Y');
+        $namePdf = "reporte-{$today}";
+
+        $pdf = \App::make('dompdf.wrapper');        
+        $pdf = \PDF::loadView('pdf.credits', ['data' => $datos])->setPaper('legal', 'portrait');
+        return $pdf->download($namePdf.'.pdf');
     }
 }
