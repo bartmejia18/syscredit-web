@@ -3,7 +3,7 @@
 
     angular.module("app.reports", ["app.constants", 'app.service.collector', 'app.service.plan', 'app.service.report', 'app.service.pdfs', 'app.service.branch'])
 
-        .controller("ReportsController", ["$scope", "$filter", "$http", "$modal", "$interval", 'collectorService', 'planService', 'reportService', 'pdfsService', 'branchService', 'API_URL', function ($scope, $filter, $http, $modal, $timeout, collectorService, planService, reportService, pdfsService, branchService, API_URL) {
+        .controller("ReportsController", ["$scope", "$filter", "$http", "$modal", "$interval", 'collectorService', 'planService', 'reportService', 'pdfsService', 'branchService', 'API_URL', function ($scope, $filter, $http, $modal, $timeout, collectorService, planService, reportService, pdfsService, branchService) {
 
             $scope.datas = Array();
 
@@ -132,7 +132,6 @@
                         }
                         break
                     case "credits":
-                        console.log($scope.data)
                         $scope.datas = [];
                         reportService.credits(data.statusCredit, data.collector, dateInit, dateFinal, data.plan, branch)
                             .then(function (response) {
@@ -151,6 +150,21 @@
                     default:
                         break
                 }
+            }
+
+            $scope.printResume = function(){
+                var data = $scope.data
+                var dateInit = $("#date_init").val()
+                var dateFinal = $("#date_fin").val()
+                var plan = $scope.data.plan == undefined ? 0 : $scope.data.plan;
+                var collector = $scope.data.collector == undefined ? 0 : $scope.data.collector;
+                var branch = $scope.usuario.tipo_usuarios_id == 1 ? branchSelected : $scope.usuario.sucursales_id
+
+                pdfsService.credits(data.statusCredit, collector, dateInit, dateFinal, plan, branch)
+                .then(function successCallback(response){     
+                    console.log(response)                			          
+                  },
+                  function errorCallback(response) {});
             }
 
             $scope.branchSelected = function (branch) {
@@ -191,8 +205,6 @@
                     end = start + $scope.numPerPage;
 
                 $scope.currentPageStores = $scope.filteredData.slice(start, end);
-                console.log("---> aquí")
-                console.log($scope.currentPageStores )
             }
 
             $scope.onFilterChange = function () {
@@ -213,7 +225,6 @@
 
             $scope.search = function () {
                 $scope.filteredData = $filter("filter")($scope.datas, $scope.searchKeywords);
-                console.log($scope.filteredData)
                 $scope.onFilterChange();
             }
 

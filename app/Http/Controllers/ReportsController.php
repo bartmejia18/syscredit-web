@@ -146,7 +146,7 @@ class ReportsController extends Controller
         $today = \Carbon\Carbon::parse(\Carbon\Carbon::now())->format('d-m-Y');
         $namePdf = "reporte-{$today}";
 
-        $pdf = \App::make('dompdf.wrapper');        
+        $pdf = \App::make('dompdf');        
         $pdf = \PDF::loadView('pdf.credits', ['data' => $datos])->setPaper('legal', 'portrait');
         return $pdf->download($namePdf.'.pdf');
     }
