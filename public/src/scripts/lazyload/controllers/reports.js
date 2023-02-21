@@ -91,6 +91,7 @@
                 var data = $scope.data
                 var dateInit = $("#date_init").val()
                 var dateFinal = $("#date_fin").val()
+                var collector = $scope.collector
                 var plan = $scope.plan == undefined ? "" : $scope.plan;
                 var branch = $scope.usuario.tipo_usuarios_id == 1 ? branchSelected : $scope.usuario.sucursales_id
 
@@ -113,6 +114,7 @@
                         }
                         break
                     case "collectors":
+                        console.log("aquí--->", collector)
                         if (collector != "" && collector != undefined) {
                             reportService.collector(collector, dateInit, dateFinal, plan, branch)
                                 .then(function (response) {
