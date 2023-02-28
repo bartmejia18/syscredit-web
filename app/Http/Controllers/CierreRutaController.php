@@ -51,11 +51,13 @@ class CierreRutaController extends Controller
                                 $nuevoRegistro = CierreRuta::create([
                                     'sucursal_id' => $request->input('branch_id'),
                                     'cobrador_id' => $request->input('collector_id'),
+                                    'usuario_id' => 0,
                                     'monto_cierre' => $request->input('total_amount'),
                                     'fecha_cierre' => $request->input('date'),
                                     'fecha_cerrado' => \Carbon\Carbon::now()->toDateString(),   
                                     'hora' => \Carbon\Carbon::now()->toTimeString(),
-                                    'estado' => 1
+                                    'estado' => 1,
+                                    'info_closure' => ""
                                 ]);
 
                                 if ( !$nuevoRegistro) 
