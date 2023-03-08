@@ -17,7 +17,7 @@
 		}
 		div.blue-bar {
 			height: 20px;
-			background: #134794;
+			background: #067851;
 		}
 		div.title-bar {
 			height: 140px;
@@ -29,7 +29,7 @@
 			text-align: center;
 			height: 18px;
 			font-size: 15px;
-			color: #1A4F83;
+			color: #067851;
 			font-weight: bold;
 		}
 		table{
@@ -48,17 +48,17 @@
 			width: 18%;
 		}
 		td.firstcolumnlabel{
-			width: 18%;
+			width: 50%;
 		}
 		td.secundcolumnlabel{
-			width: 20%;
+			width: 50%;
 		}
 		table.tablapago{
 			width: 100%;
 			border-collapse: collapse;
 		}
 		thead.pago{
-			background: #134794;
+			background: #067851;
 			border: 1px solid black;
 		}
 		td.columna{
@@ -97,76 +97,54 @@
 		<table>
 			<tr>
 				<td style="width:15px"><img src="{{ public_path('images/logo_rapicredit.jpg') }}" height="65px"></td>
-				<td><div class="title" style="margin-left: 70px">CONTROL DE PAGOS</div></td>
+				<td><div class="title" style="margin-left: 70px">BOLETA DE PAGOS</div></td>
 			</tr>
 		</table>
-		<table>
+		<table style="border: 1px solid black">
 			<tr>
-				<td class="firstcolumnlabel">Nombre Cliente:</td>
-				<td class="firstcolumninfo">
-					<span><strong><i>{!! $data->name !!}</i></strong></span>
-				</td>
-				<td class="secundcolumnlabel">DPI:</td>
-				<td class="secundcolumninfo">
-					<span><strong>{!! $data->dpi !!}</strong></span>
-				</td>
+				<td class="firstcolumnlabel">Nombre Cliente: <strong>{!! $data->name !!}</strong></td>
+				<td class="secundcolumnlabel">DPI: <strong>{!! $data->dpi !!}</strong></td>
 			</tr>
 			<tr>
-				<td class="firstcolumnlabel">Dirección:</td>
-				<td class="firstcolumninfo">
-					<span><strong>{!! $data->address!!}</strong></span>
-				</td>
-				<td class="secundcolumnlabel">Teléfono:</td>
-				<td class="secundcolumninfo">
-					<span><strong>{!! $data->numberPhone!!}</strong></span>
-				</td>
+				<td class="firstcolumnlabel">Dirección: <strong>{!! $data->address!!}</strong></td>
+				<td class="secundcolumnlabel">Teléfono: <strong>{!! $data->numberPhone!!}</strong></td>
 			</tr>
 			<tr>
-				<td class="firstcolumnlabel">Plan:</td>
-				<td class="firstcolumninfo">
-					<span><strong>{!! $data->plan!!}</strong></span>
-				</td>
-				<td class="secundcolumnlabel">Fecha de entrega:</td>
-				<td class="secundcolumninfo">
-					<span><strong>{!! $data->date!!}</strong></span>
-				</td>
+				<td class="firstcolumnlabel">Plan: <strong>{!! $data->plan!!}</strong></td>
+				<td class="secundcolumnlabel">Fecha de entrega: <strong>{!! $data->date!!}</strong></td>
 			</tr>
 			<tr>
-				<td class="firstcolumnlabel">Monto:</td>
-				<td class="firstcolumninfo">
-					<span><strong>Q. {!!number_format((float)$data->amount, 2, '.', '')!!}</strong></span>
-				</td>
-				<td class="secundcolumnlabel">Cuota diaria:</td>
-				<td class="secundcolumninfo">
-					<span><strong>Q. {!!number_format((float)$data->fees, 2, '.', '')!!}</strong></span>
-				</td>
-			</tr>		
+				<td class="firstcolumnlabel">Monto: <strong>Q. {!!number_format((float)$data->amount, 2, '.', '')!!}</strong></td>
+				<td class="secundcolumnlabel">Cuota diaria: <strong>Q. {!!number_format((float)$data->fees, 2, '.', '')!!}</strong></td>
+			</tr>
+		
+		</table>
 		</table>
 		<br>
 		<table class="tablapago">
 			<thead class="pago">
 				<tr>
-					<td class="columna">No.</td>
-					<td class="columna">Monto</td>
-					<td class="columna">Fecha pago</td>
-					<td class="columna">No.</td>
-					<td class="columna">Monto</td>
-					<td class="columna">Fecha pago</td>
+					<td class="columna" style="width:10%">No.</td>
+					<td class="columna" style="width:40%">Monto</td>
+					<td class="columna" style="width:40%">Fecha pago</td>
+					<td class="columna" style="width:10%">No.</td>
+					<td class="columna" style="width:40%">Monto</td>
+					<td class="columna" style="width:40%">Fecha pago</td>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach($data->arrayQuota as $quota)
 				<tr class="primeracolumna">
 					
-						<td class="columnapago" bgcolor="#E4E2E1">{!!$quota->indexFirst!!}</td>
-						<td class="columnapago">Q. {!!number_format((float)($quota->amountFirst), 2, '.', '')!!}</td>
-						<td class="columnapago">{!!$quota->dateFirst!!}</td>
+						<td class="columnapago" style="width:10%">{!!$quota->indexFirst!!}</td>
+						<td class="columnapago" style="width:40%">Q. {!!number_format((float)($quota->amountFirst), 2, '.', '')!!}</td>
+						<td class="columnapago" style="width:40%">{!!$quota->dateFirst!!}</td>
 					
 					@if($quota->indexSecond <= $data->days)
 						
-							<td class="columnapago" bgcolor="#E4E2E1">{!!$quota->indexSecond!!}</td>
-							<td class="columnapago">Q. {!!number_format((float)($quota->amountSecond), 2, '.', '')!!}</td>
-							<td class="columnapago">{!!$quota->dateSecond!!}</td>
+							<td class="columnapago" style="width:10%">{!!$quota->indexSecond!!}</td>
+							<td class="columnapago" style="width:40%">Q. {!!number_format((float)($quota->amountSecond), 2, '.', '')!!}</td>
+							<td class="columnapago" style="width:40%">{!!$quota->dateSecond!!}</td>
 						
 					@else
 						<td class="columnapago" colspan="3"><strong></strong></td>		
@@ -175,19 +153,18 @@
 				@endforeach	
 			</tbody>
 		</table>		
-		<span class="note"><strong>Nota: </strong>SE COBRARÁ Q. {!!number_format((float)($data->amountDefault), 2, '.', '')!!} DE MORA POR DÍA ATRASADO</span>
 		<br>
 		<br>
 		<table>
 			<tr>
+				<td class="rowfirm"></td>
+				<td class="rowfirm"></td>
 				<td class="fingerprint"></td>
-				<td class="rowfirm"></td>
-				<td class="rowfirm"></td>
 			</tr>
 			<tr>
-				<td class="rowfirmlabel">Huella</td>
-				<td class="rowfirmlabel">Firma Cliente</td>
 				<td class="rowfirmlabel">Firma Préstamo</td>
+				<td class="rowfirmlabel">Firma Cliente</td>
+				<td class="rowfirmlabel">Huella</td>
 			</tr>
 		</table> 
 	</body>
