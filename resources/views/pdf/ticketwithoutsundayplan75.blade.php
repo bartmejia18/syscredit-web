@@ -96,10 +96,10 @@
 	<body class="body-width">	
 	<table>
 		<tr>
-			<td style="width:15px"><img src="{{ public_path('images/logo_rapicredit.jpg') }}" height="45px"></td>
-			<td><div class="title" style="margin-left: 90px">BOLETA DE PAGOS</div></td>
+			<td><div class="title" style="margin-left: 125px">BOLETA DE PAGOS</div></td>
 		</tr>
 	</table>
+	<br>
 		<table style="border: 1px solid black">
 			<tr>
 				<td class="firstcolumnlabel">Nombre Cliente: <strong>{!! $data->name !!}</strong></td>
