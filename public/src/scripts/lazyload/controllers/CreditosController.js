@@ -44,7 +44,7 @@
         $http.get(API_URL + 'listacobradores', {}).then(function (response) {
           if ( response.data.result ) {
             response.data.records.forEach(function (item) {
-              if (item.sucursales_id == $scope.usuario.sucursales_id) {
+              if (item.sucursales_id == $scope.usuario.sucursales_id && item.estado == 1) {
                 $scope.usuarios_cobrador.push(item)
               }
             })

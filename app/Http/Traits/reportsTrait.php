@@ -225,27 +225,33 @@ trait reportsTrait {
                                 ->where('estado', $request->input('status'))
                                 ->where('usuarios_cobrador', $request->input('collector'))
                                 ->where('planes_id', $request->input('plan'))
-                                ->whereBetween('created_at', [$dateInit, $dateFin])
+                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
                                 ->get();
         } else if ($request->input('plan') != 0) {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
                                 ->where('estado', $request->input('status'))
                                 ->where('planes_id', $request->input('plan'))
-                                ->whereBetween('created_at', [$dateInit, $dateFin])
+                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
                                 ->get();
         } else if ($request->input('collector') != 0) {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
                                 ->where('estado', $request->input('status'))
                                 ->where('usuarios_cobrador', $request->input('collector'))
-                                ->whereBetween('created_at', [$dateInit, $dateFin])
+                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
+                                ->get();
+        } else if ($dateInit == $dateFin) {
+            $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                ->where('sucursal_id', $request->input('branch'))
+                                ->where('estado', $request->input('status'))
+                                ->where('created_at','>=', $dateInit)
                                 ->get();
         } else {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
                                 ->where('estado', $request->input('status'))
-                                ->whereBetween('created_at', [$dateInit, $dateFin])
+                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
                                 ->get();
         }
 
