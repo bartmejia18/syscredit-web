@@ -42,7 +42,7 @@
 			historyPaymentService.collectors()
 				.then(function successCallback(response) {
 			  		response.data.records.forEach(function (item) {
-					if (item.sucursales_id == $scope.usuario.sucursales_id) {
+					if (item.sucursales_id == $scope.usuario.sucursales_id && item.estado == 1 ) {
 				  		$scope.collectors.push(item)
 					}
 			  	})

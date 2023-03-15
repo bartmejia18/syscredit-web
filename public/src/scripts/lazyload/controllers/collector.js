@@ -90,7 +90,7 @@
         $scope.datas = [];
         collectorService.index().then(function (response) {
           response.data.records.forEach(function (item) {
-            if (item.sucursales_id == branch_selectd) {
+            if (item.sucursales_id == branch_selectd && item.estado == 1) {
               $scope.datas.push(item)
             }
           })
