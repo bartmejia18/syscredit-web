@@ -15,21 +15,22 @@ use Exception;
 //revisar el usuario que no sea repedito
 //validar el password que vaya vacio
 
-class UsuariosController extends Controller
-{
+class UsuariosController extends Controller {
     protected $status_code = 200;
     protected $result = false;
     protected $message = "Ocurrió un problema con tu transacción, intenta más tarde";
     protected $records = null;
     protected $sessionKey = 'usuario';
 
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
         try {
             if($request->session()->get('usuario')->tipo_usuarios_id == 1){
                 $registros = Usuarios::with('tipoUsuarios','sucursal')->get();
             } else {
-                $registros = Usuarios::where('sucursales_id', $request->session()->get('usuario')->sucursales_id)->with('tipoUsuarios','sucursal')->get();
+                $registros = Usuarios::where('sucursales_id', $request->session()->get('usuario')->sucursales_id)
+                                ->orderby('estado', 'asc')
+                                ->with('tipoUsuarios','sucursal')
+                                ->get();
             }
 
             if ($registros) {
@@ -54,8 +55,7 @@ class UsuariosController extends Controller
         }
     }
     
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         try {
 
             $registro = Usuarios::where('user',strtolower($request->input('user')))->get();
@@ -100,8 +100,7 @@ class UsuariosController extends Controller
         }
     }
 
-    public function show($id)
-    {
+    public function show($id) {
         try {
             $registro = Usuarios::with('tipoUsuarios','sucursal')->find( $id );
 
@@ -126,8 +125,7 @@ class UsuariosController extends Controller
             return response()->json($response, $this->status_code);
         }
     }
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
         try {
 
             $registroUsuario = Usuarios::where('user',strtolower($request->input('user')))->get();
@@ -170,8 +168,7 @@ class UsuariosController extends Controller
         }
     }
 
-    public function destroy($id)
-    {
+    public function destroy($id) {
         try {
             $deleteRegistro = \DB::transaction( function() use ($id) {
                                 $registro = Usuarios::find( $id );
@@ -198,7 +195,7 @@ class UsuariosController extends Controller
     }
 
     public function login(Request $request) {
-        try{
+        try {
             if (Auth::attempt([
                 'user'=> $request->input('user'),
                 'password'=> $request->input('password'), 
@@ -231,10 +228,9 @@ class UsuariosController extends Controller
         }
     }
 
-    public function listaCobradores(Request $request)
-    {
+    public function listaCobradores(Request $request) {
         try {
-            $registros = Usuarios::where('tipo_usuarios_id',4)->get();
+            $registros = Usuarios::where('tipo_usuarios_id',4)->orderBy('estado','asc')->get();
 
             if (count($registros) > 0) {
                 $this->status_code   = 200;
@@ -258,8 +254,7 @@ class UsuariosController extends Controller
         }
     }
 
-    public function checkSession(Request $request)
-    {
+    public function checkSession(Request $request) {
         try {
 //            if ($request->session()->get($this->sessionKey)) {
             
