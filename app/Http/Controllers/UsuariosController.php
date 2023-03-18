@@ -29,7 +29,10 @@ class UsuariosController extends Controller
             if($request->session()->get('usuario')->tipo_usuarios_id == 1){
                 $registros = Usuarios::with('tipoUsuarios','sucursal')->get();
             } else {
-                $registros = Usuarios::where('sucursales_id', $request->session()->get('usuario')->sucursales_id)->with('tipoUsuarios','sucursal')->get();
+                $registros = Usuarios::where('sucursales_id', $request->session()->get('usuario')->sucursales_id)
+                                    ->orderby('estado', 'asc')
+                                    ->with('tipoUsuarios','sucursal')
+                                    ->get();
             }
 
             if ($registros) {

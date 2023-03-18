@@ -45,7 +45,7 @@
                     itemAll.id = 0;
                     $scope.collectors.push(itemAll)
                     response.data.records.forEach(function (item) {
-                        if (item.sucursales_id == branch) {
+                        if (item.sucursales_id == branch && item.estado == 1) {
                             $scope.collectors.push(item)
                         }
                     })
@@ -114,7 +114,6 @@
                         }
                         break
                     case "collectors":
-                        console.log("aquí--->", collector)
                         if (collector != "" && collector != undefined) {
                             reportService.collector(collector, dateInit, dateFinal, plan, branch)
                                 .then(function (response) {
