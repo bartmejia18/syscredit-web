@@ -229,6 +229,7 @@
 
       $scope.modalDeleteOpen = function (data) {
         $scope.accion = 'eliminar'
+        $scope.plan = data
 
         modal = $modal.open({
           templateUrl: "views/planes/modal.html",

@@ -97,7 +97,6 @@
 
                 switch (typeView) {
                     case "dates":
-
                         if (dateInit != "" && dateInit != undefined && dateFinal != "" && dateFinal != undefined) {
                             reportService.dates(dateInit, dateFinal, branch)
                                 .then(function (response) {
@@ -114,7 +113,6 @@
                         }
                         break
                     case "collectors":
-                        console.log("aquí--->", collector)
                         if (collector != "" && collector != undefined) {
                             reportService.collector(collector, dateInit, dateFinal, plan, branch)
                                 .then(function (response) {
@@ -143,6 +141,7 @@
                                     
                                     $scope.datas = response.data.records.credits
                                     $scope.sumAmountCredits = response.data.records.sumAmountCredits
+                                    $scope.sumAmountTotalCredit = response.data.records.sumAmountTotalCredit
                                     $scope.search();
                                     $scope.select($scope.currentPage);
                                 }

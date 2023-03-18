@@ -219,45 +219,86 @@ trait reportsTrait {
 
         $credits = "";   
     
-        if ($request->input('collector') != 0 && $request->input('plan') != 0) {
-            $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', $request->input('status'))
-                                ->where('usuarios_cobrador', $request->input('collector'))
-                                ->where('planes_id', $request->input('plan'))
-                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
-                                ->get();
-        } else if ($request->input('plan') != 0) {
-            $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', $request->input('status'))
-                                ->where('planes_id', $request->input('plan'))
-                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
-                                ->get();
-        } else if ($request->input('collector') != 0) {
-            $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', $request->input('status'))
-                                ->where('usuarios_cobrador', $request->input('collector'))
-                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
-                                ->get();
-        } else if ($dateInit == $dateFin) {
-            $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', $request->input('status'))
-                                ->where('created_at','>=', $dateInit)
-                                ->get();
-        } else {
-            $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', $request->input('status'))
-                                ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
-                                ->get();
+        if ($request->input('status') == 1) {
+            if ($request->input('collector') != 0 && $request->input('plan') != 0) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('usuarios_cobrador', $request->input('collector'))
+                                    ->where('planes_id', $request->input('plan'))
+                                    ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
+                                    ->get();
+            } else if ($request->input('plan') != 0) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('planes_id', $request->input('plan'))
+                                    ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
+                                    ->get();
+            } else if ($request->input('collector') != 0) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('usuarios_cobrador', $request->input('collector'))
+                                    ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
+                                    ->get();
+            } else if ($dateInit == $dateFin) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('created_at','>=', $dateInit)
+                                    ->get();
+            } else {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
+                                    ->get();
+            }
+        } else if ($request->input('status') == 0) {
+            if ($request->input('collector') != 0 && $request->input('plan') != 0) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('usuarios_cobrador', $request->input('collector'))
+                                    ->where('planes_id', $request->input('plan'))
+                                    ->whereBetween('fecha_finalizado', [$dateInit, $dateFin])
+                                    ->get();
+            } else if ($request->input('plan') != 0) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('planes_id', $request->input('plan'))
+                                    ->whereBetween('fecha_finalizado', [$dateInit, $dateFin])
+                                    ->get();
+            } else if ($request->input('collector') != 0) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('usuarios_cobrador', $request->input('collector'))
+                                    ->whereBetween('fecha_finalizado', [$dateInit, $dateFin])
+                                    ->get();
+            } else if ($dateInit == $dateFin) {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->where('fecha_finalizado','>=', $dateInit)
+                                    ->get();
+            } else {
+                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
+                                    ->where('sucursal_id', $request->input('branch'))
+                                    ->where('estado', $request->input('status'))
+                                    ->whereBetween('fecha_finalizado', [$dateInit, $dateFin])
+                                    ->get();
+            }
         }
-
         if ($credits) {
             $datas->sumAmountCredits = $credits->sum(function ($item) { 
                 return $item->montos->monto;  
+            });
+
+            $datas->sumAmountTotalCredit = $credits->sum(function ($item) {
+                return $item->deudatotal;
             });
             
             $datas->credits = $credits;

@@ -181,13 +181,29 @@
 								<div class="panel-body">
 									<div class="clearfix">
 										<div class="info left">
-											<h4 class="mt0 text-success text-bold">Suma total de créditos</h4>
+											<h4 class="mt0 text-success text-bold">Suma total de inversión</h4>
 											<h2 class="text-light mb0">Q. {{ sumAmountCredits | number: "2"}}</h2>
 										</div>
 										<div class="right ion ion-cash icon"></div>
 									</div>
 								</div>
 								<div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+									<p class="mt0 mb0 left"></p>
+									<span sparkline class="right" type="bar" bar-color="#fff" width="1.15em"
+										height="1.15em"></span>
+								</div>
+							</div>
+							<div class="panel panel-default mb20 mini-box panel-hovered">
+								<div class="panel-body">
+									<div class="clearfix">
+										<div class="info left">
+											<h4 class="mt0 text-success text-bold">Suma total de créditos</h4>
+											<h2 class="text-light mb0">Q. {{ sumAmountTotalCredit | number: "2"}}</h2>
+										</div>
+										<div class="right ion ion-cash icon"></div>
+									</div>
+								</div>
+								<div class="panel-footer clearfix panel-footer-sm panel-footer-primary">
 									<p class="mt0 mb0 left"></p>
 									<span sparkline class="right" type="bar" bar-color="#fff" width="1.15em"
 										height="1.15em"></span>
