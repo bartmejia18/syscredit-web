@@ -72,7 +72,18 @@
 									</div>
 								</th>
 								<th>
-									Días
+									Tipo
+									<div class="th">
+										<i class="fa fa-caret-up icon-up"
+											ng-click=" order('dias') "
+                              				ng-class="{active: row == 'tipo'}"></i>
+										<i class="fa fa-caret-down icon-down"
+											ng-click=" order('-dias') "
+                              				ng-class="{active: row == '-tipo'}"></i>
+									</div>
+								</th>
+								<th>
+									Cantidad
 									<div class="th">
 										<i class="fa fa-caret-up icon-up"
 											ng-click=" order('dias') "
@@ -122,6 +133,7 @@
 							<tr ng-repeat="data in currentPageStores track by $index">
 								<td>{{ $index + 1 }}</td>
 								<td>{{ data.descripcion }}</td>
+								<td>{{ data.tipo_name }}</td>
 								<td>{{ data.dias }}</td>
 								<td>{{ data.porcentaje }} %</td>
 								<td>{{ data.sucursal.descripcion }}</td>

@@ -62,6 +62,7 @@ Route::prefix('ws')->group(function () {
 	Route::get('getHistoryPayments',		'HistorialPagosController@historyForCustomer');
 	Route::get('reportcredits',				'ReportsController@credits');
 	Route::get('reportcreditspdf',			'ReportsController@reportCreditsPDF');
+	Route::get('debtrecognitionpdf',		'CreditosController@debtRecognitionPDF');
 
 	Route::get('logout',function() {
 		Auth::logout();

@@ -78,7 +78,7 @@ class CreditosController extends Controller
                                                     'cuota_diaria'          => $request->input('cuota_diaria'),
                                                     'cuota_minima'          => $request->input('cuota_minima'),
                                                     'fecha_inicio'          => \Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
-                                                    'fecha_fin'             => \Carbon\Carbon::parse($lastDate)->format('Y-m-d'),
+                                                    'fecha_fin'             => \Carbon\Carbon::parse($request->input('fecha_limite'))->format('Y-m-d'),
                                                     'estado'                => 1,
                                                 ]);
 
@@ -295,24 +295,45 @@ class CreditosController extends Controller
         
         if ( $registro ) {
             $pdf = \App::make('dompdf');
-            if($registro->planes->domingo == "1"){
-                if($registro->planes->dias >= 45){
-                    $pdf = \PDF::loadView('pdf.ticketwithoutsundayplan75', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
-                }
-                else{
-                    $pdf = \PDF::loadView('pdf.ticketwithoutsunday', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
-                }
-            } else{
-                if($registro->planes->dias >= 45){
-                    $pdf = \PDF::loadView('pdf.ticketwithsundayplan75', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
-                }
-                else{
-                    $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
-                }
+            
+            switch ($registro->planes->tipo) {
+                case 2:
+                    $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayWeek($registro)])->setPaper('letter','landscape');
+                    break;
+                case 3:
+                    $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayMonth($registro)])->setPaper('letter','landscape');
+                    break;
+                default:
+                    if($registro->planes->domingo == "1"){
+                        if($registro->planes->dias >= 45){
+                            $pdf = \PDF::loadView('pdf.ticketwithoutsundayplan75', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
+                        }
+                        else{
+                            $pdf = \PDF::loadView('pdf.ticketwithoutsunday', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
+                        }
+                    } else{
+                        if($registro->planes->dias >= 45){
+                            $pdf = \PDF::loadView('pdf.ticketwithsundayplan75', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
+                        }
+                        else{
+                            $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
+                        }
+                    }
+                    break;
             }
+            
     
             $nameBoleta = $registro->cliente->nombre." " .$registro->cliente->apellido;
-            
+            return $pdf->download($nameBoleta.'.pdf');
+        }
+    }
+
+    public function debtRecognitionPDF(Request $request) {
+        $registro = Creditos::with('cliente','planes','montos')->find( $request->input('credito_id') );
+        if ($registro) {
+            $pdf = \App::make('dompdf');
+            $pdf = \PDF::loadView('pdf.debtrecognition', ['data' => $registro])->setPaper('a4','portrait');
+            $nameBoleta = $registro->cliente->nombre." " .$registro->cliente->apellido;
             return $pdf->download($nameBoleta.'.pdf');
         }
     }

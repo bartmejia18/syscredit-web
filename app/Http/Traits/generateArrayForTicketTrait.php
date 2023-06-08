@@ -136,4 +136,124 @@ trait generateArrayForTicketTrait {
         
         return $infoCredit;
     }
+
+    public function getArrayWeek($data) {
+        $dateInitial = $data->fecha_inicio;
+        $dateFinal = $data->fecha_fin;
+        $amountTotal = $data->deudatotal;
+        $dailyAmount = $data->cuota_diaria;
+
+        $totalDays = abs($data->planes->dias); 
+        $totalDays = floor($totalDays + 1 );	
+        
+        $totalDays = ($totalDays % 2 == 0 ? $totalDays : $totalDays + 1) / 2; 
+        
+        $row = array();
+        $countOne = 0;
+        $countTwo = $totalDays;
+
+        $cantOne = 0;
+        $cantTwo = $totalDays * 7;
+
+        for ($i=0; $i<$totalDays; $i++)  {  
+            $columns = new \stdClass();            
+            
+            $dateFirst = strtotime ( '+'.$cantOne.' day' , strtotime ( $dateInitial) ) ;
+            $dateFirst = date ( 'd-m-Y' , $dateFirst );
+            $dateOne = new \DateTime($dateFirst);            
+
+            $columns->indexFirst = ++$countOne;
+            $columns->amountFirst = $amountTotal - ($dailyAmount * ($columns->indexFirst-1));
+            $columns->dateFirst = $dateFirst;
+        
+            $dateSecond = strtotime ( '+'.$cantTwo.' day' , strtotime ( $dateInitial) ) ;
+            $dateSecond = date ( 'd-m-Y' , $dateSecond );
+            $dateTwo = new \DateTime($dateSecond);
+
+            $columns->indexSecond = ++$countTwo;
+            $columns->amountSecond = $amountTotal - ($dailyAmount * ($columns->indexSecond-1));
+            $columns->dateSecond = $dateSecond;
+
+            $cantOne = $cantOne + 7;
+            $cantTwo = $cantTwo + 7;            
+            
+            array_push($row, $columns);
+        }        
+
+        $infoCredit = new \stdClass();
+        $infoCredit->name = $data->cliente->nombre." ".$data->cliente->apellido;
+        $infoCredit->dpi = $data->cliente->dpi;
+        $infoCredit->address = $data->cliente->direccion;
+        $infoCredit->numberPhone = $data->cliente->telefono;
+        $infoCredit->plan = $data->planes->descripcion;
+        $infoCredit->days = $data->planes->dias;
+        $infoCredit->date = $data->fecha_inicio;
+        $infoCredit->amount = $data->montos->monto;
+        $infoCredit->fees = $data->cuota_diaria;
+        $infoCredit->amountDefault = $dailyAmount/2;
+        $infoCredit->arrayQuota = $row;
+        
+        return $infoCredit;
+    }
+
+    public function getArrayMonth($data) {
+        $dateInitial = $data->fecha_inicio;
+        $dateFinal = $data->fecha_fin;
+        $amountTotal = $data->deudatotal;
+        $dailyAmount = $data->cuota_diaria;
+
+        $totalDays = abs($data->planes->dias); 
+        $totalDays = floor($totalDays + 1 );	
+        
+        $totalDays = ($totalDays % 2 == 0 ? $totalDays : $totalDays + 1) / 2; 
+        
+        $row = array();
+        $countOne = 0;
+        $countTwo = $totalDays;
+
+        $cantOne = 0;
+        $cantTwo = 0;
+
+        for ($i=0; $i<$totalDays; $i++)  {  
+            $columns = new \stdClass();
+            $cantOne = $i;
+            $cantTwo = $i + $totalDays;          
+            
+            $dateFirst = strtotime ( '+'.$cantOne.' months' , strtotime ( $dateInitial) ) ;
+            $dateFirst = date ( 'd-m-Y' , $dateFirst );
+            $dateOne = new \DateTime($dateFirst);            
+
+            $columns->indexFirst = ++$countOne;
+            $columns->amountFirst = $amountTotal - ($dailyAmount * ($columns->indexFirst-1));
+            $columns->dateFirst = $dateFirst;
+        
+            $dateSecond = strtotime ( '+'.$cantTwo.' months' , strtotime ( $dateInitial) ) ;
+            $dateSecond = date ( 'd-m-Y' , $dateSecond );
+            $dateTwo = new \DateTime($dateSecond);
+
+            $columns->indexSecond = ++$countTwo;
+            $columns->amountSecond = $amountTotal - ($dailyAmount * ($columns->indexSecond-1));
+            $columns->dateSecond = $dateSecond;
+
+            $cantOne = $cantOne + 7;
+            $cantTwo = $cantTwo + 7;            
+            
+            array_push($row, $columns);
+        }        
+
+        $infoCredit = new \stdClass();
+        $infoCredit->name = $data->cliente->nombre." ".$data->cliente->apellido;
+        $infoCredit->dpi = $data->cliente->dpi;
+        $infoCredit->address = $data->cliente->direccion;
+        $infoCredit->numberPhone = $data->cliente->telefono;
+        $infoCredit->plan = $data->planes->descripcion;
+        $infoCredit->days = $data->planes->dias;
+        $infoCredit->date = $data->fecha_inicio;
+        $infoCredit->amount = $data->montos->monto;
+        $infoCredit->fees = $data->cuota_diaria;
+        $infoCredit->amountDefault = $dailyAmount/2;
+        $infoCredit->arrayQuota = $row;
+        
+        return $infoCredit;
+    }
 }

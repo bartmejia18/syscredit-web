@@ -65,6 +65,7 @@ class PlanesController extends Controller
             $nuevoRegistro = \DB::transaction(function() use ($request){
                                 $nuevoRegistro = Planes::create([
                                     'descripcion'   => $request->input('descripcion'),
+                                    'tipo'          => $request->input('tipo'),
                                     'dias'          => $request->input('dias'),
                                     'porcentaje'    => $request->input('porcentaje'),
                                     'domingo'       => $request->input('domingo'),
@@ -142,6 +143,7 @@ class PlanesController extends Controller
             \DB::beginTransaction();
             $registro = Planes::find( $id );
             $registro->descripcion   = $request->input('descripcion',$registro->descripcion);
+            $registro->tipo          = $request->input('tipo',$registro->tipo);
             $registro->dias          = $request->input('dias',$registro->dias);
             $registro->porcentaje    = $request->input('porcentaje',$registro->porcentaje);
             $registro->domingo       = $request->input('domingo',$registro->domingo);
