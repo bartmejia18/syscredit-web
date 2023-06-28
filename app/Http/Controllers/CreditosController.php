@@ -4,14 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Creditos;
-use App\HistorialPagos;
 use App\DetallePagos;
 use App\Planes;
-use Session;
-use DB;
 use App\Http\Traits\DatesTrait;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\generateArrayForTicketTrait;
@@ -78,7 +74,7 @@ class CreditosController extends Controller
                                                     'cuota_diaria'          => $request->input('cuota_diaria'),
                                                     'cuota_minima'          => $request->input('cuota_minima'),
                                                     'fecha_inicio'          => \Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
-                                                    'fecha_fin'             => \Carbon\Carbon::parse($request->input('fecha_limite'))->format('Y-m-d'),
+                                                    'fecha_fin'             => \Carbon\Carbon::parse($lastDate)->format('Y-m-d'),
                                                     'estado'                => 1,
                                                 ]);
 
