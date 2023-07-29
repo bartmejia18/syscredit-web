@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Planes;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PlanesController extends Controller
 {
@@ -59,22 +60,23 @@ class PlanesController extends Controller
     }
 
     
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         try {
-            $nuevoRegistro = \DB::transaction(function() use ($request){
+            $nuevoRegistro = DB::transaction(function() use ($request) {
                                 $nuevoRegistro = Planes::create([
                                     'descripcion'   => $request->input('descripcion'),
+                                    'tipo'          => $request->input('tipo'),
                                     'dias'          => $request->input('dias'),
                                     'porcentaje'    => $request->input('porcentaje'),
                                     'domingo'       => $request->input('domingo'),
                                     'sucursales_id' => $request->input('idsucursal'),                        
                                 ]);
 
-                                if( !$nuevoRegistro )
+                                if (!$nuevoRegistro) {
                                     throw new \Exception("No se pudo crear el registro");
-                                else
+                                } else {
                                     return $nuevoRegistro;
+                                }
                             });
 
             $this->statusCode   = 200;
@@ -86,15 +88,12 @@ class PlanesController extends Controller
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al crear el registro";
-        }
-        finally 
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
@@ -102,25 +101,21 @@ class PlanesController extends Controller
     public function show($id)
     {
         try {
-            $registro = Planes::find( $id );
+            $registro = Planes::find($id);
 
-            if( $registro )
-            {
+            if ($registro) {
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro consultado exitosamente";
                 $this->records      = $registro;
-            }
-            else
+            } else {
                 throw new \Exception("No se encontró el registro");
-                
+            }   
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar el registro";
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
@@ -139,35 +134,33 @@ class PlanesController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            \DB::beginTransaction();
+            DB::beginTransaction();
             $registro = Planes::find( $id );
             $registro->descripcion   = $request->input('descripcion',$registro->descripcion);
+            $registro->tipo          = $request->input('tipo',$registro->tipo);
             $registro->dias          = $request->input('dias',$registro->dias);
             $registro->porcentaje    = $request->input('porcentaje',$registro->porcentaje);
             $registro->domingo       = $request->input('domingo',$registro->domingo);
             $registro->sucursales_id = $request->input('idsucursales',$registro->sucursales_id);
             $registro->save();
 
-            \DB::commit();
+            DB::commit();
             $this->statusCode   = 200;
             $this->result       = true;
             $this->message      = "Registro editado exitosamente";
             $this->records      = $registro;
 
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al editar el registro";
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
@@ -176,8 +169,8 @@ class PlanesController extends Controller
     public function destroy($id)
     {
         try {
-            $deleteRegistro = \DB::transaction(function() use ( $id ){
-                                $registro = Planes::find( $id );
+            $deleteRegistro = DB::transaction(function() use ($id) {
+                                $registro = Planes::find($id);
                                 $registro->delete();
                             });
 
@@ -189,14 +182,11 @@ class PlanesController extends Controller
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al eliminar el registro"; 
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }

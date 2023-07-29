@@ -51,6 +51,16 @@
           
           response.data.records.forEach(function (item) {
             if (item.sucursales_id == branch_selectd) {
+              if (item.tipo == 1 || item.tipo  == null || item.tipo == 0) {
+                item.tipo_name = "Diario"
+                item.dias = item.dias + " días"
+              } else if (item.tipo == 2) {
+                item.tipo_name = "Semanal"
+                item.dias = item.dias + " semanas"
+              } else if (item.tipo == 3) {
+                item.tipo_name = "Mensual"
+                item.dias = item.dias + " meses"
+              }
               $scope.datas.push(item)
             }
           })
@@ -127,6 +137,7 @@
             url: API_URL + 'planes',
             data: {
               descripcion: plan.descripcion,
+              tipo: plan.tipo,
               dias: plan.dias,
               porcentaje: plan.porcentaje,
               idsucursal: plan.sucursales_id,
@@ -154,6 +165,7 @@
             url: API_URL + 'planes/' + plan.id,
             data: {
               descripcion: plan.descripcion,
+              tipo: plan.tipo,
               dias: plan.dias,
               porcentaje: plan.porcentaje,
               idsucursal: plan.sucursales_id,

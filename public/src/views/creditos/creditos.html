@@ -12,7 +12,12 @@
 									<input type="number" id="customerDpi" class="form-control" ng-model="search_client.dpi">
 								</div>
 								<div class="col-md-1">
-									<button type="button" class="btn btn-info ion ion-plus" ng-click="modalCreateOpen()" md-ink-ripple></button>
+									<button type="button" 
+										class="btn btn-info btn-rounded" 
+										ng-click="modalCreateOpen()" md-ink-ripple>
+										<i class="fa fa-plus"></i> 
+										Nuevo crédito
+									</button>	
 								</div>
 							</div>
 						</form>
@@ -58,11 +63,11 @@
 						<br>
 						<div class="row">
 							<div class="col-sm-4">
-								<label>Cuota diaria</label>
+								<label>Cuota</label>
 								<input type="text" class="form-control" ng-model="detalle_cliente.cuota_diaria | number : 2" disabled>
 							</div>
 							<div class="col-sm-4">
-								<label>Fecha inicio</label>
+								<label>Fecha de primer pago</label>
 								<div class="input-group date" >
 									<input  type="text" id="fechainicio" class="form-control" ng-model="detalle_cliente.fecha_inicio" ng-change="getEndDate(detalle_cliente.planes_id)" required>
 									<div class="input-group-addon" >
@@ -71,7 +76,7 @@
 								</div>	
 							</div>
 							<div class="col-sm-4">
-								<label>Fecha fin</label>
+								<label>Fecha de último pago</label>
 								<input type="text" class="form-control" ng-model="detalle_cliente.fecha_fin" disabled>
 							</div>
 						</div>

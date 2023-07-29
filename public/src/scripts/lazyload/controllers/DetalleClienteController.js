@@ -62,7 +62,7 @@
 			$scope.telefono = customer.telefono
 
 			$scope.id = infoCredit.id
-			$scope.plan = infoCredit.planes.descripcion
+			$scope.plan = infoCredit.planes
 			$scope.monto_total = "Q. "+parseFloat(infoCredit.deudatotal).toFixed(2)
 			$scope.fecha_inicio = infoCredit.fecha_inicio
 			$scope.fecha_fin = infoCredit.fecha_fin		

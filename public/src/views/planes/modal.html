@@ -14,11 +14,24 @@
 		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'editar'" action="javascript:;" novalidate>
 			<div class="row form-group">
 				<div class="col-sm-6">
+					<label>Tipo de plan</label>
+					<select class="form-control" ng-model="plan.tipo">
+						<option value="" disabled selected="selected">Seleccione un tipo de plan</option>
+						<option value="1">Diario</option>
+						<option value="2">Semanal</option>
+						<option value="3">Mensual</option>
+					</select>
+				</div>	
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-6">
 					<label>Descripción</label>
 					<input type="text" class="form-control" name="plan.descripcion" ng-model="plan.descripcion">
 				</div>
 				<div class="col-sm-6">
-					<label>Días</label>
+					<label ng-if="plan.tipo == undefind || plan.tipo == 1">Días</label>
+					<label ng-if="plan.tipo == 2">Semanas</label>
+					<label ng-if="plan.tipo == 3">Meses</label>
 					<input type="number" class="form-control" min="1" ng-model="plan.dias">
 				</div>
 			</div>
@@ -33,7 +46,7 @@
 				</div>
 			</div>
 			<br>
-			<div class="row form-group">
+			<div class="row form-group" ng-if="plan.tipo == 1">
 				<div class="col-sm-6">
 					<div class="ui-checkbox">
 						<label>

@@ -10,11 +10,12 @@ use App\Creditos;
 use App\HistorialPagos;
 use App\DetallePagos;
 use App\Planes;
-use Session;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Http\Traits\DatesTrait;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\generateArrayForTicketTrait;
+use Barryvdh\DomPDF\PDF;
+use Illuminate\Support\Facades\App;
 
 class CreditosController extends Controller
 {
@@ -64,7 +65,7 @@ class CreditosController extends Controller
                 $lastDate = $this->getLastDay(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
             }
 
-            $nuevoRegistro = \DB::transaction( function() use ($request, $lastDate) {
+            $nuevoRegistro = DB::transaction( function() use ($request, $lastDate) {
                                 $nuevoRegistro = Creditos::create([
                                                     'clientes_id'           => $request->input('idcliente'),
                                                     'planes_id'             => $request->input('idplan'),
@@ -289,26 +290,34 @@ class CreditosController extends Controller
         }
     }
 
-    public function boletaPDF(Request $request){
+    public function boletaPDF(Request $request) {
 
         $registro = Creditos::with('cliente','planes','montos')->find( $request->input('credito_id') );
         
-        if ( $registro ) {
-            $pdf = \App::make('dompdf');
-            if($registro->planes->domingo == "1"){
-                if($registro->planes->dias >= 45){
-                    $pdf = \PDF::loadView('pdf.ticketwithoutsundayplan75', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
-                }
-                else{
-                    $pdf = \PDF::loadView('pdf.ticketwithoutsunday', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
-                }
-            } else{
-                if($registro->planes->dias >= 45){
-                    $pdf = \PDF::loadView('pdf.ticketwithsundayplan75', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
-                }
-                else{
-                    $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
-                }
+        if ($registro) {
+            $pdf = App::make('dompdf');
+            switch ($registro->planes->tipo) {
+                case 2:
+                    $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayWeek($registro)])->setPaper('letter','landscape');
+                    break;
+                case 3:
+                    $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayMonth($registro)])->setPaper('letter','landscape');
+                    break;
+                default:
+                    if ($registro->planes->domingo == "1") {
+                        if ($registro->planes->dias >= 45) {
+                            $pdf = \PDF::loadView('pdf.ticketwithoutsundayplan75', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
+                        } else {
+                            $pdf = \PDF::loadView('pdf.ticketwithoutsunday', ['data' => $this->getArray($registro)])->setPaper('letter','landscape');
+                        }
+                    } else {
+                        if ($registro->planes->dias >= 45) {
+                            $pdf = \PDF::loadView('pdf.ticketwithsundayplan75', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
+                        } else {
+                            $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayWithSunday($registro)])->setPaper('letter','landscape');
+                        }
+                    }
+                    break;
             }
     
             $nameBoleta = $registro->cliente->nombre." " .$registro->cliente->apellido;

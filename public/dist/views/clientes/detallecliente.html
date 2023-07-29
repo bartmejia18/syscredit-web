@@ -83,7 +83,7 @@
 
 								<label class="col-md-2 control-label">Plan:</label>
 								<div class="col-md-4">
-									<input type="text" class="form-control" ng-model="plan" disabled>
+									<input type="text" class="form-control" ng-model="plan.descripcion" disabled>
 								</div>
 
 								<label class="col-md-2 control-label">Monto total:</label>
@@ -110,7 +110,9 @@
 								<div class="col-md-4">
 									<input type="text" class="form-control" ng-model="cobrador" disabled>
 								</div>
-								<label class="col-md-2 control-label">Cuota diaria:</label>
+								<label ng-if="plan.tipo == 1 || plan.tipo == undefined || plan.tipo == 0"class="col-md-2 control-label">Cuota diaria:</label>
+								<label ng-if="plan.tipo == 2" class="col-md-2 control-label">Cuota semanal:</label>
+								<label ng-if="plan.tipo == 3" class="col-md-2 control-label">Cuota mensual:</label>
 								<div class="col-md-3">
 									<input type="text" class="form-control" ng-model="cuota_diaria" disabled>
 								</div>
