@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Usuarios;
 use App\Creditos;
@@ -11,6 +10,7 @@ use App\DetallePagos;
 use App\CierreRuta;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCustomerTrait;
+use Carbon\Carbon;
 
 class CobradorController extends Controller {
     public $statusCode  = 200;
@@ -23,36 +23,21 @@ class CobradorController extends Controller {
 
     public function listCustomers(Request $request) {
         try {
-            $hoy = date('Y-m-d');
-            $registros = Creditos::with("cliente", "planes")
-                                ->where("usuarios_cobrador", $request->input("idusuario"))
-                                ->where('estado', 1)
-                                ->where("fecha_inicio", "<=", $request->input('fecha'))
-                                ->get();
+            $credits = $this->getCreditsForCollector($request);
 
-            $registroExtra = Creditos::with("cliente", "planes")
-                                    ->where("usuarios_cobrador", $request->input("idusuario"))
-                                    ->where("fecha_finalizado", $request->input('fecha'))
-                                    ->where('estado', 0)
-                                    ->get();
-            
-            if ($registroExtra->count() > 0) {
-                $registros = $registros->merge($registroExtra);
-            }
-
-            if ($registros) {
+            if ($credits->count() > 0) {
+                
                 $totalacobrar = 0;
                 $totalminimocobrar = 0;
                 $cantidadclientes = 0;
-                $pagohoy = false;
-                
-                foreach ($registros as $item) {                
+
+                foreach ($credits as $item) {   
                     $detailsPayments = $this->getDetailsForCollector($item, $request->input('fecha'));   
                     $item['cantidad_cuotas_pagadas'] = $detailsPayments->totalFees;
                     $item['monto_abonado'] = $detailsPayments->paymentPaid;
                     $item['monto_pagado'] = $detailsPayments->totalPayment;
-                    $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d-m-Y');
-                    $item['fecha_limite'] = \Carbon\Carbon::parse($item->fecha_limite)->format('d-m-Y');
+                    $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
+                    $item['fecha_limite'] = Carbon::parse($item->fecha_limite)->format('d-m-Y');
                     $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $request->input('fecha'));                    
 
                     $totalacobrar = $totalacobrar + $item->cuota_diaria;
@@ -63,7 +48,7 @@ class CobradorController extends Controller {
                 $datos = [];
                 $datos['total_cobrar'] = $totalacobrar;
                 $datos['total_minimo'] = $totalminimocobrar;                             
-                $datos['registros'] = $registros;
+                $datos['registros'] = $credits;
 
                 $this->statusCode   = 200;
                 $this->result       = true;
@@ -90,30 +75,15 @@ class CobradorController extends Controller {
         $collector = Usuarios::find($request->input("idusuario"));
         $branch = Sucursales::find($collector->sucursales_id);
 
-        $hoy = date('Y-m-d');
-        $registros = Creditos::with("cliente", "planes")
-                                ->where("usuarios_cobrador", $request->input("idusuario"))
-                                ->where('estado', 1)
-                                ->where("fecha_inicio", "<=", $request->input('fecha'))
-                                ->get();
+        $credits = $this->getCreditsForCollector($request);
 
-        $registroExtra = Creditos::with("cliente", "planes")
-                                ->where("usuarios_cobrador", $request->input("idusuario"))
-                                ->where('estado', 0)
-                                ->where("fecha_finalizado", $request->input('fecha'))
-                                ->get();
-        
-        if ($registroExtra->count() > 0) {
-            $registros = $registros->merge($registroExtra);
-        }
-
-        if ($registros) {
+        if ($credits->count() > 0 ) {
             $totalacobrar = 0;
             $totalminimocobrar = 0;
             $cantidadclientes = 0;
-            $pagohoy = false;
+        
             
-            foreach ($registros as $item) {                
+            foreach ($credits as $item) {                
                 $detailsPaymentsForDay = $this->getDetailsForCollector($item, $request->input('fecha'));
                 $detailsPaymentsGeneral = $this->getDetailsPaymentsForReportCollector($item->id);   
                 $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees;
@@ -138,9 +108,9 @@ class CobradorController extends Controller {
             $datos->total_cobrar = $totalacobrar;
             $datos->total_minimo = $totalminimocobrar;                             
             $datos->total_cobrado = $this->getTotalPaymentCollector($request->input('idusuario'), $request->input('fecha'));   
-            $datos->total_catera = $registros->sum('deudatotal');
-            $datos->total_pendiente = $registros->sum('saldo');
-            $datos->registros = $registros;
+            $datos->total_catera = $credits->sum('deudatotal');
+            $datos->total_pendiente = $credits->sum('saldo');
+            $datos->registros = $credits;
             
         }
         if (intval($request->input("closure_id")) != 0 ) {
@@ -164,6 +134,44 @@ class CobradorController extends Controller {
             return $pdf->download($collector->nombre.'.pdf');
         }
     }
-    
+
+    function getCreditsForCollector(Request $request) {
+        $recordsFilters = [];
+        $registros = Creditos::with("cliente", "planes")
+                                ->where("usuarios_cobrador", $request->input("idusuario"))
+                                ->where('estado', 1)
+                                ->where("fecha_inicio", "<=", $request->input('fecha'))
+                                ->get();
+
+        $registroExtra = Creditos::with("cliente", "planes")
+                                ->where("usuarios_cobrador", $request->input("idusuario"))
+                                ->where("fecha_finalizado", $request->input('fecha'))
+                                ->where('estado', 0)
+                                ->get();
+        
+        if ($registroExtra->count() > 0) {
+            $registros = $registros->merge($registroExtra);
+        }
+
+        if ($registros->count() > 0 ) {
+            $recordsFilters = $registros->filter(function ($record) use ($request) {
+                $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
+                $dateFirstPay = Carbon::createFromFormat('Y-m-d', $record->fecha_inicio);
+                $diffDays = $currentDate->diffInDays($dateFirstPay);
+                switch ($record->planes->tipo) {
+                    case (2) : 
+                        return $diffDays % 7 == 0;
+                        break;
+                    case (3) : 
+                        return $diffDays % 30 == 0;
+                        break;
+                    default : 
+                        return $diffDays % 1 == 0;
+                        break;
+                }
+            })->values();
+        }
+        return $recordsFilters;
+    }
 } 
 

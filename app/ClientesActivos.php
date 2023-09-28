@@ -26,4 +26,8 @@ class ClientesActivos extends Model {
     public function cliente() {
         return $this->hasOne('App\Clientes', 'id','clientes_id');
     }
+
+    public function plan() {
+        return $this->hasOne('App\Planes', 'id','planes_id');
+    }
 }
