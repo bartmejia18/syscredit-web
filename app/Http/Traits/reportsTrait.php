@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Creditos;
 use App\DetallePagos;
 use App\Http\Traits\detailsPaymentsTrait;
+use Carbon\Carbon;
 
 trait reportsTrait {
 
@@ -29,8 +30,8 @@ trait reportsTrait {
         $dateFin = "";
 
         if ($request->input('date-init') != null && $request->input('date-final') != null) {
-            $dateInit = \Carbon\Carbon::parse($request->input('date-init'))->format('Y-m-d');
-            $dateFin = \Carbon\Carbon::parse($request->input('date-final'))->format('Y-m-d');
+            $dateInit = Carbon::parse($request->input('date-init'))->format('Y-m-d');
+            $dateFin = Carbon::parse($request->input('date-final'))->format('Y-m-d');
         }
 
         $totalCharged = new \stdClass();        
@@ -61,7 +62,7 @@ trait reportsTrait {
         
         $dateFin = "";    
         if ($request->input('date-final') != null) {            
-            $dateFin = \Carbon\Carbon::parse($request->input('date-final'))->format('Y-m-d');                        
+            $dateFin = Carbon::parse($request->input('date-final'))->format('Y-m-d');                        
         }
         
         $totalPendingReceivable = 0;
@@ -79,7 +80,7 @@ trait reportsTrait {
         
         $dateFin = "";    
         if ($request->input('date-final') != null) {            
-            $dateFin = \Carbon\Carbon::parse($request->input('date-final'))->format('Y-m-d');                        
+            $dateFin = Carbon::parse($request->input('date-final'))->format('Y-m-d');                        
         }
 
         $totalReceivable = 0;
@@ -107,8 +108,8 @@ trait reportsTrait {
 
     public function getCustomersWithCreditToDay($credits) {        
         $countCredits = $credits->map(function($item,$key){            
-            $today = \Carbon\Carbon::now();
-            $startDate = \Carbon\Carbon::parse($item->fecha_inicio);
+            $today = Carbon::now();
+            $startDate = Carbon::parse($item->fecha_inicio);
             $days = $today->diffInDays($startDate);
             $minimumPayment = ($days - 3) * $item->cuota_diaria;            
             $totalPayment = $this->getDetailsPayments($item)->totalPayment; 
@@ -125,8 +126,8 @@ trait reportsTrait {
         
         $collector = $request->input('collector');
         if ($request->input('date-init') != null && $request->input('date-final') != null) {
-            $dateInit = \Carbon\Carbon::parse($request->input('date-init'))->format('Y-m-d');
-            $dateFin = \Carbon\Carbon::parse($request->input('date-final'))->format('Y-m-d');
+            $dateInit = Carbon::parse($request->input('date-init'))->format('Y-m-d');
+            $dateFin = Carbon::parse($request->input('date-final'))->format('Y-m-d');
         } else {
             $dateInit = "";
             $dateFin = "";
@@ -210,8 +211,8 @@ trait reportsTrait {
 
         $datas = new \stdClass();   
         if ($request->input('dateInit') != null && $request->input('dateFinal') != null) {
-            $dateInit = \Carbon\Carbon::parse($request->input('dateInit'))->format('Y-m-d');
-            $dateFin = \Carbon\Carbon::parse($request->input('dateFinal'))->format('Y-m-d');
+            $dateInit = Carbon::parse($request->input('dateInit'))->format('Y-m-d');
+            $dateFin = Carbon::parse($request->input('dateFinal'))->format('Y-m-d');
         } else {
             $dateInit = "";
             $dateFin = "";
@@ -241,12 +242,6 @@ trait reportsTrait {
                                     ->where('estado', $request->input('status'))
                                     ->where('usuarios_cobrador', $request->input('collector'))
                                     ->whereBetween('created_at', [$dateInit." 00:00:00", $dateFin." 23:59:59"])
-                                    ->get();
-            } else if ($dateInit == $dateFin) {
-                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                    ->where('sucursal_id', $request->input('branch'))
-                                    ->where('estado', $request->input('status'))
-                                    ->where('created_at','>=', $dateInit)
                                     ->get();
             } else {
                 $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
@@ -278,12 +273,6 @@ trait reportsTrait {
                                     ->where('usuarios_cobrador', $request->input('collector'))
                                     ->whereBetween('fecha_finalizado', [$dateInit, $dateFin])
                                     ->get();
-            } else if ($dateInit == $dateFin) {
-                $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
-                                    ->where('sucursal_id', $request->input('branch'))
-                                    ->where('estado', $request->input('status'))
-                                    ->where('fecha_finalizado','>=', $dateInit)
-                                    ->get();
             } else {
                 $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                     ->where('sucursal_id', $request->input('branch'))
@@ -301,7 +290,11 @@ trait reportsTrait {
                 return $item->deudatotal;
             });
             
-            $datas->credits = $credits;
+            $datas->credits = $credits->map(function($item, $key){
+                $item->fecha_inicio = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
+                $item->fecha_creacion = Carbon::parse($item->created_at)->format('d-m-Y');
+                return $item;
+            });
         }
 
         return $datas;

@@ -11,6 +11,10 @@
 |
 */
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return redirect('dist');
 });
@@ -35,38 +39,52 @@ Route::prefix('ws')->group(function () {
 	Route::resource('creditoeliminado',     'CreditosEliminadosController');
 	Route::post('login',					'UsuariosController@login');
 	Route::resource('cierreruta',			'CierreRutaController');
+	
+	Route::get('dashboard',					'DashboardController@dashboard');
+
 	Route::get('validatecierreruta', 		'CierreRutaController@validatecierreruta');
-	Route::get('session/check',				'UsuariosController@checkSession');
+	Route::get('printinfoclosure',			'CierreRutaController@printReportClosure');
+	
+	Route::get('listcustomers',				'CobradorController@listCustomers');
+	Route::get('collectorpdf',				'CobradorController@generatePdf');
+
 	Route::get('cobradorclientes',			'CreditosController@cobradorClientes');
-	Route::get('listacobradores',			'UsuariosController@listacobradores');
 	Route::post('registrarabonos',			'CreditosController@registrarAbono');
-	Route::get('buscarcliente',				'ClientesController@buscarCliente');
-	Route::get('creditocliente',			'ClientesController@buscarCreditoCliente');
+	Route::get('boletapdf',					'CreditosController@boletaPDF');
+	Route::post('payments',					'CreditosController@payments');
+	Route::post('validationArrears',		'CreditosController@validationArrearsCredit');
+	Route::get('debtrecognitionpdf',		'CreditosController@debtRecognitionPDF');
+
+	Route::get('getcreditdeleted', 			'CreditosEliminadosController@findByCreditId');
+	
+	Route::get('buscarcliente',				'ClientesController@findCustormerForDPI');
+	Route::get('creditocliente',			'ClientesController@findCustomerForName');
 	Route::get('detallecliente',			'ClientesController@detalleCreditoCliente');
 	Route::get('branch/customers',			'ClientesController@customersByBranch');	
-	Route::get('boletapdf',					'CreditosController@boletaPDF');
-	Route::get('dashboard',					'DashboardController@dashboard');
+	Route::get('printaccountstatus',		'ClientesController@printPDFAccountStatus');
+	Route::post('passwordaccess', 			'ClientesController@randomPasswordAccess');
+	
 	Route::get('paymenthistory',			'HistorialPagosController@paymentHistory');
 	Route::get('deletepayment',				'HistorialPagosController@deletePayment');
 	Route::get('totalcolletion',			'HistorialPagosController@totalColletion');
-	Route::post('payments',					'CreditosController@payments');
-	Route::get('listcustomers',				'CobradorController@listCustomers');
-	Route::get('collectorpdf',				'CobradorController@generatePdf');
+	Route::get('getHistoryPayments',		'HistorialPagosController@historyForCustomer');
+	
+	Route::get('session/check',				'UsuariosController@checkSession');
+	Route::get('listacobradores',			'UsuariosController@listacobradores');
+	
 	Route::get('reportgeneral',				'ReportsController@general');
 	Route::get('reportcollector',			'ReportsController@collector');
 	Route::get('reportdates',				'ReportsController@dates');
-	Route::get('printinfoclosure',			'CierreRutaController@printReportClosure');
-	Route::get('printaccountstatus',		'ClientesController@printPDFAccountStatus');
-	Route::post('accessdelete', 			'ClientesController@accessForDelete');
-	Route::get('getcreditdeleted', 			'CreditosEliminadosController@findByCreditId');
-	Route::get('getHistoryPayments',		'HistorialPagosController@historyForCustomer');
 	Route::get('reportcredits',				'ReportsController@credits');
 	Route::get('reportcreditspdf',			'ReportsController@reportCreditsPDF');
-	Route::get('debtrecognitionpdf',		'CreditosController@debtRecognitionPDF');
+
+	
+	
+	
 
 	Route::get('logout',function() {
 		Auth::logout();
-		return \Redirect::to('/');
+		return Redirect::to('/');
 	});
 });
 

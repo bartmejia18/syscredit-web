@@ -1,0 +1,82 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Morosidad de {{dataCustomer.nombre}}</h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal" name="form" action="javascript:;" novalidate>
+			<label><h4>Datos del crédito:</h4></label>
+			<br>
+			<div class="row">
+				<div class="col-sm-6">	
+					<h5>Plan: <b>{{dataCustomer.plan.descripcion}}</b></h5>
+				</div>
+				<div class="col-sm-6">	
+					<h5>Monto total: <b>{{dataCustomer.monto_total}}</b></h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">	
+					<h5>Fecha de inicio: <b>{{dataCustomer.fecha_inicio}}</b></h5>
+				</div>	
+			</div>
+			<div class="row">
+				<div class="col-sm-12">	
+					<h5>Fecha sugerida finalización: <b>{{dataCustomer.fecha_finalizado}}</b></h5>
+				</div>				
+			</div>
+			<div class="row">
+				<div class="col-sm-12">	
+					<h5>Fecha último pago realizado: <b>{{dataCustomer.fecha_fin}}</b></h5>
+				</div>				
+			</div>
+
+			<div class="row">
+				<div class="col-sm-6">	
+					<span ng-if="dataCustomer.credit_arrears_status=='Excelente'" class="text-success"><h5>Estado crédito: <b>{{dataCustomer.credit_arrears_status}}</b></h5></span>
+					<span ng-if="dataCustomer.credit_arrears_status=='Bueno'" class="text-warning"><h5>Estado crédito: <b>{{dataCustomer.credit_arrears_status}}</b></h5></span>
+					<span ng-if="dataCustomer.credit_arrears_status=='Moroso'" class="text-danger"><h5>Estado crédito: <b>{{dataCustomer.credit_arrears_status}}</b></h5></span>
+				</div>	
+				<div class="col-sm-6">	
+					<h5>Cuotas atrasadas: <b>{{dataCustomer.cuotas_atrasadas}}</b></h5>
+				</div>			
+			</div>
+			<hr>
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label class="control-label">Nuevo estado de morosidad</label>
+					<select class="form-control" ng-model="data.estado_morosidad" required>
+						<option value="Excelente">Excelente</option>
+						<option value="Bueno">Bueno</option>
+						<option value="Moroso">Moroso</option>
+					</select>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Comentario de evaluación: </label>
+					<input type="text" class="form-control" ng-model="data.comentario_morosidad" required>
+				</div>
+			</div>
+
+			<br>
+
+			<div ng-show="infoResult != 0">
+				<div class="row form-group">
+					<div class="col-sm-12">
+						<div ng-if="infoResult == 1" class="alert alert-danger">
+							<div><strong>Error!</strong> Ha ocurrido en error al intentar eliminar el crédito.</div>						
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">
+					<button class="btn btn-info" ng-click="modalClose()">Cancelar</button>
+					<button class="btn btn-danger" ng-click="saveCreditEvaluation(data)" ng-disabled="form.$invalid">Confirmar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

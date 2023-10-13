@@ -137,6 +137,14 @@
 				{
                     name: "app.service.deletecredit",
                     files: ["scripts/lazyload/services/deletecredit.js"]
+                },
+				{
+                    name: "app.service.passwordaccess",
+                    files: ["scripts/lazyload/services/passwordaccess.js"]
+                },
+				{
+                    name: "app.service.credits",
+                    files: ["scripts/lazyload/services/credits.js"]
                 }
 			]
 		})

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\CierreRuta;
+use Illuminate\Support\Facades\DB;
 
 class CierreRutaController extends Controller
 {
@@ -21,14 +22,14 @@ class CierreRutaController extends Controller
                                     ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
                                     ->with('cobrador')->get();
 
-            if ( $registros ) {
+            if ($registros) {
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro consultados exitosamente";
                 $this->records      = $registros;
-            } else
+            } else {
                 throw new \Exception("No se encontraron registros");
-                
+            }
         } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
@@ -40,14 +41,13 @@ class CierreRutaController extends Controller
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
 
     public function store(Request $request) {
         try {
-            $nuevoRegistro = \DB::transaction(function() use ($request) {
+            $nuevoRegistro = DB::transaction(function() use ($request) {
                                 $nuevoRegistro = CierreRuta::create([
                                     'sucursal_id' => $request->input('branch_id'),
                                     'cobrador_id' => $request->input('collector_id'),
@@ -60,10 +60,11 @@ class CierreRutaController extends Controller
                                     'info_closure' => ""
                                 ]);
 
-                                if ( !$nuevoRegistro) 
+                                if (!$nuevoRegistro) {
                                     throw new \Exception("Ocurrió un problema al realizar el cierre de la ruta. Por favor inténtelo nuevamente");
-                                else
+                                } else {
                                     return $nuevoRegistro;
+                                }
                             });
 
             $this->statusCode   =   200;
@@ -89,15 +90,14 @@ class CierreRutaController extends Controller
     {
         try {
             $registro = CierreRuta::find($id);
-
             if ($registro) {
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro consultado exitosamente";
                 $this->records      = $registro;
-            } else
+            } else {
                 throw new \Exception("No se encontro el registro");
-                    
+            }
         } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
@@ -115,20 +115,19 @@ class CierreRutaController extends Controller
 
     public function update(Request $request, $id)
     {
-        try 
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
             $registro = CierreRuta::find( $id );
             $registro->estado = 2;   
             $registro->save();
 
-            \DB::commit();
+            DB::commit();
             $this->statusCode   = 200;
             $this->result       = true;
             $this->message      = "Registro actualizado exitosamente";
             $this->records      = $registro;
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al editar el registro";   
@@ -144,10 +143,10 @@ class CierreRutaController extends Controller
 
     public function destroy($id) {
         try {
-            $deleteRegistro = \DB::transaction(function() use( $id ){
-                            $registro = CierreRuta::find( $id );
-                            $registro->delete();
-                        });
+            DB::transaction(function() use($id) {
+                $registro = CierreRuta::find($id);
+                $registro->delete();
+            });
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -178,9 +177,9 @@ class CierreRutaController extends Controller
                 $this->result       = true;
                 $this->message      = "Registro consultado exitosamente";
                 $this->records      = true;
-            } else
+            } else {
                 throw new \Exception("No se encontro el registro");
-                                    
+            }                
         } catch (\Exception $e) {
             $this->records = false;
             $this->result       = false;

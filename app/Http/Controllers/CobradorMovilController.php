@@ -9,7 +9,7 @@ use App\Usuarios;
 use App\CierreRuta;
 use App\ClientesActivos;
 use App\Http\Traits\detailsPaymentsTrait;
-use App\Http\Traits\countDaysTrait;
+use App\Http\Traits\detailsCreditsTrait;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
@@ -20,7 +20,7 @@ class CobradorMovilController extends Controller {
     public $records     = null;
     
     use detailsPaymentsTrait;
-    use countDaysTrait;
+    use detailsCreditsTrait;
 
     public function loginMovil(Request $request){
         try {
@@ -68,7 +68,7 @@ class CobradorMovilController extends Controller {
                                 ->first();
                 
                 if (!$routeClosure) {
-                    $activeCredits = ClientesActivos::with('cliente','plan')
+                    $activeCredits = ClientesActivos::with('cliente','planes')
                                                 ->where('usuarios_cobrador', $request->input('idusuario'))
                                                 ->where('fecha_inicio', '<=', $hoy)                             
                                                 ->get();
@@ -77,7 +77,7 @@ class CobradorMovilController extends Controller {
                         $currentDate = Carbon::now();
                         $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
                         $diffDays = $currentDate->diffInDays($dateFirstPay);
-                        switch($item->plan->tipo) {
+                        switch($item->planes->tipo) {
                             case (1) : 
                                 return $diffDays % 1 == 0;
                                 break;
@@ -99,7 +99,7 @@ class CobradorMovilController extends Controller {
 
                         foreach ($filteredCredits as $item) { 
                             $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
-                            $cuotas_atrasadas = $this->getTotalDaysArrears($item->fecha_inicio, $cuotas_pagadas, $item->plan->domingo);   
+                            $cuotas_atrasadas = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrears($item, $cuotas_pagadas);  
 
                             $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                             $item['saldo'] = number_format($item->saldo, 2, '.', '');
@@ -111,12 +111,13 @@ class CobradorMovilController extends Controller {
                             $item['cantidad_cuotas_pagadas'] = $cuotas_pagadas; 
                             $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
                             $item['cuotas_atrasadas'] = $cuotas_atrasadas;
+                            $item['estado_morosidad'] = $this->getArrearsStatusForDays($cuotas_atrasadas);
                             $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
                             $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
                             $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                             $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                             $totalacobrar = $totalacobrar + $item->cuota_diaria;
-                            switch ($item->plan->tipo) {
+                            switch ($item->planes->tipo) {
                                 case (0) : 
                                     $item['tipo_plan'] = "Diario";
                                     break;

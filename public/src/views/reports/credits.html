@@ -130,6 +130,15 @@
 											</div>
 										</th>
 										<th>
+											Fecha de creación
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+										<th>
 											Fecha de inicio
 											<div class="th">
 												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
@@ -157,6 +166,7 @@
 										</td>
 										<td>Q. {{ data.montos.monto | number: "2"}}</td>
 										<td>{{ data.planes.descripcion }}</td>
+										<td>{{ data.fecha_creacion }}</td>
 										<td>{{ data.fecha_inicio }}</td>
 										<td>{{ data.usuariocobrador.nombre }}</td>
 									</tr>
