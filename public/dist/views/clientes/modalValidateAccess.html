@@ -1,14 +1,15 @@
 <div class="modal-style">
 	<div class="modal-header clearfix">
-		<h4 class="modal-title">Eliminar crédito</h4>
+		<h4 class="modal-title">Validación de password de autorización</h4>
 		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
 	</div>
 	<div class="modal-body">
 		<form class="form-horizontal" name="form" action="javascript:;" novalidate>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Ingrese la contraseña de eliminación para poceder: </label>
-					<input type="password" class="form-control" ng-model="item.password" id="password" required>
+					<label ng-if = "tipoMessage == 1">Ingrese la contraseña del usuario autorizado para proceder a <strong>evular la morosidad</strong> </label>
+					<label ng-if = "tipoMessage == 2">Ingrese la contraseña del usuario autorizado para proceder a <strong>eliminar el crédito</strong> </label>
+					<input type="password" class="form-control" ng-model="item.password" id="password" required focus>
 				</div>
 			</div>
 
@@ -25,7 +26,7 @@
 			<div class="row form-group">
 				<div class="col-sm-12 text-right">
 					<button class="btn btn-info" ng-click="modalClose()">Cancelar</button>
-					<button class="btn btn-danger" ng-click="validatePassword(item)" ng-disabled="form.$invalid">Confirmar</button>
+					<button class="btn btn-danger" ng-click="validatePassword(item, tipoMessage)" ng-disabled="form.$invalid">Confirmar</button>
 				</div>
 			</div>
 		</form>

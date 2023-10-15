@@ -53,15 +53,43 @@
 							</div>
 						</div>
 						<div class="row">
-								<div class="form-horizontal">
-									<div class="form-group">
-										<label class="col-md-1 control-label">Plan de Préstamo:</label>
-										<div class="col-md-5">
-											<input type="text" class="form-control" ng-model="detalle_cliente.plan_prestamo" disabled>
-										</div>
+							<div class="form-horizontal">
+								<div class="form-group">
+									<label class="col-md-1 control-label">Plan de Préstamo:</label>
+									<div class="col-md-5">
+										<input type="text" class="form-control" ng-model="detalle_cliente.plan_prestamo" disabled>
 									</div>
 								</div>
 							</div>
+						</div>
+						<div class="row">
+							<div class="form-horizontal">
+								<div class="form-group">
+									<label class="col-md-1 control-label">Cuotas atrasadas:</label>
+									<div class="col-md-5">
+										<input type="text" class="form-control" ng-model="credito.cuotas_atrasadas" disabled>
+									</div>
+									<div ng-show="credito.estado_morosidad == 'Excelente'" style="display: flex; align-items: bottom;">
+										<label class="col-md-4 control-label">Estado crédito:</label>
+										<span class="col-md-4 label label-success" style="display: flex;align-items: center;">
+											<b>{{credito.estado_morosidad.toUpperCase()}}</b>
+										</span>
+									</div>
+									<div ng-show="credito.estado_morosidad == 'Bueno'" style="display: flex; align-items: bottom;">
+										<label class="col-md-4 control-label">Estado crédito:</label>
+										<span class="col-md-4 label label-warning" style="display: flex;align-items: center;">
+											<b>{{credito.estado_morosidad.toUpperCase()}}</b>
+										</span>
+									</div>
+									<div ng-show="credito.estado_morosidad == 'Moroso'" style="display: flex; align-items: bottom;">
+										<label class="col-md-4 control-label">Estado crédito:</label>
+										<span class="col-md-4 label label-danger" style="display: flex;align-items: center;">
+											<b>{{credito.estado_morosidad.toUpperCase()}}</b>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
 						<br>
 						<br>
 						<div class="row">

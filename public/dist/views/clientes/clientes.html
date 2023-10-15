@@ -168,14 +168,17 @@
 								<td>{{ data.direccion }}</td>
 								<td>{{ data.dpi }}</td>
 								<td>{{ data.telefono }}</td>
-								<td ng-if="data.statusCredit == 1">Sin crédito</td>
-								<td ng-if="data.statusCredit == 2">Crédito(s) pendiente(s)</td>
-								<td ng-if="data.statusCredit == 3">Crédito(s) completado(s)</td>							
-								<td ng-if="data.statusCredit == 4">Cliente eliminado</td>
-								<td>{{data.totalCredits}}</td>
+								<td>
+									<label ng-if="data.arrearsStatus == 'Excelente'" class="label label-success mr5">{{data.arrearsStatus}}</label>
+									<label ng-if="data.arrearsStatus == 'Bueno'" class="label label-warning mr5">{{data.arrearsStatus}}</label>
+									<label ng-if="data.arrearsStatus == 'Moroso'" class="label label-danger mr5">{{data.arrearsStatus}}</label>
+								</td>
+								<td ng-if="data.statusCredit == 1" style="text-align: center;">Sin crédito</td>
+								<td ng-if="data.statusCredit == 2" style="text-align: center;">Pendientes:  <strong>{{data.totalCreditsActive}}</strong></td>
+								<td ng-if="data.statusCredit == 3" style="text-align: center;">Completados: <strong>{{data.totalCredits - data.totalCreditsActive}}</strong></td>							
+								<td ng-if="data.statusCredit == 4" style="text-align: center;">Cliente eliminado</td>
 								<!--<td>
 									<label ng-if="data.categoria == 'A'" class="label label-success mr5">A</label>
-									<label ng-if="data.categoria == 'B'" class="label label-info mr5">B</label>
 									<label ng-if="data.categoria == 'C'" class="label label-warning mr5">C</label>
 									<label ng-if="data.categoria == 'D'" class="label label-danger mr5">D</label>
 								</td>-->

@@ -1,208 +1,495 @@
 <div class="page">
-	<div class="page-wrap">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="panel panel-default panel-hovered panel-stacked mb20">
-					<div class="panel-heading"><h4>Detalle del crédito(s) de: <strong>{{nombre_completo}}</strong></h4></div>
-					<div class="panel-body">					
-						<div class="row">
-							<div class="form-horizontal">
-								<div class="form-group">
+    <div class="page-wrap">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default panel-hovered panel-stacked mb20">
+                    <div class="panel-heading">
+                        <h4>
+                            Detalle del crédito(s) de:
+                            <strong>{{nombre_completo}}</strong>
+                            <label ng-if="arrearsStatus == 'Excelente'" class="label label-success mr5" style="margin-left: 1em;">{{arrearsStatus}}</label>
+                            <label ng-if="arrearsStatus == 'Bueno'" class="label label-warning mr5" style="margin-left: 1em;">{{arrearsStatus}}</label>
+                            <label ng-if="arrearsStatus == 'Moroso'" class="label label-danger mr5" style="margin-left: 1em;">{{arrearsStatus}}</label>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">PDI:</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="dpi"
+                                            disabled
+                                        />
+                                    </div>
 
-									<label class="col-md-2 control-label">PDI:</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" ng-model="dpi" disabled>
-									</div>
+                                    <label class="col-md-2 control-label">Teléfono:</label>
+                                    <div class="col-md-3">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="telefono"
+                                            disabled
+                                        />
+                                    </div>
 
-									<label class="col-md-2 control-label">Teléfono:</label>
-									<div class="col-md-3">
-										<input type="text" class="form-control" ng-model="telefono" disabled>
-									</div>
+                                    <br />
+                                    <br />
 
-									<br>
-									<br>
+                                    <label class="col-md-2 control-label">Género:</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="sexo"
+                                            disabled
+                                        />
+                                    </div>
 
-									<label class="col-md-2 control-label">Género:</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" ng-model="sexo" disabled>
-									</div>
-									
-									<label class="col-md-2 control-label">Estado civil:</label>
-									<div class="col-md-3">
-										<input type="text" class="form-control" ng-model="estado_civil" disabled>
-									</div>
+                                    <label class="col-md-2 control-label">Estado civil:</label>
+                                    <div class="col-md-3">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="estado_civil"
+                                            disabled
+                                        />
+                                    </div>
 
-									<br>
-									<br>
+                                    <br />
+                                    <br />
 
-									<label class="col-md-2 control-label">Dirección:</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" ng-model="direccion" disabled>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="panel-heading"><h4>Crédito(s) otorgado(s)</h4></div>
-					<div class="panel-body">
-						<div ng-show="showInputSelect">							
-							<div class="panel-body">
-								<div class="row">
-									<div class="form-horizontal">
-										<div class="form-group">
-											<label class="col-md-2 control-label">Creditos:</label>
-											<div class="col-md-4">								
-												<select class="form-control" 
-														ng-model="itemCredit"  
-														ng-options="item as (
+                                    <label class="col-md-2 control-label">Dirección:</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="direccion"
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-heading">
+                        <h4>Crédito(s) otorgado(s): <span style="margin-left: 1em"><strong>{{cantidadCreditos}}</strong></span></h4>
+                    </div>
+                    <div class="panel-body">
+                        <div ng-show="showInputSelect">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">Creditos:</label>
+                                            <div class="col-md-4">
+                                                <select
+                                                    class="form-control"
+                                                    ng-model="itemCredit"
+                                                    ng-options="item as (
 															item.planes.descripcion + 
 															' - Q.' + 
 															item.montos.monto + 
 															'\n\n(' + 
 															item.statusText +
 															') ') 
-															for item in listCredito" 
-														ng-change="creditSelected(itemCredit)">
-												</select>							
-											</div>
-											<div style="display: flex; align-items: center;">
-												<div style="margin-right: 2em;">
-													<h4><span ng-if="status_credit == 1" class="label label-success">CRÉDITO ACTIVO</span></h4>
-													<h4><span ng-if="status_credit == 0" class="label label-info">CRÉDITO COMPLETADO</span></h4>
-													<h4><span ng-if="status_credit == 2" class="label label-danger">CRÉDITO ELIMINADO</span></h4>	
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-						<div class="form-horizontal">
-							<div class="form-group">
+															for item in listCredito"
+                                                    ng-change="creditSelected(itemCredit)"
+                                                ></select>
+                                            </div>
+                                            <div
+                                                style="
+                                                    display: flex;
+                                                    align-items: center;
+                                                "
+                                            >
+                                                <div style="margin-right: 2em">
+                                                    <h4>
+                                                        <span
+                                                            ng-if="status_credit == 1"
+                                                            class="label label-success">
+															CRÉDITO ACTIVO
+														</span>
+                                                    </h4>
+                                                    <h4>
+                                                        <span
+                                                            ng-if="status_credit == 0"
+                                                            class="label label-info">
+															CRÉDITO COMPLETADO
+														</span>
+                                                    </h4>
+                                                    <h4>
+                                                        <span
+                                                            ng-if="status_credit == 2"
+                                                            class="label label-danger">
+															CRÉDITO ELIMINADO
+														</span>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">
+										Estado de morosidad:
+									</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="credit_arrears_status"
+                                            disabled/>
+                                    </div>
 
-								<label class="col-md-2 control-label">Plan:</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" ng-model="plan.descripcion" disabled>
-								</div>
+                                    <br />
+                                    <br />
 
-								<label class="col-md-2 control-label">Monto total:</label>
-								<div class="col-md-3">
-									<input type="text" class="form-control" ng-model="monto_total" disabled>
-								</div>
+                                    <label class="col-md-2 control-label">
+										Plan:
+									</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="plan.descripcion"
+                                            disabled/>
+                                    </div>
 
-								<br>
-								<br>
+                                    <label class="col-md-2 control-label">
+										Monto total:
+									</label>
+                                    <div class="col-md-3">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="monto_total"
+                                            disabled/>
+                                    </div>
 
-								<label class="col-md-2 control-label">Fecha de inicio:</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" ng-model="fecha_inicio" disabled>
-								</div>
-								<label class="col-md-2 control-label">Fecha de Finalización:</label>
-								<div class="col-md-3">
-									<input type="text" class="form-control" ng-model="fecha_fin" disabled>
-								</div>
+                                    <br />
+                                    <br />
 
-								<br>
-								<br>
+                                    <label class="col-md-2 control-label">
+										Fecha de inicio:
+									</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="fecha_inicio"
+                                            disabled
+                                        />
+                                    </div>
+                                    <label class="col-md-2 control-label">
+										Fecha sugerida finalización:
+									</label>
+                                    <div class="col-md-3">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="fecha_fin"
+                                            disabled
+                                        />
+                                    </div>
 
-								<label class="col-md-2 control-label">Cobrador:</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" ng-model="cobrador" disabled>
-								</div>
-								<label ng-if="plan.tipo == 1 || plan.tipo == undefined"class="col-md-2 control-label">Cuota diaria:</label>
-								<label ng-if="plan.tipo == 2" class="col-md-2 control-label">Cuota semanal:</label>
-								<label ng-if="plan.tipo == 3" class="col-md-2 control-label">Cuota mensual:</label>
-								<div class="col-md-3">
-									<input type="text" class="form-control" ng-model="cuota_diaria" disabled>
-								</div>
+                                    <div ng-if="status_credit == 0">
+                                        <br />
+                                        <br />
+                                        <label class="col-md-2 control-label">
+                                        </label>
+                                        <div class="col-md-4">
+                                        </div>
+                                        <label class="col-md-2 control-label">
+                                            Fecha último pago realizado:
+                                        </label>
+                                        <div class="col-md-3">
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                ng-model="fecha_finalizado"
+                                                disabled
+                                            />
+                                        </div>
+                                    </div>
 
-							</div>
-						</div>
-						</div>
-						<br>						
-						<span class="clearfix"></span>
-						<div class="row">						
-						<div class="col-md-2 col-md-offset-3">
-							<div class="panel panel-default mb20 mini-box panel-hovered">
-								<div class="panel-body">
-									<div class="clearfix">
-										<div class="info left">
-											<h3 class="mt0 text-danger text-bold">{{saldo_pendiente}}</h3>
-										</div>
-									</div>
-								</div>
-								<div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
-									<p class="mt0 mb0 left">Monto pendiente a cancelar</p>
-								</div>
-							</div>
-						</div>
+                                    <br />
+                                    <br />
 
-						<div class="col-md-2">
-							<div class="panel panel-default mb20 mini-box panel-hovered">
-								<div class="panel-body">
-									<div class="clearfix">
-										<div class="info left">
-											<h3 class="mt0 text-success text-bold">{{total_cancelado}}</h3>
-										</div>
-									</div>
-								</div>
-								<div class="panel-footer clearfix panel-footer-sm panel-footer-success">
-									<p class="mt0 mb0 left">Monto cancelado</p>
-								</div>
-							</div>
-						</div>
+                                    <label class="col-md-2 control-label">
+										Cobrador:
+									</label>
+                                    <div class="col-md-4">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="cobrador"
+                                            disabled
+                                        />
+                                    </div>
+                                    <label
+                                        ng-if="plan.tipo == 1 || plan.tipo == undefined || plan.tipo == 0"
+                                        class="col-md-2 control-label">
+										Cuota diaria:
+									</label>
+                                    <label
+                                        ng-if="plan.tipo == 2"
+                                        class="col-md-2 control-label">
+										Cuota semanal:
+									</label>
+                                    <label
+                                        ng-if="plan.tipo == 3"
+                                        class="col-md-2 control-label">
+										Cuota mensual:
+									</label>
+                                    <div class="col-md-3">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            ng-model="cuota_diaria"
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <span class="clearfix"></span>
+                        <div class="row">
+                            <div class="col-md-2 col-md-offset-2">
+                                <div class="panel panel-default mb20 mini-box panel-hovered">
+                                    <div class="panel-body">
+                                        <div class="clearfix">
+                                            <div class="info left">
+                                                <h3 class="mt0 text-danger text-bold">
+                                                    {{saldo_pendiente}}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
+                                        <p class="mt0 mb0 left">
+                                            <strong>Monto pendiente a cancelar</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- REGION DIAS ATRASASO -->
+							<div class="col-md-2">
+                                <div ng-if="credit_arrears_status == 'Excelente'">
+                                    <div class="panel panel-default mb20 mini-box panel-hovered">
+                                        <div class="panel-body">
+                                            <div class="clearfix">
+                                                <div class="info left">
+                                                    <h3 class="mt0 text-success text-bold">
+                                                        {{cuotas_atrasadas}}
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+                                            <p class="mt0 mb0 left">
+                                                <strong>Días Atrasados</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-if="credit_arrears_status == 'Bueno'">
+                                    <div class="panel panel-default mb20 mini-box panel-hovered">
+                                        <div class="panel-body">
+                                            <div class="clearfix">
+                                                <div class="info left">
+                                                    <h3 class="mt0 text-warning text-bold">
+                                                        {{cuotas_atrasadas}}
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer clearfix panel-footer-sm panel-footer-warning">
+                                            <p class="mt0 mb0 left">
+                                                <strong>Días Atrasados</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-if="credit_arrears_status == 'Moroso'">
+                                    <div class="panel panel-default mb20 mini-box panel-hovered">
+                                        <div class="panel-body">
+                                            <div class="clearfix">
+                                                <div class="info left">
+                                                    <h3 class="mt0 text-pink text-bold">
+                                                        {{cuotas_atrasadas}}
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer clearfix panel-footer-sm panel-footer-pink">
+                                            <p class="mt0 mb0 left">
+                                                <strong>Días Atrasados</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-						<div class="col-md-2">
-							<div class="panel panel-default mb20 mini-box panel-hovered">
-								<div class="panel-body">
-									<div class="clearfix">
-										<div class="info left">
-											<h3 class="mt0 text-info text-bold">{{cuotas_pagadas}}</h3>
-										</div>
-									</div>
-								</div>
-								<div class="panel-footer clearfix panel-footer-sm panel-footer-info">
-									<p class="mt0 mb0 left">Cuotas pagadas</p>
-								</div>
-							</div>
-						</div>							
-						</div>
-						<br>
-						<br>
-						<div class="row">
-						<div class="col-md-1"></div>
-							<div class="col-md-10">
-								<progressbar class="progress-striped" value="porcentaje" type="success">{{porcentaje}}%</progressbar>
-								<!-- <progressbar class="progress-striped" ng-model="cliente.porcentaje" type="primary">{{cliente.porcentaje}}</progressbar> -->
-							</div>
-						</div>
-						<br>
-						<div class="col-md-12" ng-show="status_credit == 2">
-							<div class="alert alert-danger text-center">
-								<div><h5><strong>Motivo de la eliminación: </strong>{{reasonForDeleted}}</h5></div>						
-							</div>
-						</div>
-						<br>	
-						<div class="row">			
-							<div class="col-sm-12 text-center" ng-show="status_credit == 1">
-								<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
-								<button type="button" class="btn btn-danger btn-rounded" ng-click="modalOpen('views/clientes/modalPasswordDelete.html')"><strong>ELIMINAR CRÉDITO</strong></button>
-								<button style="margin-left: 2em;" type="button" class="btn btn-success btn-rounded" ng-click="modalHistoryOpen(id)"><strong>VER HISTORIAL</strong></button>
-								<a style="margin-left: 2em;" type="button" class="btn btn-info btn-rounded" href="#/abonos?name={{nombre}}&lastname={{apellido}}"><strong>ABONAR CUOTAS</strong></a>
-								<!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
-							</div>
-						</div>
-						<br>
-						<br>
-					</div>				
-				</div>	
-			</div>
-		</div>
-		<div class="toast toast-{{positionModel}}">
-			<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
-				<div ng-bind-html="toast.msg"></div>
-			</alert>
-		</div>
-	</div> <!-- #end page-wrap -->
+                            <!-- END REGION -->
+
+                            <div class="col-md-2">
+                                <div class="panel panel-default mb20 mini-box panel-hovered">
+                                    <div class="panel-body">
+                                        <div class="clearfix">
+                                            <div class="info left">
+                                                <h3 class="mt0 text-success text-bold">
+                                                    {{total_cancelado}}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+                                        <p class="mt0 mb0 left">
+                                            <strong>Monto cancelado</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+							<div class="col-md-2">
+                                <div class="panel panel-default mb20 mini-box panel-hovered">
+                                    <div class="panel-body">
+                                        <div class="clearfix">
+                                            <div class="info left">
+                                                <h3 class="mt0 text-info text-bold">
+                                                    {{cuotas_pagadas}}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer clearfix panel-footer-sm panel-footer-info">
+                                        <p class="mt0 mb0 left">
+                                            <strong>Cuotas pagadas</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <progressbar
+                                    class="progress-striped"
+                                    value="porcentaje"
+                                    type="success">
+									{{porcentaje}}%
+								</progressbar>
+                                <!-- <progressbar class="progress-striped" ng-model="cliente.porcentaje" type="primary">{{cliente.porcentaje}}</progressbar> -->
+                            </div>
+                        </div>
+                        <br />
+                        <div class="col-md-12" ng-show="status_credit == 2">
+                            <div class="alert alert-danger text-center">
+                                <div>
+                                    <h5>
+                                        <strong>
+											Motivo de la eliminación: 
+										</strong>
+										{{reasonForDeleted}}
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12" ng-show="status_credit == 0 && comentario_morosidad != ''">
+                            <div class="alert alert-info text-center">
+                                <div>
+                                    <h5>
+                                        <div>
+                                            <strong>ESTE CRÉDITO YA CUENTA CON UNA ACTUALIZACIÓN DE MOROSIDAD </strong>
+                                        </div>
+                                        <br>
+                                        <div>
+                                            Fecha de evaluación: <strong>{{fecha_evalucion_morosidad}}</strong>
+                                        </div>
+                                        <div>
+                                            Razón de actualización: <strong>{{comentario_morosidad}}</strong>
+                                        </div>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div
+                                class="col-sm-12 text-center"
+                                ng-show="status_credit == 1">
+                                <!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
+                                <a
+                                    type="button"
+                                    class="btn btn-primary btn-rounded"
+                                    href="#/abonos?name={{nombre}}&lastname={{apellido}}">
+									<strong>
+										ABONAR CUOTAS
+									</strong>
+								</a>
+                                <button
+                                    style="margin-left: 1em"
+                                    type="button"
+                                    class="btn btn-success btn-rounded"
+                                    ng-click="modalHistoryOpen(id)">
+                                    <strong>VER HISTORIAL</strong>
+                                </button>
+                                <button
+                                    style="margin-left: 1em"
+                                    type="button"
+                                    class="btn btn-danger btn-rounded"
+                                    ng-click="modalValidateAccessOpen(2)">
+                                    <strong>ELIMINAR CRÉDITO</strong>
+                                </button>
+                                <!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
+                            </div>
+                            <div
+                                class="col-sm-12 text-center"
+                                ng-show="status_credit == 0">
+                                <!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Imprimir estado de cuenta</a>-->
+                                <button
+                                    style="margin-left: 1em"
+                                    type="button"
+                                    class="btn btn-success btn-rounded"
+                                    ng-click="modalHistoryOpen(id)">
+                                    <strong>VER HISTORIAL</strong>
+                                </button>
+                                <button
+                                    style="margin-left: 1em"
+                                    type="button"
+                                    class="btn btn-info btn-rounded"
+                                    ng-click="modalValidateAccessOpen(1)">
+                                    <strong>EVALUAR MOROSIDAD</strong>
+                                </button>
+                                <!--<a type="button" class="btn btn-success btn-rounded" href="#/clientes">Renovar crédito</a>-->
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toast toast-{{positionModel}}">
+            <alert
+                ng-repeat="toast in toasts"
+                type="{{toast.type}}"
+                close="closeAlert($index)"
+                class="toast-{{toast.anim}}">
+                <div ng-bind-html="toast.msg"></div>
+            </alert>
+        </div>
+    </div>
+    <!-- #end page-wrap -->
 </div>

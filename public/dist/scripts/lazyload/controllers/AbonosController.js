@@ -81,6 +81,8 @@
         $scope.credito.saldo_abonado = "Q. " + parseFloat(credit.saldo_abonado).toFixed(2) 
         $scope.credito.cuotas_pagados = credit.cuotas_pagados             
         $scope.dailyFee = credit.cuota_diaria
+        $scope.credito.cuotas_atrasadas = credit.cuotas_atrasadas
+        $scope.credito.estado_morosidad = credit.estado_morosidad
       }
 
       if ($routeParams) {  
@@ -144,7 +146,8 @@
         if (cantidadAbonada != '' && parseFloat(cantidadAbonada) > 0) {
           var datos = {
             idcredito: $scope.detalle_cliente.credit_id,
-            abono: cantidadAbonada
+            abono: cantidadAbonada,
+            origen: 1
           };
           $http({
             method: 'POST',

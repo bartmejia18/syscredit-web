@@ -4,7 +4,7 @@
 
 	angular.module("app.historypayment", ["app.constants", 'app.service.historypayment'])
 
-	.controller("HistoryPaymentController", ["$scope", "$filter", "$http", "$modal", "$interval", 'historyPaymentService', "API_URL", function($scope, $filter, $http, $modal, $timeout, historyPaymentService, API_URL)  {	
+	.controller("HistoryPaymentController", ["$scope", "$filter", "$modal", "$interval", 'historyPaymentService', function($scope, $filter, $modal, $timeout, historyPaymentService)  {	
 		
 		$scope.datas = Array();
 		$scope.date = "";
@@ -22,7 +22,7 @@
 		var showPanelPayments = false;
 		var collectorSelected = {};
 
-		$scope.existhistory = function(){
+		$scope.existhistory = function() {
 			return showPanelPayments;
 		}
 		
@@ -30,7 +30,7 @@
 		userCollector();
 
 		function userCollector(){
-			if ($scope.usuario.tipo_usuarios_id == 4){
+			if ($scope.usuario.tipo_usuarios_id == 4) {
 				showPanelPayments = true;
 			}
 		}
@@ -52,6 +52,7 @@
 		function loadPayments(collectorId, selectedDate) {
 			historyPaymentService.historylist(collectorId, selectedDate)
 				.then(function successCallback(response){	
+					console.log(response)
 					$scope.datas = response.data.records;
 					$scope.search();
 					$scope.select($scope.currentPage);
@@ -63,8 +64,8 @@
 			collectorSelected = collector;
 		}
 
-		$scope.findRecords = function(){
-			if($("#fechainicio").val() != ""){
+		$scope.findRecords = function () {
+			if ($("#fechainicio").val() != "") {
 				var selectedDate = $("#fechainicio").val()
 				var collectorId = $scope.usuario.tipo_usuarios_id == 4 ? $scope.usuario.id : collectorSelected.id
 				loadPayments(collectorId, selectedDate)
@@ -75,7 +76,7 @@
 			if ($scope.accion == 'eliminar') {	
 				historyPaymentService.deleteHistory(record.id)			
 					.then(function successCallback(response) {
-						if( response.data.result ) {
+						if (response.data.result) {
 							
 							var selectedDate = $("#fechainicio").val()
 							var collectorId = collectorSelected.id
@@ -84,8 +85,7 @@
 							modal.close();
 							$scope.createToast("success", "<strong>Éxito: </strong>"+response.data.message);
 							$timeout( function(){ $scope.closeAlert(0); }, 3000);
-						}
-						else {
+						} else {
 							modal.close();
 							$scope.createToast("danger", "<strong>Error: </strong>"+response.data.message);
 							$timeout( function(){ $scope.closeAlert(0); }, 5000);	
