@@ -61,9 +61,9 @@ trait detailsCreditsTrait {
                     $arrearsStatus['excelente'] += 1;
                 }
             } else {
-                if ($item->cuotas_atrasadas > 3) {
+                if ($item->cuotas_atrasadas > 9) {
                     $arrearsStatus['moroso'] += 1;
-                } else if ($item->cuotas_atrasadas >= 1 && $item->cuotas_atrasadas <= 3 ) {
+                } else if ($item->cuotas_atrasadas >= 4 && $item->cuotas_atrasadas <= 9 ) {
                         $arrearsStatus['bueno'] += 1;
                 } else {
                         $arrearsStatus['excelente'] += 1;
@@ -131,9 +131,9 @@ trait detailsCreditsTrait {
     }
 
     public function getArrearsStatusForDays($days) {
-        if ($days > 3) {
+        if ($days > 9) {
             return 'Moroso';
-        } else if ($days >= 1 && $days <= 3) {
+        } else if ($days >= 4 && $days <= 9) {
             return 'Bueno';
         } else {
             return 'Excelente';

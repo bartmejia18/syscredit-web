@@ -73,7 +73,7 @@ class CobradorMovilController extends Controller {
                                                 ->where('fecha_inicio', '<=', $hoy)                             
                                                 ->get();
 
-                    $filteredCredits = $activeCredits->filter(function ($item) use ($hoy) {
+                    /*$filteredCredits = $activeCredits->filter(function ($item) use ($hoy) {
                         $currentDate = Carbon::now();
                         $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
                         $diffDays = $currentDate->diffInDays($dateFirstPay);
@@ -91,13 +91,13 @@ class CobradorMovilController extends Controller {
                                 return $diffDays % 1 == 0;
                                 break;
                         }
-                    })->values();
+                    })->values();*/
 
-                    if ($filteredCredits->count() > 0) {    
+                    if ($activeCredits->count() > 0) {    
                         $totalacobrar = 0;
                         $totalminimocobrar = 0;
 
-                        foreach ($filteredCredits as $item) { 
+                        foreach ($activeCredits as $item) { 
                             $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
                             $cuotas_atrasadas = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrears($item, $cuotas_pagadas);  
 
@@ -140,7 +140,7 @@ class CobradorMovilController extends Controller {
                         $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
                         $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');     
                         $datos['total_cobrado'] = number_format($this->getTotalPaymentCollector($request->input('idusuario'), $hoy), 2, '.', ',');                         
-                        $datos['registros'] = $filteredCredits;
+                        $datos['registros'] = $activeCredits;
 
                         $this->statusCode   = 200;
                         $this->result       = true;

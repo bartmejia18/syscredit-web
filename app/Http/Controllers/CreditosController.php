@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\AtrasosCreditos;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -78,8 +77,9 @@ class CreditosController extends Controller
                                                     'deudatotal'            => $request->input('deudatotal'),
                                                     'cuota_diaria'          => $request->input('cuota_diaria'),
                                                     'cuota_minima'          => $request->input('cuota_minima'),
-                                                    'fecha_inicio'          => \Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
-                                                    'fecha_fin'             => \Carbon\Carbon::parse($lastDate)->format('Y-m-d'),
+                                                    'cuotas_atrasadas'      => 0,
+                                                    'fecha_inicio'          => Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
+                                                    'fecha_fin'             => Carbon::parse($lastDate)->format('Y-m-d'),
                                                     'estado'                => 1,
                                                 ]);
 
@@ -181,6 +181,7 @@ class CreditosController extends Controller
                         $detallePagos->credito_id = $credito->id;
                         $detallePagos->fecha_pago = Carbon::parse(date('Y-m-d'));
                         $detallePagos->abono = $request->input('abono');
+                        $detallePagos->origen = $request->input('origen');
                         $detallePagos->estado = 1;                        
                     }
                 } else {
@@ -191,6 +192,7 @@ class CreditosController extends Controller
                         $detallePagos->credito_id = $credito->id;
                         $detallePagos->fecha_pago = Carbon::parse(date('Y-m-d'));
                         $detallePagos->abono = $request->input('abono');
+                        $detallePagos->origen = $request->input('origen');
                         $detallePagos->estado = 1;
                     }
                 }

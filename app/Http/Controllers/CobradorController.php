@@ -155,7 +155,7 @@ class CobradorController extends Controller {
             $registros = $registros->merge($registroExtra);
         }
 
-        if ($registros->count() > 0 ) {
+        /*if ($registros->count() > 0 ) {
             $recordsFilters = $registros->filter(function ($record) use ($request) {
                 $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
                 $dateFirstPay = Carbon::createFromFormat('Y-m-d', $record->fecha_inicio);
@@ -172,8 +172,8 @@ class CobradorController extends Controller {
                         break;
                 }
             })->values();
-        }
-        return $recordsFilters;
+        }*/
+        return $registros;
     }
 } 
 

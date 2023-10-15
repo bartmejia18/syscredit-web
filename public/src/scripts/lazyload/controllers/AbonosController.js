@@ -146,7 +146,8 @@
         if (cantidadAbonada != '' && parseFloat(cantidadAbonada) > 0) {
           var datos = {
             idcredito: $scope.detalle_cliente.credit_id,
-            abono: cantidadAbonada
+            abono: cantidadAbonada,
+            origen: 1
           };
           $http({
             method: 'POST',
