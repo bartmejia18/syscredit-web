@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\CreditosEliminados;
 use App\Creditos;
+use Illuminate\Support\Facades\DB;
 
 class CreditosEliminadosController extends Controller
 {
@@ -30,16 +30,17 @@ class CreditosEliminadosController extends Controller
                 $credit->estado = 2;
                 
                 if ($credit->save()) {
-                    $nuevoRegistro = \DB::transaction(function() use ($request){
+                    $nuevoRegistro = DB::transaction(function() use ($request){
                         $nuevoRegistro = CreditosEliminados::create([
                             'credito_id'   =>  $request->input("creditoid"),
                             'motivo'     =>  $request->input("motivo"),
                         ]);
 
-                        if ( !$nuevoRegistro )
+                        if (!$nuevoRegistro) {
                             throw new \Exception("Ocurrió un error al crear el registro");
-                        else
+                        } else {
                             return $nuevoRegistro;
+                        }
                     });  
                 }
 
@@ -51,7 +52,6 @@ class CreditosEliminadosController extends Controller
             } else {
                 throw new \Exception("No se encontró información del crédito.");
             }
-
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
@@ -62,7 +62,6 @@ class CreditosEliminadosController extends Controller
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }

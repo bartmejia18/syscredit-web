@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Session;
 use App\Http\Traits\reportsTrait;
-use App\Creditos;
+use Carbon\Carbon;
 
 class ReportsController extends Controller
 {
@@ -109,6 +107,8 @@ class ReportsController extends Controller
             $this->result       = true;
             $this->message      = "Registros consultados exitosamente";
             $this->records      = $this->getCredits($request);
+
+
         } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
@@ -139,8 +139,8 @@ class ReportsController extends Controller
                 break;
         }
 
-        $datos->fecha_inicio = \Carbon\Carbon::parse($request->input('dateInit'))->format('d-m-Y');
-        $datos->fecha_fin = \Carbon\Carbon::parse($request->input('dateFinal'))->format('d-m-Y');
+        $datos->fecha_inicio = Carbon::parse($request->input('dateInit'))->format('d-m-Y');
+        $datos->fecha_fin = Carbon::parse($request->input('dateFinal'))->format('d-m-Y');
         $datos->credits = $this->getCredits($request);
 
         $today = \Carbon\Carbon::parse(\Carbon\Carbon::now())->format('d-m-Y');

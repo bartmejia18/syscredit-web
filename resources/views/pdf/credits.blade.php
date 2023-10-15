@@ -40,14 +40,14 @@
         }
         td.td-payment{            
             border: 1px solid black;
-            font-size: 13px;
+            font-size: 11px;
             height: 15px;
             text-align: center;
         }
         td.td-name-customer{
             border: 1px solid black;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
         }
         table.table-resumen{
 			font-family: 'Roboto', sans-serif;
@@ -86,6 +86,7 @@
 					<th class="head-column" width="40%">Nombre cliente</th>
 					<th class="head-column" width="12%">Monto</th>
 					<th class="head-column" width="12%">Plan</th>
+					<th class="head-column" width="12%">Fecha crecación</th>		
 					<th class="head-column" width="12%">Fecha de inicio</th>		
                     <th class="head-column" width="20%">Cobrador</th>				
 				</tr>
@@ -98,6 +99,7 @@
                     <td class="td-name-customer">{!! $item->cliente->nombre." ".$item->cliente->apellido !!}</td>
                     <td class="td-payment">Q. {!! number_format((float)($item->montos->monto), 2, '.', '') !!}</td>
 					<td class="td-payment">{!! $item->planes->descripcion !!}</td>
+					<td class="td-payment">{!! $item->fecha_creacion !!}</td>
 					<td class="td-payment">{!! $item->fecha_inicio !!}</td>
                     <td class="td-payment">{!! $item->usuariocobrador->nombre !!}</td>
                 </tr>	
@@ -106,7 +108,7 @@
                     <td class="td-payment" colspan="1"></td>
                     <td class="td-payment" style="text-align: right;">Total: </td>
                     <td class="td-payment" style="background-color:#8FCFF9">Q. {!! number_format((float)($data->credits->sumAmountCredits), 2, '.', '') !!}</td>
-                    <td class="td-payment" colspan="3"></td>
+                    <td class="td-payment" colspan="4"></td>
                 </tr>
 			</tbody>
 		</table>

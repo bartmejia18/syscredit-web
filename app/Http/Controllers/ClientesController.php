@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Clientes;
 use App\Creditos;
-use App\DetallePagos;
 use App\Usuarios;
-use DB;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCreditsTrait;
+use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller {
     public $statusCode  = 200;
@@ -40,15 +38,18 @@ class ClientesController extends Controller {
             
             if ($registros) {
                 $registros->map(function ($item, $key){   
-                    if($item->status == 1){
+                    if ($item->status == 1) {
                         $detailCredits = $this->getStatusCredits($item->id);
                         $item->statusCredit = $detailCredits->status;
-                        $item->totalCredits = $detailCredits->total;
+                        $item->totalCreditsActive = $detailCredits->creditsActives;
+                        $item->totalCredits = $detailCredits->totalCredits;
                         $item->collector = $detailCredits->collector;
+                        $item->arrearsStatus = $detailCredits->arrearsStatus;
                     } else {
                         $item->statusCredit = 4;
                         $item->totalCredits = 0;
                         $item->collector = 0;
+                        $item->arrearsStatus = "";
                     }
                     return $item;
                 });
@@ -57,8 +58,9 @@ class ClientesController extends Controller {
                 $this->result       = true;
                 $this->message      = "Registros consultados exitosamente";
                 $this->records      = $registros;
-            } else
+            } else {
                 throw new \Exception("No se encontraron registros");
+            }
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
@@ -77,7 +79,7 @@ class ClientesController extends Controller {
     
     public function store(Request $request){
         try {
-            $nuevoRegistro = \DB::transaction( function() use ($request) {
+            $nuevoRegistro = DB::transaction(function() use ($request) {
                                 $nuevoRegistro = Clientes::create([
                                                     'sucursal_id'   => $request->session()->get($this->sessionKey)->sucursales_id,
                                                     'nombre'        => $request->input('nombre'),
@@ -92,10 +94,11 @@ class ClientesController extends Controller {
                                                     'status'        => 1
                                                 ]);
 
-                                if( !$nuevoRegistro )
+                                if (!$nuevoRegistro) {
                                     throw new \Exception("No se pudo crear el registro");
-                                else
+                                } else {
                                     return $nuevoRegistro;
+                                }
                             });
 
             $this->statusCode   = 200;
@@ -107,8 +110,7 @@ class ClientesController extends Controller {
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al crear el registro";
-        }
-        finally{
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
@@ -122,28 +124,24 @@ class ClientesController extends Controller {
         try {
             $registro = Clientes::find( $id );
 
-            if( $registro ){
+            if ($registro) {
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro consultado exitosamente";
                 $this->records      = $registro;
-            }
-            else
+            } else {
                 throw new \Exception("No se encontró el registro");
-                
+            }
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar el registro";
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
@@ -153,8 +151,8 @@ class ClientesController extends Controller {
     public function update(Request $request, $id)
     {
         try {
-            \DB::beginTransaction();
-            $registro = Clientes::find( $id );
+            DB::beginTransaction();
+            $registro = Clientes::find($id);
             $registro->nombre       = $request->input('nombre', $registro->nombre);
             $registro->apellido     = $request->input('apellido', $registro->apellido);
             $registro->dpi          = $request->input('dpi', $registro->dpi);
@@ -168,7 +166,7 @@ class ClientesController extends Controller {
             
             $credit = Creditos::where("clientes_id", $id)->where("estado",1)->get();
 
-            if($credit->count() > 0){
+            if ($credit->count() > 0) {
                 $credit->map(function ($item, $key) use ($request){   
                     if ($request->input('collector') != 0) {
                         $item->usuarios_cobrador = $request->input('collector', $item->usuarios_cobrador);
@@ -178,8 +176,8 @@ class ClientesController extends Controller {
                 });
             }
 
-            if($registro->save()){
-                \DB::commit();
+            if ($registro->save()) {
+                DB::commit();
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro editado exitosamente";
@@ -187,21 +185,17 @@ class ClientesController extends Controller {
             } else {
                 throw new \Exception("Error al editar el cliente");
             }
-                
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al editar el registro";
-        }
-        finally
-        {
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
@@ -211,20 +205,20 @@ class ClientesController extends Controller {
         try {
             $credit = Creditos::where("clientes_id", $id)->get();
 
-            $deleteRegistro = \DB::transaction( function() use ( $id ) {
-                                $credit = Creditos::where('clientes_id', $id)->where('estado', 1)->get();
+            DB::transaction(function() use ($id) {
+                $credit = Creditos::where('clientes_id', $id)->where('estado', 1)->get();
 
-                                if ($credit->count() > 0) {
-                                    $credit->map(function ($item, $key) {   
-                                        $item->estado = 2;
-                                        $item->save();
-                                        return $item;
-                                    });
-                                }
-                                $registro = Clientes::find( $id );
-                                $registro->status = 2;
-                                $registro->save();
-                            });
+                if ($credit->count() > 0) {
+                    $credit->map(function ($item, $key) {   
+                        $item->estado = 2;
+                        $item->save();
+                        return $item;
+                    });
+                }
+                $registro = Clientes::find( $id );
+                $registro->status = 2;
+                $registro->save();
+            });
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -243,7 +237,7 @@ class ClientesController extends Controller {
         }
     }
 
-    public function buscarCliente(Request $request) {
+    public function findCustormerForDPI(Request $request) {
         try {
             $cliente = Clientes::where('dpi', $request->input('dpi') )
                             ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
@@ -253,21 +247,25 @@ class ClientesController extends Controller {
                 if ($cliente->status == 1) {
                     $detailCredits = $this->getStatusCredits($cliente->id);
                     $cliente->statusCredit = $detailCredits->status;
-                    $cliente->totalCredits = $detailCredits->total;
+                    $cliente->totalCreditsActive = $detailCredits->creditsActives;
+                    $cliente->totalCredits = $detailCredits->totalCredits;
                     $cliente->collector = $detailCredits->collector;
+                    $cliente->arrearsStatus = $detailCredits->arrearsStatus;
                     $cliente->cobrador = Usuarios::find($detailCredits->collector);
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;
                     $cliente->collector = 0;
+                    $cliente->arrearsStatus = 0;
                     $cliente->cobrador = "";
                 }  
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro consultado exitosamente";
                 $this->records      = $cliente;
-            } else
+            } else {
                 throw new \Exception("El cliente ingresado no se encuentra en el sistema, revise los datos y vuelva a intentarlo. ");
+            }
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
@@ -282,7 +280,7 @@ class ClientesController extends Controller {
         }
     }
 
-    public function buscarCreditoCliente(Request $request){
+    public function findCustomerForName(Request $request){
         try {            
             $creditoCliente = Clientes::with(['creditos' => function($item) {
                                             $item->where('estado', 1);
@@ -300,6 +298,8 @@ class ClientesController extends Controller {
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
+                                                        $item->cuotas_atrasadas = $this->getTotalDaysArrears($item, $detailsPayments->totalFees);
+                                                        $item->estado_morosidad = $this->getArrearsStatusForCustomerId($item->id);
                                                     }
                                                     return $item;
                                                 });                                                        
@@ -307,10 +307,12 @@ class ClientesController extends Controller {
                     $this->result       = true;
                     $this->message      = "Registro consultado exitosamente";
                     $this->records      =  $creditoCliente;
-                } else 
+                } else {
                     throw new \Exception("Cliente no cuenta con crédito");      
-            } else
+                }
+            } else {
                 throw new \Exception("No cliente ingresado no existe");  
+            }
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;
@@ -339,15 +341,19 @@ class ClientesController extends Controller {
                                         ->where('id', $request->input('cliente_id'))                                        
                                         ->first();
             if ($creditoCliente) {                
-                if ($creditoCliente->creditos->count() > 0) {                                                                                
-                    $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key){
-                                                    if($item->estado == 1){                                                    
+                if ($creditoCliente->creditos->count() > 0) { 
+                    $creditoCliente->cantidadCreditos = $creditoCliente->creditos->count();                                                                            
+                    $creditoCliente->arrearsStatus = $this->getStatusCredits($creditoCliente->id)->arrearsStatus;
+                    $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
+                                                    if ($item->estado != 2) {                                                    
                                                         $detailsPayments = $this->getDetailsPayments($item);                                    
                                                         //$item->allPayments = $detailsPayments->allPayments;
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
                                                         $item->porcentaje_pago = $detailsPayments->paymentPercentage;
+                                                        $item->cuotas_atrasadas = $this->getDaysLate($item);
+                                                        $item->estado_morosidad = $item->estado_morosidad != null && $item->estado_morosidad != "" ? $item->estado_morosidad : $this->getArrearsStatusForDays($item->cuotas_atrasadas);
                                                     }
                                                     return $item;
                                                 });
@@ -356,10 +362,12 @@ class ClientesController extends Controller {
                     $this->result       = true;
                     $this->message      = "Registro consultado exitosamente";
                     $this->records      = $creditoCliente;
-                } else 
+                } else {
                     throw new \Exception("Cliente no cuenta con crédito");      
-            } else
+                }
+            } else {
                 throw new \Exception("No cliente ingresado no existe");  
+            }
         } finally {
             $response = [
                 'result'    => $this->result,
@@ -406,7 +414,7 @@ class ClientesController extends Controller {
         return $datos;
     }*/
 
-    public function accessForDelete(Request $request){
+    public function randomPasswordAccess(Request $request){
         
         $today = \Carbon\Carbon::now()->format('d');
         $year = \Carbon\Carbon::now()->format('y');
@@ -415,5 +423,14 @@ class ClientesController extends Controller {
         $password = "r{$todayString}c{$year}";
 
         return response()->json($password == $request->input("password"));
+    }
+
+    public function getDaysLate($credit) {
+        if ($credit->cuotas_atrasadas == 0) {
+            $totalFeesPaid = $this->getDetailsPayments($credit)->totalFees;
+            return $this->getTotalDaysArrears($credit, $totalFeesPaid);
+        } else {
+            return $credit->cuotas_atrasadas;
+        }
     }
 }

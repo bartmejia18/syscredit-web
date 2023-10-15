@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Session;
 use App\DetallePagos;
 use App\Clientes;
 use App\Creditos;
-use DB;
 use App\Http\Traits\detailsPaymentsTrait;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class HistorialPagosController extends Controller
 {
@@ -32,7 +32,7 @@ class HistorialPagosController extends Controller
                         ->where('detalle_pagos.estado', 1)
                         ->get();
 
-            if($items){
+            if ($items) {
                 $colletion = collect($items);
                 $colletion->map(function ($item, $key){
                     $dateTime = explode(" ", $item->created_at);
@@ -45,16 +45,13 @@ class HistorialPagosController extends Controller
                 $this->result       = true;
                 $this->message      = "Registro consultados exitosamente";
                 $this->records      = $items;
-            }
-            else
+            } else {
                 throw new \Exception("No se encontraron registros");
-                
-        } 
-        catch (\Exception $e) {
+            }
+        } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
-            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
-            
+            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";  
         } finally {
             $response = [
                 'result'    => $this->result,
@@ -66,47 +63,44 @@ class HistorialPagosController extends Controller
     }
 
     public function deletePayment(Request $request){
-        try{
+        try {
 
             $detallePago = DetallePagos::where('id', $request->input('detalle_id'))
                                         ->where('estado', 1)
                                         ->first();
             
-            if($detallePago){
+            if ($detallePago) {
                 
                 $detallePago->estado = 2;
                 
-                if($detallePago->save()){                    
+                if ($detallePago->save()) {                    
                     $credito = Creditos::find($detallePago->credito_id);
                     $credito->saldo = $credito->saldo + $detallePago->abono;
                     $credito->estado = 1;
                     
-                    if($credito->save()){
+                    if ($credito->save()) {
                         $this->statusCode   = 200;
                         $this->result       = true;
                         $this->message      = "Cobro eliminado correctamente";
                     } else {
                         throw new \Exception("Error al eliminar el pago");        
                     }
-                }else {
+                } else {
                     throw new \Exception("Error al eliminar el pago");
                 }    
             } else {
                 throw new \Exception("No se encontró el pago a eliminar");
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
             $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
-        }
-        finally{
+        } finally {
             $response = [
                 'result'    => $this->result,
                 'message'   => $this->message,
                 'records'   => $this->records,
             ];
-
             return response()->json($response, $this->statusCode);
         }
     }
@@ -117,12 +111,10 @@ class HistorialPagosController extends Controller
             $this->result       = true;
             $this->message      = "Registro consultados exitosamente";
             $this->records      = $this->getTotalPaymentCollector($request->input('cobrador_id'), $request->input('fecha'));   
-        } 
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
-            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
-            
+            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";  
         } finally {
             $response = [
                 'result'    => $this->result,
@@ -142,7 +134,7 @@ class HistorialPagosController extends Controller
             if ($records) {
                 $colletion = collect($records);
                 $colletion->map(function ($item, $key){
-                    return $item->fecha_pago = \Carbon\Carbon::parse($item->fecha_pago)->format('d/m/Y');
+                    return $item->fecha_pago = Carbon::parse($item->fecha_pago)->format('d/m/Y');
                 });
 
                 $this->statusCode   = 200;
@@ -152,8 +144,7 @@ class HistorialPagosController extends Controller
             } else {
                 throw new \Exception("No se encontraron registros");
             }   
-        } 
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->statusCode = 200;
             $this->result = false;
             $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";

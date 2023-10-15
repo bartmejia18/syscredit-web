@@ -7,10 +7,6 @@ eliminar_credito.service('deletCreditService', ['$http', 'API_URL', function($ht
         return $http.post(API_URL+'creditoeliminado', infoCreditDeleted);
     }
 
-    this.valitePasswordToDelete = function(password) {
-        return $http.post(API_URL+'accessdelete', password);
-    }
-
     this.getCreditDeleted = function(creditId) {
         return $http.get(API_URL+'getcreditdeleted?creditoId='+creditId)
     }

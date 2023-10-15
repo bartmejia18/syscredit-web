@@ -18,10 +18,15 @@ class Creditos extends Model {
 		'deudatotal',
 		'cuota_diaria',
 		'cuota_minima',
+		'cuotas_atrasadas',
 		'fecha_inicio',
 		'fecha_fin',
 		'fecha_finalizado',
-		'estado'];
+		'estado',
+		'estado_morosidad',
+		'comentario_morosidad',
+		'fecha_evaluacion_morosidad'
+	];
 
 	public function planes() {
 		return $this->hasOne('App\Planes', 'id', 'planes_id');

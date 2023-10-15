@@ -84,6 +84,13 @@
 								<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') " ng-class="{active: row == 'nombre'}"></i>
 								<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') " ng-class="{active: row == '-nombre'}"></i>
 								</div>
+							</th>	
+							<th>
+								Origen
+								<div class="th">
+								<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') " ng-class="{active: row == 'nombre'}"></i>
+								<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') " ng-class="{active: row == '-nombre'}"></i>
+								</div>
 							</th>					
 							<th>Acciones</th>
 							</tr>
@@ -94,6 +101,9 @@
 							<td>{{ data.customer.nombre + " " + data.customer.apellido }}</td>
 							<td>Q. {{ data.abono | number: "2"}}</td>
 							<td>{{ data.hour_payment }}</td>							
+							<td ng-show="data.origen == 0"></td>
+							<td ng-show="data.origen == 1">Web</td>
+							<td ng-show="data.origen == 2">Móvil</td>
 							<td>
 								<div class="btn-group">
 								<button type="button" class="btn btn-danger ion ion-close" ng-click="modalDeleteOpen(data)" md-ink-ripple></button>

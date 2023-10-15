@@ -10,6 +10,7 @@ use App\DetallePagos;
 use App\CierreRuta;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCustomerTrait;
+use App\Http\Traits\detailsCreditsTrait;
 use Carbon\Carbon;
 
 class CobradorController extends Controller {
@@ -20,6 +21,7 @@ class CobradorController extends Controller {
     
     use detailsPaymentsTrait;
     use detailsCustomerTrait;
+    use detailsCreditsTrait;
 
     public function listCustomers(Request $request) {
         try {
@@ -32,7 +34,7 @@ class CobradorController extends Controller {
                 $cantidadclientes = 0;
 
                 foreach ($credits as $item) {   
-                    $detailsPayments = $this->getDetailsForCollector($item, $request->input('fecha'));   
+                    $detailsPayments = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));   
                     $item['cantidad_cuotas_pagadas'] = $detailsPayments->totalFees;
                     $item['monto_abonado'] = $detailsPayments->paymentPaid;
                     $item['monto_pagado'] = $detailsPayments->totalPayment;
@@ -84,11 +86,11 @@ class CobradorController extends Controller {
         
             
             foreach ($credits as $item) {                
-                $detailsPaymentsForDay = $this->getDetailsForCollector($item, $request->input('fecha'));
-                $detailsPaymentsGeneral = $this->getDetailsPaymentsForReportCollector($item->id);   
+                $detailsPaymentsForDay = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));
+                $detailsPaymentsGeneral = $this->getDetailsPayments($item);   
                 $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees;
                 $item['total_cuotas'] = $item->planes->dias;
-                $item['cuotas_atrasadas'] = $this->getDayOverdueCustomer($item->id, $detailsPaymentsGeneral->totalFees) + 1;
+                $item['cuotas_atrasadas'] = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
                 $item['cantidad_cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
                 $item['monto_abonado'] = $detailsPaymentsForDay->paymentPaid;
                 $item['monto_pagado'] = $detailsPaymentsForDay->totalPayment;
@@ -153,7 +155,7 @@ class CobradorController extends Controller {
             $registros = $registros->merge($registroExtra);
         }
 
-        if ($registros->count() > 0 ) {
+        /*if ($registros->count() > 0 ) {
             $recordsFilters = $registros->filter(function ($record) use ($request) {
                 $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
                 $dateFirstPay = Carbon::createFromFormat('Y-m-d', $record->fecha_inicio);
@@ -170,8 +172,8 @@ class CobradorController extends Controller {
                         break;
                 }
             })->values();
-        }
-        return $recordsFilters;
+        }*/
+        return $registros;
     }
 } 
 
