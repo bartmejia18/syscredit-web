@@ -102,7 +102,7 @@ trait detailsCreditsTrait {
         $dateInitial = $credit->fecha_inicio;
         $dateFinal = $credit->estado == 0 ? $credit->fecha_finalizado : date('Y-m-d');
 
-        $totalDays = (strtotime($dateInitial)-strtotime($dateFinal))/86400;
+        $totalDays = (strtotime($dateInitial) - strtotime($dateFinal))/86400;
         $totalDays = abs($totalDays); 
         $totalDays = floor($totalDays + 1);	
     
