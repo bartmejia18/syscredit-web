@@ -33,7 +33,7 @@ class ClientesController extends Controller {
                             ->groupBy('clientes.id')
                             ->get();
             } else {
-                $registros = Clientes::all();
+                $registros = Clientes::where('sucursal_id', $request->session()->get('usuario')->sucursales_id)->get();
             }
             
             if ($registros) {
