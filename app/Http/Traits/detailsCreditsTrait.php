@@ -109,7 +109,7 @@ trait detailsCreditsTrait {
         
         if ($credit->planes->tipo == 0 || $credit->planes->tipo == 1) {
             $countSundayTemporal = 0;
-            if ($credit->planes->domingo == 1) {
+            if ($credit->planes->domingo == 1 && $totalDays < 360) {
                 for ($i=0; $i<$totalDays; $i++)  {  
                     $dateTemporal = strtotime('+'.$i.'day', strtotime($dateInitial));
                     $dateTemporal = date('d-m-Y', $dateTemporal);
