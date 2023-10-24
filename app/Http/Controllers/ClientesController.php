@@ -37,21 +37,21 @@ class ClientesController extends Controller {
             }
             
             if ($registros) {
-                $registros->map(function ($item, $key){   
-                    if ($item->status == 1) {
-                        $detailCredits = $this->getStatusCredits($item->id);
-                        $item->statusCredit = $detailCredits->status;
-                        $item->totalCreditsActive = $detailCredits->creditsActives;
-                        $item->totalCredits = $detailCredits->totalCredits;
-                        $item->collector = $detailCredits->collector;
-                        $item->arrearsStatus = $detailCredits->arrearsStatus;
+                $registros->map(function ($customer, $key){   
+                    if ($customer->status == 1) {
+                        $credits = $this->getCreditsForCustomerId($customer->id);
+                        $countCredits = $this->getTotalActiveCompleted($credits);
+                        $customer->statusCredit = $countCredits->status;
+                        $customer->totalCreditsActive = $countCredits->creditsActives;
+                        $customer->totalCredits = $countCredits->totalCredits;
+                        $customer->arrearsStatus = $this->getGeneralStatusCustomer($credits);
                     } else {
-                        $item->statusCredit = 4;
-                        $item->totalCredits = 0;
-                        $item->collector = 0;
-                        $item->arrearsStatus = "";
+                        $customer->statusCredit = 4;
+                        $customer->totalCredits = 0;
+                        $customer->collector = 0;
+                        $customer->arrearsStatus = "";
                     }
-                    return $item;
+                    return $customer;
                 });
 
                 $this->statusCode   = 200;
@@ -203,8 +203,6 @@ class ClientesController extends Controller {
     
     public function destroy($id) {
         try {
-            $credit = Creditos::where("clientes_id", $id)->get();
-
             DB::transaction(function() use ($id) {
                 $credit = Creditos::where('clientes_id', $id)->where('estado', 1)->get();
 
@@ -245,17 +243,17 @@ class ClientesController extends Controller {
                             
             if ($cliente) {
                 if ($cliente->status == 1) {
-                    $detailCredits = $this->getStatusCredits($cliente->id);
-                    $cliente->statusCredit = $detailCredits->status;
-                    $cliente->totalCreditsActive = $detailCredits->creditsActives;
-                    $cliente->totalCredits = $detailCredits->totalCredits;
-                    $cliente->collector = $detailCredits->collector;
-                    $cliente->arrearsStatus = $detailCredits->arrearsStatus;
-                    $cliente->cobrador = Usuarios::find($detailCredits->collector);
+                    $credits = $this->getCreditsForCustomerId($cliente->id);
+                    $countCredits = $this->getTotalActiveCompleted($credits);
+                    
+                    $cliente->statusCredit = $countCredits->status;
+                    $cliente->totalCreditsActive = $countCredits->creditsActives;
+                    $cliente->totalCredits = $countCredits->totalCredits;
+                    $cliente->arrearsStatus = $countCredits->creditsActives > 0 ? $this->getGeneralStatusCustomer($credits) : $cliente->morosidad;
+                    $cliente->cobrador = Usuarios::find($credits[0]->usuario_cobrador);
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;
-                    $cliente->collector = 0;
                     $cliente->arrearsStatus = 0;
                     $cliente->cobrador = "";
                 }  
@@ -298,8 +296,8 @@ class ClientesController extends Controller {
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
-                                                        $item->cuotas_atrasadas = $this->getTotalDaysArrears($item, $detailsPayments->totalFees);
-                                                        $item->estado_morosidad = $this->getArrearsStatusForCustomerId($item->id);
+                                                        $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
+                                                        $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
                                                     }
                                                     return $item;
                                                 });                                                        
@@ -343,17 +341,18 @@ class ClientesController extends Controller {
             if ($creditoCliente) {                
                 if ($creditoCliente->creditos->count() > 0) { 
                     $creditoCliente->cantidadCreditos = $creditoCliente->creditos->count();                                                                            
-                    $creditoCliente->arrearsStatus = $this->getStatusCredits($creditoCliente->id)->arrearsStatus;
+                    $creditoCliente->arrearsStatus = $this->getGeneralStatusCustomer($creditoCliente->creditos);
                     $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
                                                     if ($item->estado != 2) {                                                    
                                                         $detailsPayments = $this->getDetailsPayments($item);                                    
-                                                        //$item->allPayments = $detailsPayments->allPayments;
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
                                                         $item->porcentaje_pago = $detailsPayments->paymentPercentage;
-                                                        $item->cuotas_atrasadas = $this->getDaysLate($item);
-                                                        $item->estado_morosidad = $item->estado_morosidad != null && $item->estado_morosidad != "" ? $item->estado_morosidad : $this->getArrearsStatusForDays($item->cuotas_atrasadas);
+                                                        if ($item->estado == 1) {
+                                                            $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
+                                                            $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
+                                                        }
                                                     }
                                                     return $item;
                                                 });
@@ -427,8 +426,7 @@ class ClientesController extends Controller {
 
     public function getDaysLate($credit) {
         if ($credit->cuotas_atrasadas == 0) {
-            $totalFeesPaid = $this->getDetailsPayments($credit)->totalFees;
-            return $this->getTotalDaysArrears($credit, $totalFeesPaid);
+            return $this->getTotalDaysArrears($credit);
         } else {
             return $credit->cuotas_atrasadas;
         }
