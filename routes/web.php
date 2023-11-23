@@ -76,6 +76,7 @@ Route::prefix('ws')->group(function () {
 	Route::get('reportcollector',			'ReportsController@collector');
 	Route::get('reportdates',				'ReportsController@dates');
 	Route::get('reportcredits',				'ReportsController@credits');
+	Route::get('reportamounttocolleted',	'ReportsController@amountToColletedForCollector');
 	Route::get('reportcreditspdf',			'ReportsController@reportCreditsPDF');
 
 	
