@@ -85,7 +85,7 @@
                     $scope.direccion = customer.direccion;
                     $scope.estado_civil = customer.estado_civil == 1 ? "Soltero (a)" : "Casado (a)";
                     $scope.telefono = customer.telefono;
-                    $scope.arrearsStatus = customer.arrearsStatus
+                    $scope.categoria = customer.categoria;
                     $scope.cantidadCreditos = customer.cantidadCreditos
                     $scope.id = infoCredit.id;
                     $scope.plan = infoCredit.planes;

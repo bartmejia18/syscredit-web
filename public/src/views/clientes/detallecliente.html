@@ -7,9 +7,16 @@
                         <h4>
                             Detalle del crédito(s) de:
                             <strong>{{nombre_completo}}</strong>
-                            <label ng-if="arrearsStatus == 'Excelente'" class="label label-success mr5" style="margin-left: 1em;">{{arrearsStatus}}</label>
-                            <label ng-if="arrearsStatus == 'Bueno'" class="label label-warning mr5" style="margin-left: 1em;">{{arrearsStatus}}</label>
-                            <label ng-if="arrearsStatus == 'Moroso'" class="label label-danger mr5" style="margin-left: 1em;">{{arrearsStatus}}</label>
+                            <span 
+                                style="margin-left: 1em;
+                                align-items: center;"
+                            >
+                                <label ng-if="categoria == 'A'" class="label label-success mr5">Categoria: {{categoria}}</label>
+                                <label ng-if="categoria == 'B'" class="label label-primary mr5">Categoria: {{categoria}}</label>
+                                <label ng-if="categoria == 'C'" class="label label-info mr5">{{categoria}}</label>
+                                <label ng-if="categoria == 'D'" class="label label-warning mr5">{{categoria}}</label>
+                                <label ng-if="categoria == 'E'" class="label label-danger mr5">{{categoria}}</label>
+                            </span>
                         </h4>
                     </div>
                     <div class="panel-body">

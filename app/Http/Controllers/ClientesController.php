@@ -33,7 +33,8 @@ class ClientesController extends Controller {
                             ->groupBy('clientes.id')
                             ->get();
             } else {
-                $registros = Clientes::where('sucursal_id', $request->session()->get('usuario')->sucursales_id)->get();
+                $registros = Clientes::where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
+                            ->get();
             }
             
             if ($registros) {
@@ -44,12 +45,10 @@ class ClientesController extends Controller {
                         $customer->statusCredit = $countCredits->status;
                         $customer->totalCreditsActive = $countCredits->creditsActives;
                         $customer->totalCredits = $countCredits->totalCredits;
-                        $customer->arrearsStatus = $this->getGeneralStatusCustomer($credits);
                     } else {
                         $customer->statusCredit = 4;
                         $customer->totalCredits = 0;
                         $customer->collector = 0;
-                        $customer->arrearsStatus = "";
                     }
                     return $customer;
                 });
@@ -89,7 +88,7 @@ class ClientesController extends Controller {
                                                     'direccion'      => $request->input('direccion'),
                                                     'estado_civil'  => $request->input('estado_civil'),
                                                     'sexo'          => $request->input('sexo'),
-                                                    'categoria'     => 'A',
+                                                    'categoria'     => 1,
                                                     'color'         => 'verde',
                                                     'status'        => 1
                                                 ]);

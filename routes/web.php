@@ -78,9 +78,9 @@ Route::prefix('ws')->group(function () {
 	Route::get('reportcredits',				'ReportsController@credits');
 	Route::get('reportcreditspdf',			'ReportsController@reportCreditsPDF');
 
-	
-	
-	
+	//Migraciones
+	Route::get('setarrearscredits', 		'DataMigrationsController@setArrearsToCredits');
+	Route::get('setcategorycustomer', 		'DataMigrationsController@setCategoryCustomers');
 
 	Route::get('logout',function() {
 		Auth::logout();
