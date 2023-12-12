@@ -29,7 +29,6 @@
 			text-align: left;
 			height: 18px;
 			font-size: 20px;
-			color: #067851;
 			font-weight: bold;
 		}
 		table{
@@ -96,28 +95,27 @@
 	<body class="body-width">
 		<table>
 		<tr>
-			<td><div class="title" style="margin-left: 125px;">BOLETA DE PAGOS</div></td>
+			<td style="width:15px"><img src="{{ public_path('images/logo.png') }}" height="65px"></td>
+			<td><div class="title" style="margin-left: 70px;">TARJETA DE PAGOS</div></td>
 		</tr>
 	</table>
 	<br>
-		<table style="border: 1px solid black">
-			<tr>
-				<td class="firstcolumnlabel">Nombre Cliente: <strong>{!! $data->name !!}</strong></td>
-				<td class="secundcolumnlabel">DPI: <strong>{!! $data->dpi !!}</strong></td>
-			</tr>
-			<tr>
-				<td class="firstcolumnlabel">Dirección: <strong>{!! $data->address!!}</strong></td>
+		<table>
+		<tr>
+				<td class="firstcolumnlabel">Cliente: <strong>{!! $data->name !!}</strong></td>
 				<td class="secundcolumnlabel">Teléfono: <strong>{!! $data->numberPhone!!}</strong></td>
 			</tr>
 			<tr>
-				<td class="firstcolumnlabel">Plan: <strong>{!! $data->plan!!}</strong></td>
-				<td class="secundcolumnlabel">Fecha de entrega: <strong>{!! $data->date!!}</strong></td>
+				<td class="firstcolumnlabel">Dirección: <strong>{!! $data->address!!}</strong></td>
+				<td class="secundcolumnlabel">Plan: <strong>{!! $data->plan!!}</strong></td>
 			</tr>
 			<tr>
 				<td class="firstcolumnlabel">Monto: <strong>Q. {!!number_format((float)$data->amount, 2, '.', '')!!}</strong></td>
-				<td class="secundcolumnlabel">Cuota diaria: <strong>Q. {!!number_format((float)$data->fees, 2, '.', '')!!}</strong></td>
+				<td class="secundcolumnlabel">Fecha de inicio: <strong>{!! $data->date!!}</strong></td>
 			</tr>
-		
+			<tr>
+				<td class="firstcolumnlabel">Cuota diaria: <strong>Q. {!!number_format((float)$data->fees, 2, '.', '')!!}</strong></td>
+			</tr>
 		</table>
 		<br>
 		<table class="tablapago">
@@ -139,7 +137,9 @@
 						<td class="columnapago" style="width:40%">Q. {!!number_format((float)($quota->amountFirst), 2, '.', '')!!}</td>
 						<td class="columnapago" style="width:40%">{!!$quota->dateFirst!!}</td>
 					@else
-						<td class="columnapago" colspan="3"><strong>DOMINGO</strong></td>		
+						<td class="columnapago" style="width:10%"></td>
+						<td class="columnapago" style="width:40%"><strong>DOMINGO</strong></td>
+						<td class="columnapago" style="width:40%">{!!$quota->dateFirst!!}</td>		
 					@endif
 					@if($quota->indexSecond <= $data->days)
 						@if($quota->sundaySecond == "N")
@@ -147,7 +147,9 @@
 							<td class="columnapago" style="width:40%">Q. {!!number_format((float)($quota->amountSecond), 2, '.', '')!!}</td>
 							<td class="columnapago" style="width:40%">{!!$quota->dateSecond!!}</td>
 						@else
-							<td class="columnapago" colspan="3"><strong>DOMINGO</strong></td>		
+							<td class="columnapago" style="width:10%"></td>
+							<td class="columnapago" style="width:40%"><strong>DOMINGO</strong></td>
+							<td class="columnapago" style="width:40%">{!!$quota->dateFirst!!}</td>	
 						@endif
 					@else
 						<td class="columnapago" colspan="3"><strong></strong></td>		
@@ -161,13 +163,10 @@
 			<tr>
 				<td class="rowfirm"></td>
 				<td class="rowfirm"></td>
-				<td class="fingerprint"></td>
 			</tr>
 			<tr>
 				<td class="rowfirmlabel">Firma Préstamo</td>
 				<td class="rowfirmlabel">Firma Cliente</td>
-				<td class="rowfirmlabel">Huella</td>
-				
 			</tr>
 		</table>
 

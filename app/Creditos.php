@@ -18,6 +18,7 @@ class Creditos extends Model {
 		'deudatotal',
 		'cuota_diaria',
 		'cuota_minima',
+		'cuotas_atrasadas',
 		'fecha_inicio',
 		'fecha_fin',
 		'fecha_finalizado',

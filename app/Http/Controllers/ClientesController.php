@@ -88,7 +88,6 @@ class ClientesController extends Controller {
                                                     'estado_civil'  => $request->input('estado_civil'),
                                                     'sexo'          => $request->input('sexo'),
                                                     'categoria'     => 'A',
-                                                    'color'         => 'verde',
                                                     'status'        => 1
                                                 ]);
 
@@ -163,7 +162,6 @@ class ClientesController extends Controller {
             $registro->estado_civil = $request->input('estado_civil', $registro->estado_civil);
             $registro->sexo         = $request->input('sexo', $registro->sexo);
             $registro->categoria    = $request->input('categoria', $registro->categoria);
-            $registro->color        = $request->input('color', $registro->color);
             $registro->status       = $request->input('status', 1);
             
             $credit = Creditos::where("clientes_id", $id)->where("estado",1)->get();

@@ -78,6 +78,7 @@ class CreditosController extends Controller
                                                     'deudatotal'            => $request->input('deudatotal'),
                                                     'cuota_diaria'          => $request->input('cuota_diaria'),
                                                     'cuota_minima'          => $request->input('cuota_minima'),
+                                                    'cuotas_atrasadas'      => 0,
                                                     'fecha_inicio'          => \Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
                                                     'fecha_fin'             => \Carbon\Carbon::parse($lastDate)->format('Y-m-d'),
                                                     'estado'                => 1,

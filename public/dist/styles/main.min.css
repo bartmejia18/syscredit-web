@@ -4097,13 +4097,12 @@ fieldset[disabled] .btn-youtube.active {
 }
 .main-container .nav-wrap .site-nav .profile > img {
   border-radius: 100%;
-  border: 2px solid #eeeeee;
   width: 50px;
   height: 50px;
   float: left;
 }
 .main-container .nav-wrap .site-nav .profile > .group {
-  margin-left: 10px;
+  margin-left: 65px;
   color: #464646;
 }
 .main-container .nav-wrap .site-nav .profile > .group .name,
