@@ -99,6 +99,23 @@ class CobradorMovilController extends Controller {
                             $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
                             $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                             $totalacobrar = $totalacobrar + $item->cuota_diaria;
+                            switch ($item->planes->tipo) {
+                                case (0) : 
+                                    $item['tipo_plan'] = "Diario";
+                                    break;
+                                case (1) : 
+                                    $item['tipo_plan'] = "Diario";
+                                    break;
+                                case (2) : 
+                                    $item['tipo_plan'] = "Semanal";
+                                    break;
+                                case (3) : 
+                                    $item['tipo_plan'] = "Mensual";
+                                    break;
+                                default : 
+                                    $item['tipo_plan'] = "";
+                                    break;
+                            }
                         }
 
                         $datos = [];
