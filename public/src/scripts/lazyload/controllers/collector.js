@@ -113,6 +113,9 @@
       function showCustomer(data){
         var date = $("#fechapago").val()
 
+        $scope.datas = []
+        $scope.plan = ""
+
         collectorService.detail(data.id, date).then(function(response){          
           $scope.collectorSelected = data       
           $scope.showCollectorTable = false
@@ -128,7 +131,6 @@
 
           totalCollection(data.id, date)
           
-          $scope.datas = []
           $scope.datas = response.data.records.registros
           $scope.searchKeywords = ''
           $scope.search()
@@ -165,6 +167,7 @@
 
       $scope.findCustomers = function(){
         if($("#fechapago").val() != ""){                    
+          $scope.data = []
           $scope.totalCartera = 0
           $scope.totalPendientePago = 0
           showCustomer(collectorSelected)

@@ -105,6 +105,17 @@ trait reportsTrait {
         return $generatedInterests;
     }
 
+    public function getAmountInvested(Request $request) {
+        $amountInvested = 0;
+        $credits = $this->getCreditWithPlansAmount($request);
+        if ($credits->count() > 0) {
+            foreach ($credits as $credit) {
+                $amountInvested += $credit->montos->monto;
+            }
+        } 
+        return $amountInvested;
+    }
+
     public function getCustomersWithCreditToDay($credits) {        
         $countCredits = $credits->map(function($item,$key){            
             $today = \Carbon\Carbon::now();

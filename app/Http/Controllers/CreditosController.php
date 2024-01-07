@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Creditos;
-use App\HistorialPagos;
 use App\DetallePagos;
 use App\Planes;
+use App\CierreRuta;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\DatesTrait;
 use App\Http\Traits\detailsPaymentsTrait;
@@ -59,13 +58,20 @@ class CreditosController extends Controller
     public function store(Request $request){
         try {
             $plan = Planes::find($request->input('idplan'));
-            if ($plan->domingo == "1") {
-                $lastDate = $this->getLastDayWithoutSunday(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
-            } else {
-                $lastDate = $this->getLastDay(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
+
+            $payDay = "";
+            if ($plan->tipo == 1) {
+                $payDay = "Diario";
+            } else if ($plan->tipo == 2) {
+                $days = array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
+                $dateST = strtotime($request->input('fecha_inicio'));
+                $payDay = $days[date('w', $dateST)];
+            } else if ($plan->tipo == 3) {
+                $dateST = strtotime($request->input('fecha_inicio'));
+                $payDay = "Fecha pago: " . date("d", $dateST);
             }
 
-            $nuevoRegistro = DB::transaction( function() use ($request, $lastDate) {
+            $nuevoRegistro = DB::transaction( function() use ($request, $payDay) {
                                 $nuevoRegistro = Creditos::create([
                                                     'clientes_id'           => $request->input('idcliente'),
                                                     'planes_id'             => $request->input('idplan'),
@@ -78,8 +84,10 @@ class CreditosController extends Controller
                                                     'deudatotal'            => $request->input('deudatotal'),
                                                     'cuota_diaria'          => $request->input('cuota_diaria'),
                                                     'cuota_minima'          => $request->input('cuota_minima'),
+                                                    'cuotas_atrasadas'      => 0,
+                                                    'dia_pago'              => $payDay,
                                                     'fecha_inicio'          => \Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
-                                                    'fecha_fin'             => \Carbon\Carbon::parse($lastDate)->format('Y-m-d'),
+                                                    'fecha_fin'             => \Carbon\Carbon::parse($request->input('fecha_limite'))->format('Y-m-d'),
                                                     'estado'                => 1,
                                                 ]);
 
@@ -169,53 +177,66 @@ class CreditosController extends Controller
 
     public function payments(Request $request) {
         try {
+            $hoy = date('Y-m-d');
             $credito = Creditos::where('id', $request->input('idcredito'))->with('planes','montos')->first();
             if ($credito) {
-                $detallePagos = DetallePagos::where('credito_id', $credito->id)->where('estado', 1)->get();
+                $routeClosure = CierreRuta::where('cobrador_id', $credito->usuarios_cobrador)
+                                ->where('fecha_cierre', $hoy)
+                                ->where('estado', 1)
+                                ->whereOr('estado', 2)
+                                ->first();
+                
+                if (!$routeClosure) {
+                    $detallePagos = DetallePagos::where('credito_id', $credito->id)->where('estado', 1)->get();
 
-                if ($detallePagos->count() > 0) {
-                    $totalPayment = $detallePagos->sum('abono') + $request->input('abono');
-                    if ($totalPayment > $credito->deudatotal) {
-                        throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
+                    if ($detallePagos->count() > 0) {
+                        $totalPayment = $detallePagos->sum('abono') + $request->input('abono');
+                        if ($totalPayment > $credito->deudatotal) {
+                            throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
+                        } else {
+                            $detallePagos = new DetallePagos;
+                            $detallePagos->credito_id = $credito->id;
+                            $detallePagos->fecha_pago = \Carbon\Carbon::parse(date('Y-m-d'));
+                            $detallePagos->abono = $request->input('abono');
+                            $detallePagos->origen = $request->input('origen');
+                            $detallePagos->estado = 1;                        
+                        }
                     } else {
-                        $detallePagos = new DetallePagos;
-                        $detallePagos->credito_id = $credito->id;
-                        $detallePagos->fecha_pago = \Carbon\Carbon::parse(date('Y-m-d'));
-                        $detallePagos->abono = $request->input('abono');
-                        $detallePagos->estado = 1;                        
+                        if ($request->input('abono') > $credito->deudatotal) {
+                            throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
+                        } else {
+                            $detallePagos = new DetallePagos;
+                            $detallePagos->credito_id = $credito->id;
+                            $detallePagos->fecha_pago = \Carbon\Carbon::parse(date('Y-m-d'));
+                            $detallePagos->abono = $request->input('abono');
+                            $detallePagos->origen = $request->input('origen');
+                            $detallePagos->estado = 1;
+                        }
+                    }
+
+                    if ($detallePagos->save()) {
+                        $detailPayment = $this->getDetailsPayments($credito);     
+                        $balance = $credito->deudatotal - $detailPayment->totalPayment;           
+                        
+                        if ($balance == 0) {
+                            $credito->saldo = $balance;
+                            $credito->fecha_finalizado = \Carbon\Carbon::parse(date('Y-m-d'));
+                            $credito->estado = 0;
+                        } else {
+                            $credito->saldo = $balance;
+                        }
+                        
+                        $credito->save();
+                        $this->statusCode = 200;
+                        $this->result = true;
+                        $this->message = "Pago realizado con éxito";                    
+                    } else {
+                        throw new \Exception("Ocurrió un error al ingresar el pago");
                     }
                 } else {
-                    if ($request->input('abono') > $credito->deudatotal) {
-                        throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
-                    } else {
-                        $detallePagos = new DetallePagos;
-                        $detallePagos->credito_id = $credito->id;
-                        $detallePagos->fecha_pago = \Carbon\Carbon::parse(date('Y-m-d'));
-                        $detallePagos->abono = $request->input('abono');
-                        $detallePagos->estado = 1;
-                    }
+                    throw new \Exception("La ruta ya ha sido cerrada");
                 }
-
-                if ($detallePagos->save()) {
-                    $detailPayment = $this->getDetailsPayments($credito);     
-                    $balance = $credito->deudatotal - $detailPayment->totalPayment;           
-                    
-                    if ($balance == 0) {
-                        $credito->saldo = $balance;
-                        $credito->fecha_finalizado = \Carbon\Carbon::parse(date('Y-m-d'));
-                        $credito->estado = 0;
-                    } else {
-                        $credito->saldo = $balance;
-                    }
-                    
-                    $credito->save();
-                    $this->statusCode = 200;
-                    $this->result = true;
-                    $this->message = "Pago realizado con éxito";                    
-                } else {
-                    throw new \Exception("Ocurrió un error al ingresar el pago");
-                }
-            }            
+            }          
         } catch (\Exception $e) {
             $this->statusCode   = 200;
             $this->result       = false;

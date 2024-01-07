@@ -1,152 +1,279 @@
 <div class="page">
-	<div class="page-wrap">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="panel panel-default panel-hovered panel-stacked mb20">
-					<div class="panel-heading"><h4>Reporte por general</h4></div>
-					<input type="hidden" id="view" value="general">
-					<div class="panel-heading">
-						<br>						
-						<form role="form" class="form-horizontal">	
-							<div class="form-group" ng-if="usuario.tipo_usuarios_id == 1">								
-								<label class="col-sm-1  col-md-offset-1 control-label">Sucursal:</label>
-								<div class="col-md-4">
-									<select class="form-control" ng-model="branch" ng-options="item.id as item.descripcion for item in branchs" ng-change="branchSelected(branch)"></select>
-								</div>
-							</div>																											
-						</form>
-						<br>
-					</div>
-					<div class="panel-body">						
-						<br>				
-						<div class="row">
-							<div class="col-md-12 col-sm-12">
-								<div class="panel panel-info panel-hovered">
-									<div class="panel-body">
-										<div class="clearfix">											
-											<h2 class="mt0 text-info text-bold">REPORTE DE CLIENTES</h2>
-											<br>
-											<div class="col-md-4">
-												<div class="panel panel-hovered">														
-													<div class="panel-body">
-														<div class="row form-group">	
-															<div class="text-center">
-																<label>Total de clientes con crédito</label>
-															</div>																																												
-															<div class="text-center"> 																	
-																<label><h1 class="mt0 text-info text-bold">{{customerGeneral.total}}</h1></label>
-															</div>															
-														</div>
-													</div>							
-												</div>
-											</div>
-											<div class="col-md-4">
-												<div class="panel panel-hovered">														
-													<div class="panel-body">
-														<div class="row form-group">	
-															<div class="text-center">
-																<label>Total de clientes al día</label>
-															</div>																																												
-															<div class="text-center"> 																	
-																<label><h1 class="mt0 text-info text-bold">{{customerGeneral.today}}</h1></label>
-															</div>															
-														</div>
-													</div>							
-												</div>
-											</div>
-											<div class="col-md-4">
-												<div class="panel panel-hovered">														
-													<div class="panel-body">
-														<div class="row form-group">	
-															<div class="text-center">
-																<label>Total de clientes morosos</label>
-															</div>																																												
-															<div class="text-center"> 																	
-																<label><h1 class="mt0 text-info text-bold">{{customerGeneral.notoday}}</h1></label>
-															</div>															
-														</div>
-													</div>							
-												</div>
-											</div>										
-										</div>
-									</div>
-									<div class="panel-footer clearfix panel-footer-sm panel-footer-info">
-										<p class="mt0 mb0 left"></p>
-										<span sparkline class="right" type="bar" bar-color="#fff" width="1.15em" height="1.15em"></span>
-									</div>
-								</div>
-							</div>						
-						</div>
-						<br>				
-						<div class="row">
-							<div class="col-md-12 col-sm-12">
-								<div class="panel panel-success panel-hovered">
-									<div class="panel-body">
-										<div class="clearfix">											
-											<h2 class="mt0 text-success text-bold">REPORTE DE CREDITOS</h2>
-											<br>
-											<div class="col-md-4">
-												<div class="panel panel-hovered">														
-													<div class="panel-body">
-														<div class="row form-group">	
-															<div class="text-center">
-																<label>Monto total cobrado</label>
-															</div>																																												
-															<div class="text-center"> 																	
-																<label><h1 class="mt0 text-success text-bold">Q. {{ customerGeneral.revenueTotals | number: "2"}}</h1></label>
-															</div>															
-														</div>
-													</div>							
-												</div>
-											</div>
-											<div class="col-md-4">
-												<div class="panel panel-hovered">														
-													<div class="panel-body">
-														<div class="row form-group">	
-															<div class="text-center">
-																<label>Total pendiente a cobrar</label>
-															</div>																																												
-															<div class="text-center"> 																	
-																<label><h1 class="mt0 text-success text-bold">Q. {{ customerGeneral.totalPendingReceivable | number: "2"}}</h1></label>
-															</div>															
-														</div>
-													</div>							
-												</div>
-											</div>
-											<div class="col-md-4">
-												<div class="panel panel-hovered">														
-													<div class="panel-body">
-														<div class="row form-group">	
-															<div class="text-center">
-																<label>Monto total de créditos</label>
-															</div>																																												
-															<div class="text-center"> 																	
-																<label><h1 class="mt0 text-success text-bold">Q. {{ customerGeneral.totalReceivable | number: "2"}}</h1></label>
-															</div>															
-														</div>
-													</div>							
-												</div>
-											</div>										
-										</div>
-									</div>
-									<div class="panel-footer clearfix panel-footer-sm panel-footer-success">
-										<p class="mt0 mb0 left"></p>
-										<span sparkline class="right" type="bar" bar-color="#fff" width="1.15em" height="1.15em"></span>
-									</div>
-								</div>
-							</div>						
-						</div>
-					</div>
-				</div>
-				<div class="toast toast-{{positionModel}}">
-					<alert ng-repeat="toast in toasts" type="{{toast.type}}" close="closeAlert($index)" class="toast-{{toast.anim}}">
-						<div ng-bind-html="toast.msg"></div>
-					</alert>
-				</div>
-			</div>
-		</div>
-	</div> <!-- #end page-wrap -->
+    <div class="page-wrap">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default panel-hovered panel-stacked mb20">
+                    <div class="panel-heading">
+                        <h4>Reporte por general</h4>
+                    </div>
+                    <input type="hidden" id="view" value="general" />
+                    <div class="panel-heading">
+                        <br />
+                        <form role="form" class="form-horizontal">
+                            <div
+                                class="form-group"
+                                ng-if="usuario.tipo_usuarios_id == 1">
+                                <label class="col-sm-1 col-md-offset-1 control-label">Sucursal:</label>
+                                <div class="col-md-4">
+                                    <select
+                                        class="form-control"
+                                        ng-model="branch"
+                                        ng-options="item.id as item.descripcion for item in branchs"
+                                        ng-change="branchSelected(branch)"
+                                    ></select>
+                                </div>
+                            </div>
+                        </form>
+                        <br />
+                    </div>
+                    <div class="panel-body">
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <div class="panel panel-info panel-hovered">
+                                    <div class="panel-body">
+                                        <div class="clearfix">
+                                            <h2 class="mt0 text-info text-bold">
+                                                REPORTE DE CLIENTES
+                                            </h2>
+                                            <br />
+                                            <div class="col-md-4">
+                                                <div
+                                                    class="panel panel-hovered"
+                                                >
+                                                    <div class="panel-body">
+                                                        <div
+                                                            class="row form-group"
+                                                        >
+                                                            <div
+                                                                class="text-center"
+                                                            >
+                                                                <label
+                                                                    >Total de
+                                                                    clientes con
+                                                                    crédito</label
+                                                                >
+                                                            </div>
+                                                            <div
+                                                                class="text-center"
+                                                            >
+                                                                <label
+                                                                    ><h1
+                                                                        class="mt0 text-info text-bold"
+                                                                    >
+                                                                        {{customerGeneral.total}}
+                                                                    </h1></label
+                                                                >
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div
+                                                    class="panel panel-hovered"
+                                                >
+                                                    <div class="panel-body">
+                                                        <div
+                                                            class="row form-group"
+                                                        >
+                                                            <div
+                                                                class="text-center"
+                                                            >
+                                                                <label
+                                                                    >Total de
+                                                                    clientes al
+                                                                    día</label
+                                                                >
+                                                            </div>
+                                                            <div
+                                                                class="text-center"
+                                                            >
+                                                                <label
+                                                                    ><h1
+                                                                        class="mt0 text-info text-bold"
+                                                                    >
+                                                                        {{customerGeneral.today}}
+                                                                    </h1></label
+                                                                >
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div
+                                                    class="panel panel-hovered"
+                                                >
+                                                    <div class="panel-body">
+                                                        <div
+                                                            class="row form-group"
+                                                        >
+                                                            <div
+                                                                class="text-center"
+                                                            >
+                                                                <label
+                                                                    >Total de
+                                                                    clientes
+                                                                    morosos</label
+                                                                >
+                                                            </div>
+                                                            <div
+                                                                class="text-center"
+                                                            >
+                                                                <label
+                                                                    ><h1
+                                                                        class="mt0 text-info text-bold"
+                                                                    >
+                                                                        {{customerGeneral.notoday}}
+                                                                    </h1></label
+                                                                >
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="panel-footer clearfix panel-footer-sm panel-footer-info"
+                                    >
+                                        <p class="mt0 mb0 left"></p>
+                                        <span
+                                            sparkline
+                                            class="right"
+                                            type="bar"
+                                            bar-color="#fff"
+                                            width="1.15em"
+                                            height="1.15em"
+                                        ></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <div class="panel panel-success panel-hovered">
+                                    <div class="panel-body">
+                                        <div class="clearfix">
+                                            <h2 class="mt0 text-success text-bold">
+                                                REPORTE DE CREDITOS
+                                            </h2>
+                                            <br />
+                                            <div class="col-md-3">
+                                                <div class="panel panel-hovered">
+                                                    <div class="panel-body">
+                                                        <div class="row form-group">
+                                                            <div class="text-center">
+                                                                <label>
+																	Monto total cobrado
+																</label>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <label>
+																	<h1 class="mt0 text-success text-bold">
+                                                                        Q. {{customerGeneral.revenueTotals|number:"2"}}
+                                                                    </h1>
+																</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="panel panel-hovered">
+                                                    <div class="panel-body">
+                                                        <div class="row form-group">
+                                                            <div class="text-center">
+                                                                <label>
+																	Total pendiente a cobrar
+																	</label>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <label>
+																	<h1 class="mt0 text-success text-bold">
+                                                                        Q. {{customerGeneral.totalPendingReceivable|number:"2"}}
+                                                                    </h1>
+																</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="panel panel-hovered">
+                                                    <div class="panel-body">
+                                                        <div class="row form-group">
+                                                            <div class="text-center">
+                                                                <label>
+																	Monto total de créditos
+																</label>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <label>
+																	<h1 class="mt0 text-success text-bold">
+                                                                        Q. {{customerGeneral.totalReceivable|number:"2"}}
+                                                                    </h1>
+																</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="panel panel-hovered">
+                                                    <div class="panel-body">
+                                                        <div class="row form-group">
+                                                            <div class="text-center">
+                                                                <label>
+																	Total Invertido
+																</label>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <label>
+																	<h1 class="mt0 text-success text-bold">
+                                                                        Q. {{customerGeneral.totalInvested|number:"2"}}
+                                                                    </h1>
+																</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <divclass="panel-footer clearfix panel-footer-sm panel-footer-success">
+                                        <p class="mt0 mb0 left"></p>
+                                        <span
+                                            sparkline
+                                            class="right"
+                                            type="bar"
+                                            bar-color="#fff"
+                                            width="1.15em"
+                                            height="1.15em"
+                                        ></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="toast toast-{{positionModel}}">
+                    <alert
+                        ng-repeat="toast in toasts"
+                        type="{{toast.type}}"
+                        close="closeAlert($index)"
+                        class="toast-{{toast.anim}}"
+                    >
+                        <div ng-bind-html="toast.msg"></div>
+                    </alert>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #end page-wrap -->
 </div>
 <script>
-	$('.input-group.date').datepicker({format: "dd-mm-yyyy"}); 
+    $(".input-group.date").datepicker({ format: "dd-mm-yyyy" });
 </script>
