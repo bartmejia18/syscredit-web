@@ -93,7 +93,7 @@ class CobradorMovilController extends Controller {
                             $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
                             $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                             
-                            $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
+                            /*$currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
                             $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('Y-m-d');
                             $diffDays = $currentDate->diffInDays($dateFirstPay);
                             $sumarPayToday = false;
@@ -114,7 +114,7 @@ class CobradorMovilController extends Controller {
 
                             if ($sumarPayToday) {
                                 $totalacobrar = $totalacobrar + $item->cuota_diaria;
-                            }
+                            }*/
                         }
 
                         $datos = [];
