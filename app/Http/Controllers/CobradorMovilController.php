@@ -104,9 +104,7 @@ class CobradorMovilController extends Controller {
                             $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                             $item['saldo'] = number_format($item->saldo, 2, '.', '');
                             $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
-                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
-                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
-                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
+                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                                     
                             $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
                             $item['cantidad_cuotas_pagadas'] = $detailsPaymentsGeneral->totalFees; 
                             $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
@@ -114,6 +112,9 @@ class CobradorMovilController extends Controller {
                             $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
                             $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
                             $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
+
+                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');   
                         }
 
                         $datos = [];
