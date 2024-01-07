@@ -128,12 +128,12 @@ class CobradorController extends Controller {
                 $item['cantidad_cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
                 $item['monto_abonado'] = $detailsPaymentsForDay->paymentPaid;
                 $item['monto_pagado'] = $detailsPaymentsForDay->totalPayment;
-                $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d-m-Y');
-                $item['fecha_limite'] = \Carbon\Carbon::parse($item->fecha_limite)->format('d-m-Y');
+                $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
+                $item['fecha_limite'] = Carbon::parse($item->fecha_limite)->format('d-m-Y');
                 $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $request->input('fecha'));                    
 
-                $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
-                $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('Y-m-d');
+                $currentDate = Carbon::parse($request->input('fecha'));
+                $dateFirstPay = Carbon::parse($item->fecha_inicio);
                 $diffDays = $currentDate->diffInDays($dateFirstPay);
                 $sumarPayToday = false;
                 switch ($item->planes->tipo) {
