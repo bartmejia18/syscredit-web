@@ -133,7 +133,7 @@ class CobradorController extends Controller {
                 $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $request->input('fecha'));                    
 
                 $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
-                $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
+                $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('Y-m-d');
                 $diffDays = $currentDate->diffInDays($dateFirstPay);
                 $sumarPayToday = false;
                 switch ($item->planes->tipo) {
