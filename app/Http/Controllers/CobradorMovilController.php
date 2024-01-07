@@ -76,7 +76,6 @@ class CobradorMovilController extends Controller {
                         $totalacobrar = 0;
                         foreach ($registros as $item) {     
                                 
-                            $detailsPaymentsForDay = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));
                             $detailsPaymentsGeneral = $this->getDetailsPayments($item); 
 
                             $currentDate = Carbon::parse($request->input('fecha'));
@@ -109,7 +108,7 @@ class CobradorMovilController extends Controller {
                             $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
                             $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
                             $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
-                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees; 
+                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsGeneral->totalFees; 
                             $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
                             $item['cuotas_atrasadas'] = $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
                             $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
