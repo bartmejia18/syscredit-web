@@ -79,22 +79,8 @@ class CobradorMovilController extends Controller {
                             $detailsPaymentsForDay = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));
                             $detailsPaymentsGeneral = $this->getDetailsPayments($item); 
 
-                            $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
-                            $item['saldo'] = number_format($item->saldo, 2, '.', '');
-                            $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
-                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
-                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
-                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
-                            $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
-                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees; 
-                            $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
-                            $item['cuotas_atrasadas'] = $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
-                            $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
-                            $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
-                            $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
-                            
                             $currentDate = Carbon::parse($request->input('fecha'));
-                            $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $dateFirstPay = Carbon::parse($item->fecha_inicio);
                             $diffDays = $currentDate->diffInDays($dateFirstPay);
                             $sumarPayToday = false;
                             switch ($item->planes->tipo) {
@@ -115,6 +101,20 @@ class CobradorMovilController extends Controller {
                             if ($sumarPayToday) {
                                 $totalacobrar = $totalacobrar + $item->cuota_diaria;
                             }
+
+                            $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
+                            $item['saldo'] = number_format($item->saldo, 2, '.', '');
+                            $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
+                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
+                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
+                            $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
+                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees; 
+                            $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
+                            $item['cuotas_atrasadas'] = $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
+                            $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
+                            $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
+                            $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
                         }
 
                         $datos = [];
