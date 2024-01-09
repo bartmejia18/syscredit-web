@@ -112,6 +112,9 @@
 
       function showCustomer(data){
         var date = $("#fechapago").val()
+        
+        $scope.datas = []
+        $scope.plan = ""
 
         collectorService.detail(data.id, date).then(function(response){          
           $scope.collectorSelected = data       
