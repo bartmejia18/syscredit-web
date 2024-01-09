@@ -13,6 +13,7 @@ class ClientesActivos extends Model {
         'deudatotal',
         'cuota_diaria',
         'cuota_minima',
+        'dia_pago',
         'fecha_inicio',
         'fecha_fin',
         'estado',

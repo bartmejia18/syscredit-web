@@ -2,33 +2,53 @@
 
 namespace App\Http\Traits;
 
-use App\Creditos;
+use Carbon\Carbon;
 
 trait countDaysTrait {
-    public function getTotalDaysArrears($dateInitial, $feePaid, $sunday) {
-        $dateInitial = $dateInitial;
-        $dateFinal = date('Y-m-d');
+    /*public function getTotalDaysArrears($credit, $feePaid) {
+        $dateInitial = $credit->fecha_inicio;
+        $dateFinal = $credit->estado == 0 ? $credit->fecha_finalizado : date('Y-m-d');
 
         $totalDays = (strtotime($dateInitial)-strtotime($dateFinal))/86400;
         $totalDays = abs($totalDays); 
-        $totalDays = floor($totalDays + 1 );	
+        $totalDays = floor($totalDays + 1);	
     
-        $dateInit = new \DateTime($dateInitial);
         $countSundayTemporal = 0;
         
-        if ($sunday == 1) {
+        if ($credit->planes->domingo == 1) {
             for ($i=0; $i<$totalDays; $i++)  {  
-                $dateTemporal = strtotime ( '+'.$i.' day' , strtotime ( $dateInitial) ) ;
-                $dateTemporal = date ( 'd-m-Y' , $dateTemporal );
+                $dateTemporal = strtotime('+'.$i.'day', strtotime($dateInitial));
+                $dateTemporal = date('d-m-Y', $dateTemporal);
                 $dateTemporalNew = new \DateTime($dateTemporal);
                 $sundayTemporal = date("D", $dateTemporalNew->getTimestamp());
 
-                if($sundayTemporal == "Sun"){
+                if ($sundayTemporal == "Sun") {
                     ++$countSundayTemporal;
                 }
             }
         }
-
         return ($totalDays - $countSundayTemporal) - $feePaid;
+    }*/
+
+    public function countDaysBetweenDates($dateStart, $dateEnd, $withoutSunday) {
+        $totalDays = (strtotime($dateStart)-strtotime($dateEnd))/86400;
+        $totalDays = abs($totalDays); 
+        $totalDays = floor($totalDays + 1);	
+
+        $countSundayTemporal = 0;
+
+        if ($withoutSunday == 1) {
+            for ($i=0; $i < $totalDays; $i++) {
+                $dateTemporal = strtotime('+'.$i.'day', strtotime($dateStart));
+                    $dateTemporal = date('d-m-Y', $dateTemporal);
+                    $dateTemporalNew = new \DateTime($dateTemporal);
+                    $sundayTemporal = date("D", $dateTemporalNew->getTimestamp());
+
+                    if ($sundayTemporal == "Sun") {
+                        ++$countSundayTemporal;
+                    }
+            }
+        }
+        return $totalDays - $countSundayTemporal;
     }
 }

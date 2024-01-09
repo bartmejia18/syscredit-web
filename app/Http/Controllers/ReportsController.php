@@ -27,6 +27,7 @@ class ReportsController extends Controller
             $general->totalPendingReceivable =  $this->getPendingReceivable($request);
             $general->totalReceivable =  $this->getTotalReceivable($request);
             $general->totalGeneratedInterests = $this->getGeneratedInterests($request);
+            $general->totalInvested = $this->getAmountInvested($request);
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -55,6 +56,7 @@ class ReportsController extends Controller
             $general->totalPendingReceivable =  $this->getPendingReceivable($request);
             $general->totalReceivable =  $this->getTotalReceivable($request);
             $general->totalGeneratedInterests = $this->getGeneratedInterests($request);
+            $general->totalInvested = $this->getAmountInvested($request);
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -83,6 +85,7 @@ class ReportsController extends Controller
             $general->totalPendingReceivable =  $this->getPendingReceivable($request);
             $general->totalReceivable =  $this->getTotalReceivable($request);
             $general->totalGeneratedInterests = $this->getGeneratedInterests($request);
+            $general->totalInvested = $this->getAmountInvested($request);
 
             $this->statusCode   = 200;
             $this->result       = true;

@@ -19,6 +19,7 @@ class Creditos extends Model {
 		'cuota_diaria',
 		'cuota_minima',
 		'cuotas_atrasadas',
+		'dia_pago',
 		'fecha_inicio',
 		'fecha_fin',
 		'fecha_finalizado',

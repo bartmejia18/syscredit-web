@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Clientes;
 use App\Creditos;
-use App\DetallePagos;
 use App\Usuarios;
-use DB;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCreditsTrait;
+use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller {
     public $statusCode  = 200;
@@ -77,7 +75,7 @@ class ClientesController extends Controller {
     
     public function store(Request $request){
         try {
-            $nuevoRegistro = \DB::transaction( function() use ($request) {
+            $nuevoRegistro = DB::transaction( function() use ($request) {
                                 $nuevoRegistro = Clientes::create([
                                                     'sucursal_id'   => $request->session()->get($this->sessionKey)->sucursales_id,
                                                     'nombre'        => $request->input('nombre'),
@@ -152,7 +150,7 @@ class ClientesController extends Controller {
     public function update(Request $request, $id)
     {
         try {
-            \DB::beginTransaction();
+            DB::beginTransaction();
             $registro = Clientes::find( $id );
             $registro->nombre       = $request->input('nombre', $registro->nombre);
             $registro->apellido     = $request->input('apellido', $registro->apellido);
@@ -177,7 +175,7 @@ class ClientesController extends Controller {
             }
 
             if($registro->save()){
-                \DB::commit();
+                DB::commit();
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registro editado exitosamente";
@@ -187,7 +185,7 @@ class ClientesController extends Controller {
             }
                 
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             $this->statusCode   = 200;
             $this->result       = false;
             $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al editar el registro";
@@ -209,7 +207,7 @@ class ClientesController extends Controller {
         try {
             $credit = Creditos::where("clientes_id", $id)->get();
 
-            $deleteRegistro = \DB::transaction( function() use ( $id ) {
+            $deleteRegistro = DB::transaction( function() use ( $id ) {
                                 $credit = Creditos::where('clientes_id', $id)->where('estado', 1)->get();
 
                                 if ($credit->count() > 0) {
