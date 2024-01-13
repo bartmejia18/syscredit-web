@@ -21,10 +21,12 @@ class ReportsController extends Controller
         try {        
             $general = new \stdClass();          
             $general->customers = $this->getCountCustomers($request);
+            
+            $resumenOfCredits = $this->resumenOfCredits($request);
             $general->revenueTotals =  $this->getRevenueTotals($request);
-            $general->totalPendingReceivable =  $this->getPendingReceivable($request);
-            $general->totalReceivable =  $this->getTotalReceivable($request);
-            $general->totalGeneratedInterests = $this->getGeneratedInterests($request);
+            $general->totalPendingReceivable =  $resumenOfCredits->pendingReceivable;
+            $general->totalReceivable =  $resumenOfCredits->totalReceivable;
+            $general->totalGeneratedInterests = $resumenOfCredits->generatedInterests;
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -49,10 +51,13 @@ class ReportsController extends Controller
         try {
             $general = new \stdClass();          
             $general->customers = $this->getCountCustomers($request);
+
+            $resumenOfCredits = $this->resumenOfCredits($request);
             $general->revenueTotals =  $this->getRevenueTotals($request);
-            $general->totalPendingReceivable =  $this->getPendingReceivable($request);
-            $general->totalReceivable =  $this->getTotalReceivable($request);
-            $general->totalGeneratedInterests = $this->getGeneratedInterests($request);
+            $general->totalPendingReceivable =  $resumenOfCredits->pendingReceivable;
+            $general->totalReceivable =  $resumenOfCredits->totalReceivable;
+            $general->totalGeneratedInterests = $resumenOfCredits->generatedInterests;
+            $general->totalAmountToCollected = $this->getAmountToColletedForCollector($request);
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -77,10 +82,12 @@ class ReportsController extends Controller
         try {
             $general = new \stdClass();          
             $general->customers = $this->getCountCustomers($request);
+
+            $resumenOfCredits = $this->resumenOfCredits($request);
             $general->revenueTotals =  $this->getRevenueTotals($request);
-            $general->totalPendingReceivable =  $this->getPendingReceivable($request);
-            $general->totalReceivable =  $this->getTotalReceivable($request);
-            $general->totalGeneratedInterests = $this->getGeneratedInterests($request);
+            $general->totalPendingReceivable =  $resumenOfCredits->pendingReceivable;
+            $general->totalReceivable =  $resumenOfCredits->totalReceivable;
+            $general->totalGeneratedInterests = $resumenOfCredits->generatedInterests;
 
             $this->statusCode   = 200;
             $this->result       = true;
@@ -107,6 +114,28 @@ class ReportsController extends Controller
             $this->result       = true;
             $this->message      = "Registros consultados exitosamente";
             $this->records      = $this->getCredits($request);
+
+
+        } catch (\Exception $e) {
+            $this->statusCode = 200;
+            $this->result = false;
+            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
+        } finally {
+            $response = [
+                'result'    => $this->result,
+                'message'   => $this->message,
+                'records'   => $this->records,
+            ];
+            return response()->json($response, $this->statusCode);
+        }
+    }
+
+    public function amountToColletedForCollector(Request $request) {
+        try {
+            $this->statusCode   = 200;
+            $this->result       = true;
+            $this->message      = "Registros consultados exitosamente";
+            $this->records      = $this->getAmountToColletedForCollector($request);
 
 
         } catch (\Exception $e) {
