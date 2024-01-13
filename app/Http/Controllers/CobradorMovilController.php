@@ -99,7 +99,7 @@ class CobradorMovilController extends Controller {
 
                         foreach ($activeCredits as $item) { 
                             $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
-                            $cuotas_atrasadas = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrears($item, $cuotas_pagadas);  
+                            $cuotas_atrasadas = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrearsWithTotalPaid($item, $cuotas_pagadas);  
 
                             $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                             $item['saldo'] = number_format($item->saldo, 2, '.', '');

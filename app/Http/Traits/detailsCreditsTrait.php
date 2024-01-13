@@ -3,44 +3,47 @@
 namespace App\Http\Traits;
 
 use App\Creditos;
+use App\DetallePagos;
 use stdClass;
+use App\Http\Traits\datesUtilsTrait;
+use Carbon\Carbon;
+use DateTime;
 
 trait detailsCreditsTrait {
 
-    public function getStatusCredits($customerId){
-        $detailCredits = new stdClass();
-        
-        $credits = Creditos::where('clientes_id', $customerId)
-            ->where('estado','!=',2)
-            ->orderBy('id', 'desc')
-            ->get();
+    use datesUtilsTrait;
 
-        $totalCredits = $credits->count();
-        if ($totalCredits > 0) {
-            $complete = $credits->where('estado', 0)->count();
-            $detailCredits->status = $complete == $totalCredits ? 3 : 2;
-            $detailCredits->creditsActives =  $totalCredits - $complete;
-            $detailCredits->totalCredits = $totalCredits;
-            $detailCredits->collector = $credits[0]->usuarios_cobrador;
-
-            $arrersCredits = $this->getArrearsForCredits($credits);
-            $detailCredits->arrearsStatus = $this->getArrearsStatus($arrersCredits);
-        } else {
-            $detailCredits->status = 1;
-            $detailCredits->creditsActives =  0;
-            $detailCredits->totalCredits = 0;
-            $detailCredits->collector = 0;
-            $detailCredits->arrearsStatus = "";
-        }
-
-        return $detailCredits;
+    public function getCreditsForCustomerId($customerId) {
+        return Creditos::with('planes')
+                    ->where('clientes_id', $customerId)
+                    ->where('estado','!=',2)
+                    ->orderBy('id', 'desc')
+                    ->get();
     }
 
+    public function getTotalActiveCompleted($credits) {
+        $total = new stdClass();
+        
+        $countCredits = $credits->count();
+
+        $total->totalCredits = $countCredits;
+        $total->creditsCompleted = $credits->where('estado', 0)->count();
+        $total->creditsActives =  $countCredits - $total->creditsCompleted;
+        $total->status = $total->creditsCompleted == $countCredits ? 3 : 2;
+        
+        return $total;
+    }
+
+    public function getGeneralStatusCustomer($credits) {
+        $arrersCredits = $this->getArrearsForCredits($credits);
+        return $this->getArrearsStatus($arrersCredits);
+    }
+
+
     public function getArrearsForCredits($credits) {
-        $credits->map(function($item, $key) {
-            if ($item->cuotas_atrasadas == 0) {
-                $totalFeesPaid = $this->getDetailsPayments($item)->totalFees;
-                $item->cuotas_atrasadas = $this->getTotalDaysArrears($item, $totalFeesPaid);
+        $credits->map(function($item, $key) {            
+            if ($item->estado == 1) {
+                $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
             }
             return $item;
         });
@@ -74,33 +77,26 @@ trait detailsCreditsTrait {
     }
 
     public function getArrearsStatus($arrearsCredits) {
-        if ($arrearsCredits['moroso'] > 0) {
-            return 'Moroso';
-        } else if ($arrearsCredits['bueno'] > 0) {
-            return 'Bueno';
-        } else if ($arrearsCredits['excelente'] > 0) {
-            return 'Excelente';
+        if ($arrearsCredits['moroso'] == 0 && $arrearsCredits['bueno'] == 0 && $arrearsCredits['excelente'] > 0) {
+            return "A";
+        } else if ($arrearsCredits['moroso'] >= 0 && $arrearsCredits['moroso'] <= 1 && $arrearsCredits['bueno'] >= 0 && $arrearsCredits['excelente'] >= 0) {
+            return "B";
+        } else if ($arrearsCredits['moroso'] >= 2 && $arrearsCredits['moroso'] < 4) {
+            return "C";
+        } else if ($arrearsCredits['moroso'] >= 3 && $arrearsCredits['moroso'] < 5) {
+            return "D";
+        } else if ($arrearsCredits['moroso'] >= 5) {
+            return "E";
         }
     }
 
-    public function getArrearsForCustomerId($customerId) {
-        $credits = Creditos::where('clientes_id', $customerId)
-            ->where('estado','!=',2)
-            ->orderBy('id', 'desc')
-            ->get();
-
-        return $this->getArrearsForCredits($credits);
-    }
-
-    public function getArrearsStatusForCustomerId($customerId) {
-        $arrearsCredits = $this->getArrearsForCustomerId($customerId);
-
-        return $this->getArrearsStatus($arrearsCredits);
-    }
-
-    public function getTotalDaysArrears($credit, $feePaid) {
+    /*
+        Obtiene la cantidad de atrasos menos el total pagado
+    */
+    public function getTotalDaysArrearsWithTotalPaid($credit, $feePaid) {
         $dateInitial = $credit->fecha_inicio;
-        $dateFinal = $credit->estado == 0 ? $credit->fecha_finalizado : date('Y-m-d');
+        $dateFinal = $this->getDateFinalCredit($credit);
+    
 
         $totalDays = (strtotime($dateInitial) - strtotime($dateFinal))/86400;
         $totalDays = abs($totalDays); 
@@ -109,7 +105,7 @@ trait detailsCreditsTrait {
         
         if ($credit->planes->tipo == 0 || $credit->planes->tipo == 1) {
             $countSundayTemporal = 0;
-            if ($credit->planes->domingo == 1 && $totalDays < 360) {
+            if ($credit->planes->domingo == 1) {
                 for ($i=0; $i<$totalDays; $i++)  {  
                     $dateTemporal = strtotime('+'.$i.'day', strtotime($dateInitial));
                     $dateTemporal = date('d-m-Y', $dateTemporal);
@@ -128,6 +124,80 @@ trait detailsCreditsTrait {
             $totalDays = floor($totalDays / 30);
         }
         return $totalDays - $feePaid;
+    }
+
+    public function getTotalDaysArrears($credit) {
+        $dateInitial = $credit->fecha_inicio;
+        $dateFinal = $this->getDateFinalCredit($credit);
+
+        $detailsPayments = DetallePagos::where('credito_id',$credit->id)->get();
+
+        $dtInit = strtotime($dateInitial);
+        $dtFin = strtotime($dateFinal);
+        $countDaysArrears = 0;
+        if ($detailsPayments->count() > 0) {
+            
+            if ($credit->planes->tipo == 0 || $credit->planes->tipo == 1) {
+                /*
+                    Ciclo for que aumenta día a día (86400) para plan diario
+                */
+                for($i = $dtInit; $i <= $dtFin; $i+=86400){
+                    
+                    $detailPayment = $this->findDateInPayments($detailsPayments, $i);
+
+                    if ($credit->planes->domingo == 1) {
+                        $sunday = new DateTime(date('d-m-Y', $i));
+                        if (date("D", $sunday->getTimestamp()) != "Sun") {
+                            if ($this->isValidPayment($detailPayment, $credit) == false) {
+                                ++$countDaysArrears;
+                            }
+                        }
+                    } else {
+                        if ($this->isValidPayment($detailPayment, $credit) == false) {
+                            ++$countDaysArrears;
+                        }
+                    }
+                }
+            } else if ($credit->planes->tipo == 2) {
+                /*
+                    Ciclo for que aumenta cada 7 día (604800) para plan semanal
+                */
+                for($i = strtotime($dateInitial); $i <= strtotime($dateFinal); $i+=604800) {
+                    $detailPayment = $this->findDateInPayments($detailsPayments, $i);
+
+                    if ($this->isValidPayment($detailPayment, $credit) == false) {
+                        ++$countDaysArrears;
+                    }                    
+                }
+            }
+        } else {
+            $currentDate = Carbon::createFromFormat('Y-m-d', $dateFinal);
+            $dateFirstPay = Carbon::createFromFormat('Y-m-d', $dateInitial);
+            $countDaysArrears = $currentDate->diffInDays($dateFirstPay);
+        }
+        return $countDaysArrears;
+    }
+
+    public function findDateInPayments($detailsPayments, $date) {
+        return $detailsPayments->filter(function($payment) use ($date) {
+                    return $payment->fecha_pago == date("Y-m-d", $date);
+                })->first();
+    }
+
+    public function isValidPayment($detailPayment, $credit) {
+        if ($detailPayment && $detailPayment->abono >= $credit->cuota_diaria && strtotime($detailPayment->fecha_pago) <= strtotime($credit->fecha_fin)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function setArrearsToCreditComplete($credit) {
+        $daysLate = $this->getTotalDaysArrears($credit);
+
+        $credit->cuotas_atrasadas = $daysLate;
+        $credit->estado_morosidad = $this->getArrearsStatusForDays($daysLate);
+        $credit->save();
     }
 
     public function getArrearsStatusForDays($days) {

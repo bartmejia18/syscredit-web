@@ -57,14 +57,7 @@ class CreditosController extends Controller
 
     public function store(Request $request){
         try {
-            $plan = Planes::find($request->input('idplan'));
-            if ($plan->domingo == "1") {
-                $lastDate = $this->getLastDayWithoutSunday(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
-            } else {
-                $lastDate = $this->getLastDay(\Carbon\Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),$plan->dias);
-            }
-
-            $nuevoRegistro = DB::transaction(function() use ($request, $lastDate) {
+            $nuevoRegistro = DB::transaction(function() use ($request) {
                                 $nuevoRegistro = Creditos::create([
                                                     'clientes_id'           => $request->input('idcliente'),
                                                     'planes_id'             => $request->input('idplan'),
@@ -79,7 +72,7 @@ class CreditosController extends Controller
                                                     'cuota_minima'          => $request->input('cuota_minima'),
                                                     'cuotas_atrasadas'      => 0,
                                                     'fecha_inicio'          => Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
-                                                    'fecha_fin'             => Carbon::parse($lastDate)->format('Y-m-d'),
+                                                    'fecha_fin'             => Carbon::parse($request->input('fecha_limite'))->format('Y-m-d'),
                                                     'estado'                => 1,
                                                 ]);
 
@@ -167,8 +160,6 @@ class CreditosController extends Controller
             $credito = Creditos::where('id', $request->input('idcredito'))->with('planes','montos')->first();
             if ($credito) {
                 
-                $this->setDaysLate($credito);
-                
                 $detallePagos = DetallePagos::where('credito_id', $credito->id)->where('estado', 1)->get();
 
                 if ($detallePagos->count() > 0) {
@@ -205,6 +196,7 @@ class CreditosController extends Controller
                         $credito->saldo = $balance;
                         $credito->fecha_finalizado = Carbon::parse(date('Y-m-d'));
                         $credito->estado = 0;
+                        $this->setDaysLate($credito);
                     } else {
                         $credito->saldo = $balance;
                     }
@@ -336,8 +328,7 @@ class CreditosController extends Controller
     }
 
     public function setDaysLate($credito) {
-        $totalFeesPaid = $this->getDetailsPayments($credito)->totalFees;
-        $daysLate = $this->getTotalDaysArrears($credito, $totalFeesPaid) - 1;
+        $daysLate = $this->getTotalDaysArrears($credito);
 
         $credito->cuotas_atrasadas = $daysLate;
         $credito->estado_morosidad = $this->getArrearsStatusForDays($daysLate);

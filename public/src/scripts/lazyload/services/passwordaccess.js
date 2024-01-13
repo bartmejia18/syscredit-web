@@ -6,4 +6,8 @@ password_access.service('passwordAccessService', ['$http', 'API_URL', function($
     this.valitePasswordForAccess = function(password) {
         return $http.post(API_URL+'passwordaccess', password);
     }
+
+    this.valitePasswordSupervisor = function(data) {
+        return $http.post(API_URL+'supervisoraccess', data);
+    }
 }]);

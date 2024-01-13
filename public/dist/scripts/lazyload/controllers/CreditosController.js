@@ -2,7 +2,12 @@
     "use strict";
 
     angular
-        .module("app.creditos", ["app.constants", "app.service.pdfs"])
+        .module("app.creditos", [
+            "app.constants", 
+            "app.service.pdfs",
+            "app.service.passwordaccess",
+            "app.service.clientunlock"
+        ])
 
         .controller("CreditosController", [
             "$scope",
@@ -11,6 +16,8 @@
             "$modal",
             "$interval",
             "pdfsService",
+            "passwordAccessService",
+            "clientUnlockService",
             "API_URL",
             function (
                 $scope,
@@ -19,12 +26,16 @@
                 $modal,
                 $timeout,
                 pdfsService,
+                passwordAccessService,
+                clientUnlockService,
                 API_URL
             ) {
                 $scope.positionModel = "topRight";
                 $scope.detalle_cliente = {};
                 $scope.toasts = [];
                 $scope.usuarios_cobrador = Array();
+                $scope.passwordResult = 0;
+                $scope.supervisor = {};
                 var modal;
 
                 const CUSTOMER_DELETED = "customer_deleted";
@@ -263,7 +274,8 @@
                             params: { dpi: dpi },
                         }).then(function successCallback(response) {
                             if (response.data.result) {
-                                $scope.cliente = response.data.records;
+                                $scope.cliente.exists = true 
+                                $scope.cliente = response.data.records
                             } else {
                                 $scope.cliente.statusCredit = 0;
                             }
@@ -272,7 +284,6 @@
                 };
 
                 $scope.optionNo = function() {
-                    console.log("option no")
                     modal.close()
                 }
 
@@ -281,6 +292,71 @@
                         167
                     );
                     modal.close()
+                }
+
+                $scope.validatePassword = function (data) {
+                    passwordAccessService
+                        .valitePasswordSupervisor(data)
+                        .then(function succesCallback(response) {
+                            if (response.data.result == true) {
+                                $scope.passwordResult = 1;
+                                $scope.supervisor = response.data.records
+                            } else {
+                                $scope.supervisor = null
+                                $scope.passwordResult = 0;
+                                $("#alertPasswordIncorrect").removeClass("hidden")
+                            }
+                        },
+                        function errorCallback(response) {
+                            $scope.supervisor = null
+                            $scope.passwordResult = 0;
+                            $("#alertPasswordIncorrect").removeClass("hidden")
+                        });
+                };
+
+                $scope.detailsUnlockClient = function (client, data) {
+
+                    data.clientId = client.id
+                    data.supervisorId = $scope.supervisor.id
+
+                    console.log(data)
+
+                    clientUnlockService.create(data)
+                        .then(function succesCallback(response) {
+                            if (response.data.result) {
+                                $scope.createToast(
+                                    "success",
+                                    "<strong>Éxito: </strong>Se ha desbloquedo el cliente"
+                                );
+                                $timeout(function () {
+                                    $scope.closeAlert(0);
+                                }, 3000);
+
+                                $("#row-detalle").removeClass("hidden");
+                                $(".btn-new-customer").prop("disabled", true);
+                                modal.close();
+                                updateCustomer(client);
+                            } else {
+                                $scope.createToast(
+                                    "danger",
+                                    "<strong>Error: </strong>" +
+                                        response.data.message
+                                );
+                                $timeout(function () {
+                                    $scope.closeAlert(0);
+                                }, 5000);
+                            }
+                        },
+                        function errorCallback(response) {
+                            $scope.createToast(
+                                "danger",
+                                "<strong>Error: </strong>" +
+                                    response.data.message
+                            );
+                            $timeout(function () {
+                                $scope.closeAlert(0);
+                            }, 5000);
+                        });
                 }
 
                 function updateCustomer(cliente) {
@@ -401,6 +477,20 @@
 
                     modal = $modal.open({
                         templateUrl: "views/creditos/modalReconocimientoDeuda.html",
+                        scope: $scope,
+                        size: "md",
+                        resolve: function () {},
+                        windowClass: "default",
+                    });
+                };
+
+                $scope.modalUnlockClient = function (customer) {
+                    modal.close()
+                    
+                    $scope.cliente = customer;
+                    
+                    modal = $modal.open({
+                        templateUrl: "views/creditos/modalUnlockClient.html",
                         scope: $scope,
                         size: "md",
                         resolve: function () {},
