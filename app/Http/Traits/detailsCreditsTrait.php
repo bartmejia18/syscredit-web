@@ -41,12 +41,7 @@ trait detailsCreditsTrait {
 
 
     public function getArrearsForCredits($credits) {
-        $credits->map(function($item, $key) {
-            //TODO: Eliminar para una nueva implementación
-            if ($item->estado == 0 && $item->cuotas_atrasadas == 0 && $item->estado_morosidad) {
-                $this->setArrearsToCreditComplete($item);
-            } 
-            
+        $credits->map(function($item, $key) {            
             if ($item->estado == 1) {
                 $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
             }

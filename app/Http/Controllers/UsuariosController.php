@@ -8,9 +8,10 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Usuarios;
 use Auth;
-use DB;
 use Session;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 //revisar el usuario que no sea repedito
 //validar el password que vaya vacio
@@ -61,22 +62,25 @@ class UsuariosController extends Controller {
             $registro = Usuarios::where('user',strtolower($request->input('user')))->get();
 
             if (count($registro) == 0) {
-                $nuevoRegistro = \DB::transaction( function() use ( $request){
+                $nuevoRegistro = DB::transaction( function() use ( $request){
                                     $nuevoRegistro = Usuarios::create([
                                                         'tipo_usuarios_id'  => $request->input('tipo_usuarios_id'),
+                                                        'sucursales_id'     => $request->input('sucursales_id'),
+                                                        'code'  => 0,
                                                         'nombre'            => $request->input('nombre'),
                                                         'user'              => strtolower($request->input('user')),
                                                         'estado'            => 1,
-                                                        'sucursales_id'     => $request->input('sucursales_id'),
-                                                        'password'          => \Hash::make($request->input('password')),
-                                                        'password_2'        => \Hash::make($request->input('password2')),
-
+                                                        'password'          => Hash::make($request->input('password')),
+                                                        'password_2'        => Hash::make($request->input('password2')),
                                                     ]);
 
-                                    if( !$nuevoRegistro )
+                                    if (!$nuevoRegistro) {
                                         throw new \Exception("No se pudo crear el registro");
-                                    else
+                                    } else {
+                                        $nuevoRegistro->code = $request->input('sucursales_id') . $request->input('tipo_usuarios_id') . $nuevoRegistro->id;
+                                        $nuevoRegistro->save();
                                         return $nuevoRegistro;
+                                    }
                                 });
             } else
                 throw new \Exception("Usuario ingresado ya existe, favor verifica");
@@ -131,29 +135,29 @@ class UsuariosController extends Controller {
             $registroUsuario = Usuarios::where('user',strtolower($request->input('user')))->get();
 
             if (count($registroUsuario) == 0)
-                \DB::beginTransaction();
+                DB::beginTransaction();
                 $registro = Usuarios::find( $id );
                 $registro->tipo_usuarios_id = $request->input('idtipousuario', $registro->tipo_usuarios_id);
+                $registro->sucursales_id    = $request->input('idsucursal', $registro->sucursales_id);
                 $registro->nombre           = $request->input('nombre', $registro->nombre);
                 $registro->user             = strtolower($request->input('user', $registro->user));
                 $registro->estado           = $request->input('estado', $registro->estado);
-                $registro->sucursales_id    = $request->input('idsucursal', $registro->sucursales_id);
 
                 if($request->input("password")!="")
-                    $registro->password       = \Hash::make($request->input('password'));
+                    $registro->password       = Hash::make($request->input('password'));
                 if($request->input("password2")!="")   
-                    $registro->password_2     = \Hash::make($request->input('password2')); 
+                    $registro->password_2     = Hash::make($request->input('password2')); 
 
                 $registro->password_2       = $request->input('password2', $registro->password_2);
                 $registro->save();
 
-            \DB::commit();
+            DB::commit();
             $this->status_code   = 200;
             $this->result       = true;
             $this->message      = "Registro editado exitosamente";
             $this->records      = $registro;
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             $this->status_code   = 200;
             $this->result       = false;
             $this->message = env('APP_DEBUG') ? $e->getMessage() : $this->message;
@@ -170,7 +174,7 @@ class UsuariosController extends Controller {
 
     public function destroy($id) {
         try {
-            $deleteRegistro = \DB::transaction( function() use ($id) {
+            $deleteRegistro = DB::transaction( function() use ($id) {
                                 $registro = Usuarios::find( $id );
                                 $registro->estado = 2;
                                 $registro->save();
@@ -230,7 +234,9 @@ class UsuariosController extends Controller {
 
     public function listaCobradores(Request $request) {
         try {
-            $registros = Usuarios::where('tipo_usuarios_id',4)->orderBy('estado','asc')->get();
+            $registros = Usuarios::where('tipo_usuarios_id',4)
+                        ->orderBy('estado','asc')
+                        ->get();
 
             if (count($registros) > 0) {
                 $this->status_code   = 200;
@@ -278,6 +284,36 @@ class UsuariosController extends Controller {
             ];
 
             return response()->json($responseObject, $this->status_code);
+        }
+    }
+
+    public function passwordSupervisor(Request $request) {
+        try {
+            $user = Usuarios::where('code',$request->input("code"))
+                            ->where('tipo_usuarios_id', 5)
+                            ->where('estado', 1)
+                            ->first();
+
+            if ($user && Hash::check($request->input("password"), $user->password) && $user->sucursales_id == $request->session()->get('usuario')->sucursales_id) {
+                $this->message      =   "Credenciales validas";
+                $this->result       =   true;
+                $this->status_code   =   200;
+                $this->records = $user;
+            } else {
+                throw new Exception("No se pudo validar el usuario");
+            }
+        } catch (Exception $e) {
+            $this->status_code = 200;
+            $this->message = env('APP_DEBUG') ? $e->getMessage() : $this->message;
+            $this->result = false;
+        } finally {
+            $response = [
+                'message'   =>  $this->message,
+                'result'    =>  $this->result,
+                'records'   =>  $this->records
+            ];
+            
+            return response()->json($response, $this->status_code);
         }
     }
 }

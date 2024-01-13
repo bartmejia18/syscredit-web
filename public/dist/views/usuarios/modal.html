@@ -13,6 +13,18 @@
 		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'editar'" action="javascript:;" novalidate>
 			<div class="row form-group">
 				<div class="col-sm-6">
+					<label class="control-label">Tipo de usuario</label>
+					<select 
+						class="form-control" 
+						ng-model="usuario.tipo_usuarios_id" 
+						ng-options="item.id as item.descripcion for item in tipousuarios" 
+						required>
+					</select>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-6">
 					<label>Nombre de usuario</label>
 					<input type="text" class="form-control" ng-model="usuario.nombre" required>
 				</div>
@@ -33,12 +45,13 @@
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-6">
-					<label class="control-label">Tipo de usuario</label>
-					<select class="form-control" ng-model="usuario.tipo_usuarios_id" ng-options="item.id as item.descripcion for item in tipousuarios" required></select>
-				</div>
-				<div class="col-sm-6">
 					<label class="control-label">Sucursal</label>
-					<select class="form-control" ng-model="usuario.sucursales_id" ng-options="item.id as item.descripcion for item in sucursales" required></select>
+					<select 
+						class="form-control" 
+						ng-model="usuario.sucursales_id" 
+						ng-options="item.id as item.descripcion for item in sucursales" 
+						required>
+					</select>
 				</div>
 			</div>
 			<div class="row form-group" ng-if="accion == 'editar'">

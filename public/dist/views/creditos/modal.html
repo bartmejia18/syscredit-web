@@ -9,8 +9,19 @@
 			<div class="row form-group">
 				<div class="col-sm-12">
 					<label>DPI</label>				
-					<input type="number" class="form-control" ng-if="accion == 'crear'" ng-model="cliente.dpi" ng-change="findUser(cliente.dpi)" required maxlength="13">
-					<input type="text" class="form-control" ng-if="accion == 'info'" ng-model="cliente.dpi" required>
+					<input 
+						type="number" 
+						class="form-control" 
+						ng-if="accion == 'crear'" 
+						ng-model="cliente.dpi" 
+						ng-change="findUser(cliente.dpi)" 
+						required 
+						maxlength="13">
+					<input 
+						type="text" 
+						class="form-control" 
+						ng-if="accion == 'info'" 
+						ng-model="cliente.dpi" required>
 				</div>
 			</div>
 			<div class="row form-group">
@@ -53,59 +64,79 @@
 					</select>
 				</div>
 			</div>
-			<br>
-			<div ng-show="cliente.arrearsStatus != ''">
-				<div class="row form-group">
-					<div class="col-sm-12">
-						<div ng-if="cliente.arrearsStatus == 'Moroso'" class="alert alert-danger clearfix">
-							<div class="row">
-								<div class="col-md-6 text-left">
-									<span>Tipo de cliente: <strong>{{cliente.arrearsStatus.toUpperCase()}}</strong></span>
-								</div>
-								<div class="col-md-6 text-right">
-									<a 
-										type="button" 
-										class="btn btn-default btn-xs"
-										href="#/detallecliente/{{ cliente.id }}"
-										ng-click="modalClose()">
-										REVISAR CRÉDITOS
-									</a>
-								</div>
-							</div>
-						</div>
-
-						<div ng-if="cliente.arrearsStatus == 'Bueno'" class="alert alert-warning clearfix">
-							<div>Tipo de cliente: <strong>{{cliente.arrearsStatus.toUpperCase()}} </strong></div>
-						</div>
-
-						<div ng-if="cliente.arrearsStatus == 'Excelente'" class="alert alert-success clearfix">
-							<div>Tipo de cliente: <strong>{{cliente.arrearsStatus.toUpperCase()}}</strong></div>
-						</div>
-					</div>
-				</div>
-			</div>
 			<div ng-show="cliente.statusCredit != 0">
 				<div class="row form-group">
 					<div class="col-sm-12">
-						<div class="alert alert-danger">
-							<div ng-if="cliente.statusCredit == 1"><strong>¡Alerta! </strong> El cliente ya existe en el sistema, pero no tiene crédito asignado. ¿Desea asignarle crédito?</div>
-							<div ng-if="cliente.statusCredit == 2"><strong>¡Alerta! </strong> El cliente actualmente cuenta con <b>{{cliente.totalCreditsActive}}</b> crédito(s) con saldo pendiente. ¿Desea agregar otro crédito?</div>
-							<div ng-if="cliente.statusCredit == 3"><strong>¡Alerta! </strong> El cliente ha completado <b>{{cliente.totalCredits}}</b> crédito(s). ¿Desea agregar otro crédito?</div>
-							<div ng-if="cliente.statusCredit == 4"><strong>¡Alerta! </strong> El cliente se encuentra eliminado. ¿Desea activar y asignarle crédito? </div>
+						<div ng-show="cliente.statusCredit != 0">
+							<div class="row form-group">
+								<div class="col-md-12 col-sm-12">
+									<accordion class="accordion-panel">
+										<accordion-group class="panel-default" is-open="status.open">
+											<accordion-heading>
+												<span ng-if="cliente.categoria == 'A'" class="badge" style="background-color: green;">Categoria del cliente: <strong>< A ></strong></span>
+												<span ng-if="cliente.categoria == 'B'" class="badge" style="background-color: lightskyblue;">Categoria del cliente:<strong>< B ></strong></span>
+												<span ng-if="cliente.categoria == 'C'" class="badge" style="background-color: rgb(39, 39, 137);">Categoria del cliente: <strong>< C ></strong></span>
+												<span ng-if="cliente.categoria == 'D'" class="badge" style="background-color: orange">Categoria del cliente: <strong>< D ></strong></span>
+												<span ng-if="cliente.categoria == 'E'" class="badge" style="background-color: red">Categoria del cliente: <strong>< E ></strong></span>
+											</accordion-heading>
+											<p class="small text-muted text-uppercase text-bold mb15">TOTAL DE CRÉDITOS: {{cliente.totalCredits}}</p>
+											<ul class="list-group">
+												<li class="list-group-item" ng-show="cliente.arrearsCredits.excelente > 0">
+													Excelentes
+													<span class="badge right badge-sm badge-success"><b>{{cliente.arrearsCredits.excelente}}</b></span>
+												</li>
+												<li class="list-group-item" ng-show="cliente.arrearsCredits.bueno > 0">
+													Buenos
+													<span class="badge right badge-sm badge-info"><b>{{cliente.arrearsCredits.bueno}}</b></span>
+												</li>
+												<li class="list-group-item"  ng-show="cliente.arrearsCredits.moroso > 0">
+													Morosos
+													<span class="badge right badge-sm badge-danger"><b>{{cliente.arrearsCredits.moroso}}</b></span>
+												</li>
+											</ul>
+										</accordion-group>
+									</accordion>
+									<div class="alert alert-danger">
+										<div ng-if="cliente.statusCredit == 1"><strong>¡Alerta! </strong> El cliente ya existe en el sistema, pero no tiene crédito asignado. ¿Desea asignarle crédito?</div>
+										<div ng-if="cliente.statusCredit == 2"><strong>¡Alerta! </strong> El cliente actualmente cuenta con <b>{{cliente.totalCreditsActive}}</b> crédito(s) con saldo pendiente. ¿Desea agregar otro crédito?</div>
+										<div ng-if="cliente.statusCredit == 3"><strong>¡Alerta! </strong> El cliente ha completado <b>{{cliente.totalCredits}}</b> crédito(s). ¿Desea agregar otro crédito?</div>
+										<div ng-if="cliente.statusCredit == 4"><strong>¡Alerta! </strong> El cliente se encuentra eliminado. ¿Desea activar y asignarle crédito? </div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			
 			<div class="row form-group">
 				<div class="col-sm-12 text-right">
 					<div ng-show="cliente.statusCredit == 0">
 						<button class="btn-new-customer btn btn-success" ng-if="accion == 'crear'" ng-click="saveDataNewClient(cliente)" ng-disabled="form.$invalid">Registrar</button>
 					</div>
-					<div ng-show="cliente.statusCredit != 0 && cliente.arrearsStatus != 'Moroso'">						
-						<button class="btn-new-customer btn btn-success" ng-show="cliente.statusCredit != 2" ng-click="addCredit(cliente)">Confirmar</button>
-						<button class="btn-new-customer btn btn-success" ng-show="cliente.statusCredit == 2" ng-click="addNewCredit(cliente)">Confirmar</button>
-						<button class="btn btn-danger" ng-click="modalClose()">Cancelar</button>
+					<div ng-show="cliente.statusCredit != 0">		
+						<button 
+							class="btn-new-customer btn btn-info" 
+							ng-if="cliente.categoria == 'E'" 
+							ng-click="modalUnlockClient(cliente)">
+							Solicitar desbloqueo
+						</button>
+						<button 
+							class="btn-new-customer btn btn-success" 
+							ng-if="cliente.statusCredit != 2 && cliente.categoria != 'E'" 
+							ng-click="addCredit(cliente)">
+							Confirmar
+						</button>
+						<button 
+							class="btn-new-customer btn btn-success" 
+							ng-if="cliente.statusCredit == 2 && cliente.categoria != 'E'" 
+							ng-click="addNewCredit(cliente)">
+							Confirmar
+						</button>
+						<button 
+							class="btn btn-danger" 
+							ng-click="modalClose()">
+							Cancelar
+						</button>
 					</div>
 				</div>
 			</div>

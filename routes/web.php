@@ -62,7 +62,9 @@ Route::prefix('ws')->group(function () {
 	Route::get('detallecliente',			'ClientesController@detalleCreditoCliente');
 	Route::get('branch/customers',			'ClientesController@customersByBranch');	
 	Route::get('printaccountstatus',		'ClientesController@printPDFAccountStatus');
-	Route::post('passwordaccess', 			'ClientesController@randomPasswordAccess');
+
+	Route::resource('clientUnlock',			'ClientesDesbloqueadosController');
+	Route::get('clientUnlockById',			'ClientesDesbloqueadosController@findByClientId');
 	
 	Route::get('paymenthistory',			'HistorialPagosController@paymentHistory');
 	Route::get('deletepayment',				'HistorialPagosController@deletePayment');
@@ -77,6 +79,9 @@ Route::prefix('ws')->group(function () {
 	Route::get('reportdates',				'ReportsController@dates');
 	Route::get('reportcredits',				'ReportsController@credits');
 	Route::get('reportcreditspdf',			'ReportsController@reportCreditsPDF');
+
+	Route::post('passwordaccess', 			'AccessController@randomPasswordAccess');
+	Route::post('supervisoraccess',			'UsuariosController@passwordSupervisor');
 
 	//Migraciones
 	Route::get('setarrearscredits', 		'DataMigrationsController@setArrearsToCredits');

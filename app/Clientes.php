@@ -17,7 +17,6 @@ class Clientes extends Model
 		'direccion',
 		'estado_civil',
 		'sexo',
-		'color',
 		'status'
 	];
 

@@ -71,7 +71,7 @@ class DataMigrationsController extends Controller
                     }
                 }
                 $categoryForArrearsStatus = $this->getArrearsStatus($arrearsStatus);
-                $customer->categoriA = $categoryForArrearsStatus;
+                $customer->categoria = $categoryForArrearsStatus;
                 $customer->save();
             }
 

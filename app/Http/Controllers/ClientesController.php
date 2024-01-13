@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Clientes;
+use App\ClientesDesbloqueados;
 use App\Creditos;
-use App\Usuarios;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCreditsTrait;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +45,9 @@ class ClientesController extends Controller {
                         $customer->statusCredit = $countCredits->status;
                         $customer->totalCreditsActive = $countCredits->creditsActives;
                         $customer->totalCredits = $countCredits->totalCredits;
+                        if ($customer->totalCreditsActive > 0) {
+                            $customer->categoria = $this->getGeneralStatusCustomer($credits);
+                        }
                     } else {
                         $customer->statusCredit = 4;
                         $customer->totalCredits = 0;
@@ -88,8 +91,7 @@ class ClientesController extends Controller {
                                                     'direccion'      => $request->input('direccion'),
                                                     'estado_civil'  => $request->input('estado_civil'),
                                                     'sexo'          => $request->input('sexo'),
-                                                    'categoria'     => 1,
-                                                    'color'         => 'verde',
+                                                    'categoria'     => "A",
                                                     'status'        => 1
                                                 ]);
 
@@ -160,7 +162,6 @@ class ClientesController extends Controller {
             $registro->estado_civil = $request->input('estado_civil', $registro->estado_civil);
             $registro->sexo         = $request->input('sexo', $registro->sexo);
             $registro->categoria    = $request->input('categoria', $registro->categoria);
-            $registro->color        = $request->input('color', $registro->color);
             $registro->status       = $request->input('status', 1);
             
             $credit = Creditos::where("clientes_id", $id)->where("estado",1)->get();
@@ -244,16 +245,16 @@ class ClientesController extends Controller {
                 if ($cliente->status == 1) {
                     $credits = $this->getCreditsForCustomerId($cliente->id);
                     $countCredits = $this->getTotalActiveCompleted($credits);
-                    
+
                     $cliente->statusCredit = $countCredits->status;
                     $cliente->totalCreditsActive = $countCredits->creditsActives;
                     $cliente->totalCredits = $countCredits->totalCredits;
-                    $cliente->arrearsStatus = $countCredits->creditsActives > 0 ? $this->getGeneralStatusCustomer($credits) : $cliente->morosidad;
-                    $cliente->cobrador = Usuarios::find($credits[0]->usuario_cobrador);
+                    $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getGeneralStatusCustomer($credits) : $cliente->categoria;
+                    $cliente->arrearsCredits = $this->getArrearsForCredits($credits);
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;
-                    $cliente->arrearsStatus = 0;
+                    $cliente->categoria = 0;
                     $cliente->cobrador = "";
                 }  
                 $this->statusCode   = 200;
@@ -337,10 +338,16 @@ class ClientesController extends Controller {
                                         ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
                                         ->where('id', $request->input('cliente_id'))                                        
                                         ->first();
-            if ($creditoCliente) {                
-                if ($creditoCliente->creditos->count() > 0) { 
-                    $creditoCliente->cantidadCreditos = $creditoCliente->creditos->count();                                                                            
-                    $creditoCliente->arrearsStatus = $this->getGeneralStatusCustomer($creditoCliente->creditos);
+            if ($creditoCliente) { 
+                $unlocks = ClientesDesbloqueados::with('supervisor')
+                            ->where('cliente_id', $creditoCliente->id)
+                            ->orderBy('created_at','desc')
+                            ->get();
+
+                if ($creditoCliente->creditos->count() > 0) {                                                                           
+                    $creditoCliente->categoria = $this->getGeneralStatusCustomer($creditoCliente->creditos);
+                    $creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditoCliente->creditos);
+                    $creditoCliente->cantidadCreditos = $creditoCliente->creditos->count();  
                     $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
                                                     if ($item->estado != 2) {                                                    
                                                         $detailsPayments = $this->getDetailsPayments($item);                                    
@@ -355,6 +362,8 @@ class ClientesController extends Controller {
                                                     }
                                                     return $item;
                                                 });
+                    $creditoCliente->unlockCount = $unlocks ? $unlocks->count():0;
+                    $creditoCliente->unlocks = $unlocks ? $unlocks : [];
                    
                     $this->statusCode   = 200;
                     $this->result       = true;
@@ -411,23 +420,4 @@ class ClientesController extends Controller {
         $newDatos = $datos->creditos->filter(function ($item) use ($request){return $item->id == 7;});
         return $datos;
     }*/
-
-    public function randomPasswordAccess(Request $request){
-        
-        $today = \Carbon\Carbon::now()->format('d');
-        $year = \Carbon\Carbon::now()->format('y');
-
-        $todayString = $today * 2;
-        $password = "r{$todayString}c{$year}";
-
-        return response()->json($password == $request->input("password"));
-    }
-
-    public function getDaysLate($credit) {
-        if ($credit->cuotas_atrasadas == 0) {
-            return $this->getTotalDaysArrears($credit);
-        } else {
-            return $credit->cuotas_atrasadas;
-        }
-    }
 }

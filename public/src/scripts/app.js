@@ -145,6 +145,10 @@
 				{
                     name: "app.service.credits",
                     files: ["scripts/lazyload/services/credits.js"]
+                },
+				{
+                    name: "app.service.clientunlock",
+                    files: ["scripts/lazyload/services/clientunlock.js"]
                 }
 			]
 		})

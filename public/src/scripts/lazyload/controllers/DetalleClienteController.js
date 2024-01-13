@@ -38,6 +38,8 @@
 
                 $scope.historyCredit = [];
                 $scope.listCredito = [];
+                $scope.listTable = [];
+                $scope.listUnlocks = [];
                 $scope.itemCredit = "";
                 $scope.showInputSelect = false;
                 $scope.toasts = [];
@@ -100,10 +102,12 @@
                     $scope.total_cancelado = "Q. " + parseFloat(infoCredit.total_cancelado).toFixed(2);
 					$scope.cuotas_atrasadas = infoCredit.cuotas_atrasadas;
                     $scope.credit_arrears_status = infoCredit.estado_morosidad;
-                    $scope.comentario_morosidad = infoCredit.comentario_morosidad
-                    $scope.fecha_evalucion_morosidad = infoCredit.fecha_evaluacion_morosidad
                     $scope.cuotas_pagadas = infoCredit.cuotas_pagados;
                     $scope.porcentaje = parseInt(infoCredit.porcentaje_pago);
+                    $scope.arrearsCredits = customer.arrearsCredits;
+                    $scope.unlockCount = customer.unlockCount;
+
+                    listUnlocks(customer.unlocks)
 
                     if (infoCredit.estado == 2) {
                         getCreditDeleted(infoCredit.id);
@@ -131,6 +135,12 @@
                     });
 
                     return array;
+                }
+
+                function listUnlocks(listUnlocks) {
+                    $scope.listUnlocks = listUnlocks
+                    $scope.search()
+                    $scope.select($scope.currentPage)
                 }
 
                 function statusText(status) {
@@ -162,7 +172,7 @@
                         .historyForCredit(creditId)
                         .then(function succesCallback(response) {
                             if (response.data.result == true) {
-                                $scope.historyCredit = response.data.records;
+                                $scope.listTable = response.data.records;
                                 $scope.search();
                                 $scope.select($scope.currentPage);
                             }
@@ -173,7 +183,6 @@
                     passwordAccessService
                         .valitePasswordForAccess(password)
                         .then(function succesCallback(response) {
-                            console.log(response)
                             if (response.data == true) {
                                 modal.close();
                                 if (tipo == 1) {
@@ -214,7 +223,6 @@
 
                 $scope.saveCreditEvaluation = function (data) {
                     data.credit_id = $scope.id;
-                    console.log(data)
                     creditsService
                         .saveEvaluateArrears(data)
                         .then(
@@ -231,6 +239,13 @@
                                 $scope.infoResult = 1;
                             }
                         );
+                }
+
+                $scope.clearListTable = function() {
+                    $scope.listTable = $scope.listUnlocks
+                    $scope.filteredData = []
+                    $scope.search();
+                    $scope.select($scope.currentPage);
                 }
 
                 //#region "modal"
@@ -317,7 +332,7 @@
 
                 $scope.search = function () {
                     $scope.filteredData = $filter("filter")(
-                        $scope.historyCredit,
+                        $scope.listTable,
                         $scope.searchKeywords
                     );
                     $scope.onFilterChange();

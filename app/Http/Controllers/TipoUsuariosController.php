@@ -19,10 +19,12 @@ class TipoUsuariosController extends Controller
     public function index(Request $request)
     {
         try {
-            if($request->session()->get('usuario')->tipo_usuarios_id == 1)
+            if ($request->session()->get('usuario')->tipo_usuarios_id == 1)
                 $registros = TipoUsuarios::all();
             else
-                $registros = TipoUsuarios::where('id','<>',1)->get();
+                $registros = TipoUsuarios::where('id','<>',1)
+                                ->where('id','<>', 5)
+                                ->get();
 
             if($registros)
             {

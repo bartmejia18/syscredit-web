@@ -1,0 +1,73 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Desbloquear cliente: <strong>{{cliente.nombre}}  {{cliente.apellido}}</strong></h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+		<form ng-show="passwordResult == 0" class="form-horizontal" name="form-validate-password" action="javascript:;">
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Código de supervisor: </label>
+					<input type="text" class="form-control" ng-model="item.code" id="code" required focus>
+				</div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-12">
+					<label>Contraseña de supervisor: </label>
+					<input type="password" class="form-control" ng-model="item.password" id="password" required>
+				</div>
+			</div>
+
+			<div id="alertPasswordIncorrect" class="hidden">
+				<div class="row form-group">
+					<div class="col-sm-12">
+						<div class="alert alert-danger">
+							<div><strong>Error!</strong> La contraseña ingresada es incorrecta.</div>						
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-12 text-right">
+					<button class="btn btn-info" ng-click="modalClose()">Cancelar</button>
+					<button class="btn btn-danger" ng-click="validatePassword(item)">Validar contraseña</button>
+				</div>
+			</div>
+		</form>
+
+		<div ng-show="passwordResult == 1">
+			<p class="small text-muted text-uppercase text-bold mb15">TOTAL DE CRÉDITOS: {{cliente.totalCredits}}</p>
+			<ul class="list-group">
+				<li class="list-group-item" ng-show="cliente.arrearsCredits.excelente > 0">
+					Excelentes
+					<span class="badge right badge-sm badge-success"><b>{{cliente.arrearsCredits.excelente}}</b></span>
+				</li>
+				<li class="list-group-item" ng-show="cliente.arrearsCredits.bueno > 0">
+					Buenos
+					<span class="badge right badge-sm badge-info"><b>{{cliente.arrearsCredits.bueno}}</b></span>
+				</li>
+				<li class="list-group-item"  ng-show="cliente.arrearsCredits.moroso > 0">
+					Morosos
+					<span class="badge right badge-sm badge-danger"><b>{{cliente.arrearsCredits.moroso}}</b></span>
+				</li>
+			</ul>
+
+			<form class="form-horizontal" name="form-detail-unlock-client" action="javascript:;">
+				<div class="row form-group">
+					<div class="col-sm-12">
+						<label>Razón de desbloqueo: </label>
+						<input type="text" class="form-control" ng-model="data.reason" id="data.reason" required focus>
+					</div>
+				</div>
+				<div class="row form-group">
+					<div class="col-sm-12 text-right">
+						<button class="btn btn-info" ng-click="modalClose()">Cancelar</button>
+						<button class="btn btn-success" ng-click="detailsUnlockClient(cliente, data)">Confirmar desbloqueo</button>
+					</div>
+				</div>
+			</form>
+			</div>	
+		</di>		
+	</div>
+</div>
