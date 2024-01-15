@@ -50,13 +50,20 @@
 									</div>
 								</th>
 								<th>
+									Código
+									<div class="th">
+										<i class="fa fa-caret-up icon-up" ng-click=" order('code') " ng-class="{active: row == 'code'}"></i>
+										<i class="fa fa-caret-down icon-down" ng-click=" order('-code') " ng-class="{active: row == '-code'}"></i>
+									</div>
+								</th>
+								<th>
 									Tipo de usuario
 									<div class="th">
 										<i class="fa fa-caret-up icon-up" ng-click=" order('tipo_usuarios.descripcion') " ng-class="{active: row == 'tipo_usuarios.descripcion'}"></i>
 										<i class="fa fa-caret-down icon-down" ng-click=" order('-tipo_usuarios.descripcion') " ng-class="{active: row == '-tipo_usuarios.descripcion'}"></i>
 									</div>
 								</th>
-								<th>
+								<th ng-show="usuario.tipo_usuarios_id == 1">
 									Sucursal
 									<div class="th">
 										<i class="fa fa-caret-up icon-up" ng-click=" order('sucursal.descripcion') " ng-class="{active: row == 'sucursal.descripcion'}"></i>
@@ -78,8 +85,11 @@
 								<td>{{ $index + 1 }}</td>
 								<td>{{ data.nombre }}</td>
 								<td>{{ data.user }}</td>
+								<td>{{ data.code }}</td>
 								<td>{{ data.tipo_usuarios.descripcion }}</td>
-								<td>{{ data.sucursal.descripcion }}</td>
+								<td ng-show="usuario.tipo_usuarios_id == 1">
+									{{ data.sucursal.descripcion }}
+								</td>
 								<td>
 									<label ng-if="data.estado == 1" class="label label-success mr5">Activo</label>
 									<label ng-if="data.estado == 2" class="label label-danger mr5">Inactivo</label>

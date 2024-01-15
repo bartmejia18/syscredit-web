@@ -82,8 +82,9 @@ class UsuariosController extends Controller {
                                         return $nuevoRegistro;
                                     }
                                 });
-            } else
+            } else {
                 throw new \Exception("Usuario ingresado ya existe, favor verifica");
+            }
                   
             $this->status_code = 200;
             $this->result = true;

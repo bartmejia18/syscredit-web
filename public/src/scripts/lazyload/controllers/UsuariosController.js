@@ -19,6 +19,8 @@
       $scope.positionModel = "topRight"
       $scope.toasts = []
       $scope.passwordRequired = true
+      $scope.userCreate = 0
+      $scope.message = ""
       var modal
 
       $scope.cargarTipoUsuarios = function () {
@@ -137,17 +139,22 @@
             .then(function successCallback(response) {
               if (response.data.result) {
                 $scope.LlenarTabla()
-                modal.close()
-                $scope.createToast("success", "<strong>Éxito: </strong>" + response.data.message)
-                $timeout(function () { $scope.closeAlert(0) }, 5000)
+                $scope.userCreate = 1
+                $scope.newUser = response.data.records
+                $scope.message = response.data.message
+                $("#alertSuccess").removeClass('hidden')
+                $("#alertError").addClass('hidden')
               }
               else {
-                $scope.createToast("danger", "<strong>Error: </strong>" + response.data.message)
-                $timeout(function () { $scope.closeAlert(0) }, 5000)
+                $("#alertSuccess").addClass('hidden')
+                $("#alertError").removeClass('hidden')
+                $scope.message = response.data.message
               }
             },
               function errorCallback(response) {
-                console.log(response.data.message)
+                $("#alertSuccess").addClass('hidden')
+                $("#alertError").removeClass('hidden')
+                $scope.message = response.data.message
               })
         }
         else if ($scope.accion == 'editar') {
@@ -172,12 +179,15 @@
                 $timeout(function () { $scope.closeAlert(0) }, 3000)
               }
               else {
-                $scope.createToast("danger", "<strong>Error: </strong>" + response.data.message)
-                $timeout(function () { $scope.closeAlert(0) }, 5000)
+                $scope.message = response.data.message
+                $("#alertSuccess").addClass('hidden')
+                $("#alertError").removeClass('hidden')
               }
             },
               function errorCallback(response) {
-                console.log(response.data.message)
+                $scope.message = response.data.message
+                $("#alertSuccess").addClass('hidden')
+                $("#alertError").removeClass('hidden')
               })
         }
         else if ($scope.accion == 'eliminar') {
@@ -208,6 +218,7 @@
         $scope.usuario = {}
         $scope.accion = 'crear'
         $scope.passwordRequired = true
+        $scope.userCreate = 0
 
         modal = $modal.open({
           templateUrl: "views/usuarios/modal.html",

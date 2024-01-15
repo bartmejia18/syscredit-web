@@ -14,11 +14,19 @@ trait detailsCreditsTrait {
     use datesUtilsTrait;
 
     public function getCreditsForCustomerId($customerId) {
-        return Creditos::with('planes')
-                    ->where('clientes_id', $customerId)
-                    ->where('estado','!=',2)
-                    ->orderBy('id', 'desc')
-                    ->get();
+        $credits = Creditos::with('planes')
+                        ->where('clientes_id', $customerId)
+                        ->where('estado','!=',2)
+                        ->orderBy('id', 'desc')
+                        ->get();
+        
+        $credits->map(function ($item, $key) {
+            if ($item->estado == 1) {
+                $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
+                $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
+            }
+        });
+        return $credits;
     }
 
     public function getTotalActiveCompleted($credits) {
@@ -41,12 +49,6 @@ trait detailsCreditsTrait {
 
 
     public function getArrearsForCredits($credits) {
-        $credits->map(function($item, $key) {            
-            if ($item->estado == 1) {
-                $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
-            }
-            return $item;
-        });
 
         $arrearsStatus = [
             'moroso' => 0,
@@ -55,7 +57,7 @@ trait detailsCreditsTrait {
         ];
 
         foreach ($credits as $item) {
-            if ($item->estado_morosidad != null && $item->estado_morosidad != "") {
+            if ($item->estado == 0) {
                 if ($item->estado_morosidad == "Moroso") {
                     $arrearsStatus['moroso'] += 1;
                 } else if ($item->estado_morosidad == "Bueno") {
@@ -79,13 +81,13 @@ trait detailsCreditsTrait {
     public function getArrearsStatus($arrearsCredits) {
         if ($arrearsCredits['moroso'] == 0 && $arrearsCredits['bueno'] == 0 && $arrearsCredits['excelente'] > 0) {
             return "A";
-        } else if ($arrearsCredits['moroso'] >= 0 && $arrearsCredits['moroso'] <= 1 && $arrearsCredits['bueno'] >= 0 && $arrearsCredits['excelente'] >= 0) {
+        } else if ($arrearsCredits['moroso'] == 1 && $arrearsCredits['bueno'] >= 0 && $arrearsCredits['excelente'] >= 0) {
             return "B";
-        } else if ($arrearsCredits['moroso'] >= 2 && $arrearsCredits['moroso'] < 4) {
+        } else if ($arrearsCredits['moroso'] >= 2 && $arrearsCredits['moroso'] <= 3) {
             return "C";
-        } else if ($arrearsCredits['moroso'] >= 3 && $arrearsCredits['moroso'] < 5) {
+        } else if ($arrearsCredits['moroso'] >= 4 && $arrearsCredits['moroso'] <= 5) {
             return "D";
-        } else if ($arrearsCredits['moroso'] >= 5) {
+        } else if ($arrearsCredits['moroso'] > 5) {
             return "E";
         }
     }
@@ -171,9 +173,11 @@ trait detailsCreditsTrait {
                 }
             }
         } else {
-            $currentDate = Carbon::createFromFormat('Y-m-d', $dateFinal);
-            $dateFirstPay = Carbon::createFromFormat('Y-m-d', $dateInitial);
-            $countDaysArrears = $currentDate->diffInDays($dateFirstPay);
+            if ($dateFinal > $dateInitial) {
+                $currentDate = Carbon::createFromFormat('Y-m-d', $dateFinal);
+                $dateFirstPay = Carbon::createFromFormat('Y-m-d', $dateInitial);
+                $countDaysArrears = $currentDate->diffInDays($dateFirstPay);
+            }
         }
         return $countDaysArrears;
     }

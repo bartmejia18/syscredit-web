@@ -87,6 +87,7 @@ Route::prefix('ws')->group(function () {
 	//Migraciones
 	Route::get('setarrearscredits', 		'DataMigrationsController@setArrearsToCredits');
 	Route::get('setcategorycustomer', 		'DataMigrationsController@setCategoryCustomers');
+	Route::get('setcodeuser', 				'DataMigrationsController@setCodeUser');
 
 	Route::get('logout',function() {
 		Auth::logout();

@@ -153,10 +153,10 @@
                   </div>
                 </th>
                 <th>
-                  Deuda total
+                  Plan
                   <div class="th">
-                    <i class="fa fa-caret-up icon-up" ng-click=" order('deudatotal') " ng-class="{active: row == 'deudatotal'}"></i>
-                    <i class="fa fa-caret-down icon-down" ng-click=" order('-deudatotal') " ng-class="{active: row == '-deudatotal'}"></i>
+                    <i class="fa fa-caret-up icon-up" ng-click=" order('plan') " ng-class="{active: row == 'plan'}"></i>
+                    <i class="fa fa-caret-down icon-down" ng-click=" order('-plan') " ng-class="{active: row == '-plan'}"></i>
                   </div>
                 </th>
                 <th>
@@ -194,7 +194,12 @@
               <tr ng-repeat="data in currentPageStores track by $index">
                 <td>{{ $index + 1 }}</td>
                 <td>{{ data.cliente.nombre +" "+ data.cliente.apellido }}</td>
-                <td>Q. {{ data.deudatotal | number: "2"}}</td>
+                <td>
+                  <label ng-if="data.planes.tipo == 1" class="label label-info mr5">Diario</label>
+                  <label ng-if="data.planes.tipo == 2" class="label label-info mr5">Semanal</label>
+                  <label ng-if="data.planes.tipo == 3" class="label label-info mr5">Mensual</label>
+                  <label ng-if="data.planes.tipo == 2 || data.planes.tipo == 3" class="label label-primary mr5">{{data.dia_pago}}</label>
+                </td>
                 <td>Q. {{ data.cuota_diaria | number: "2"}}</td>
                 <td>{{ data.cantidad_cuotas_pagadas }}</td>
                 <td>Q. {{ data.monto_pagado | number: "2" }}</td>

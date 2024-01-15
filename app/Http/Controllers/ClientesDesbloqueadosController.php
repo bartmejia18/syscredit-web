@@ -47,11 +47,16 @@ class ClientesDesbloqueadosController extends Controller
 
     public function store(Request $request) {
         try {
-            $nuevoRegistro = DB::transaction(function() use ($request) {
+            $unlocksClients = ClientesDesbloqueados::where('cliente_id', $request->input('clientId'))
+                                                    ->orderBy('created_at', 'DESC')
+                                                    ->first();
+        
+            $nuevoRegistro = DB::transaction(function() use ($request, $unlocksClients) {
                                 $nuevoRegistro = ClientesDesbloqueados::create([
                                                     'cliente_id' => $request->input('clientId'),
                                                     'supervisor_id' => $request->input('supervisorId'),
                                                     'razon' => $request->input('reason'),
+                                                    'numero' => $unlocksClients ? ($unlocksClients->numero + 1) : 0
                                                 ]);
 
                                 if (!$nuevoRegistro) {

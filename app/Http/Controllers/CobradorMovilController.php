@@ -9,9 +9,10 @@ use App\Usuarios;
 use App\CierreRuta;
 use App\ClientesActivos;
 use App\Http\Traits\detailsPaymentsTrait;
+use App\Http\Traits\countDaysTrait;
 use App\Http\Traits\detailsCreditsTrait;
-use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class CobradorMovilController extends Controller {
     public $statusCode  = 200;
@@ -20,25 +21,24 @@ class CobradorMovilController extends Controller {
     public $records     = null;
     
     use detailsPaymentsTrait;
+    use countDaysTrait;
     use detailsCreditsTrait;
 
-    public function loginMovil(Request $request){
+    public function loginMovil (Request $request) {
         try {
             $usuario = Usuarios::where("user", $request->input("user"))
                             ->where("estado", 1)
                             ->first();
             
-            if ($usuario) {
-                if (Hash::check($request->input("password"),  $usuario->password)) {
+            if ( $usuario ) {
+                if(Hash::check($request->input("password"),  $usuario->password)){
                     $this->result   = true;
                     $this->message  = "Bienvenido";
                     $this->records  = $usuario;
-                } else {
+                } else
                     throw new \Exception("Datos incorrectos, intenta de nuevo"); 
-                }
-            } else {
+            } else
                 throw new \Exception("El email ingresado no esta registrado"); 
-            }
         } catch (\Exception $e) {
             $this->result       =   false;
             $this->message      =  env('APP_DEBUG')?$e->getMessage():'Ocurrio un problema al procesar la solicitud';
@@ -68,79 +68,59 @@ class CobradorMovilController extends Controller {
                                 ->first();
                 
                 if (!$routeClosure) {
-                    $activeCredits = ClientesActivos::with('cliente','planes')
-                                                ->where('usuarios_cobrador', $request->input('idusuario'))
-                                                ->where('fecha_inicio', '<=', $hoy)                             
+                    $registros = ClientesActivos::with('cliente','planes')
+                                                ->where("fecha_inicio", "<=", $hoy)
+                                                ->where("usuarios_cobrador", $request->input("idusuario"))                     
                                                 ->get();
-
-                    /*$filteredCredits = $activeCredits->filter(function ($item) use ($hoy) {
-                        $currentDate = Carbon::now();
-                        $dateFirstPay = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
-                        $diffDays = $currentDate->diffInDays($dateFirstPay);
-                        switch($item->planes->tipo) {
-                            case (1) : 
-                                return $diffDays % 1 == 0;
-                                break;
-                            case (2) : 
-                                return $diffDays % 7 == 0;
-                                break;
-                            case (3) : 
-                                return $diffDays % 30 == 0;
-                                break;
-                            default : 
-                                return $diffDays % 1 == 0;
-                                break;
-                        }
-                    })->values();*/
-
-                    if ($activeCredits->count() > 0) {    
+                    if ($registros) {    
                         $totalacobrar = 0;
-                        $totalminimocobrar = 0;
+                        foreach ($registros as $item) {     
+                                
+                            $detailsPaymentsGeneral = $this->getDetailsPayments($item); 
 
-                        foreach ($activeCredits as $item) { 
-                            $cuotas_pagadas = $item->cantidad_cuotas_pagadas == null ? 0 : $item->cantidad_cuotas_pagadas;   
-                            $cuotas_atrasadas = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrearsWithTotalPaid($item, $cuotas_pagadas);  
+                            $currentDate = Carbon::parse($request->input('fecha'));
+                            $dateFirstPay = Carbon::parse($item->fecha_inicio);
+                            $diffDays = $currentDate->diffInDays($dateFirstPay);
+                            $sumarPayToday = false;
+                            switch ($item->planes->tipo) {
+                                case (1) : 
+                                    $sumarPayToday = $diffDays % 1 == 0;
+                                    break;
+                                case (2) : 
+                                    $sumarPayToday = $diffDays % 7 == 0;
+                                    break;
+                                case (3) : 
+                                    $sumarPayToday = $diffDays % 30 == 0;
+                                    break;
+                                default : 
+                                    $sumarPayToday = false;
+                                    break;
+                            }
+
+                            if ($sumarPayToday) {
+                                $totalacobrar = $totalacobrar + $item->cuota_diaria;
+                            }
 
                             $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                             $item['saldo'] = number_format($item->saldo, 2, '.', '');
                             $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
-                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                    
-                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
-                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');                    
+                            $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                                     
                             $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
-                            $item['cantidad_cuotas_pagadas'] = $cuotas_pagadas; 
-                            $item['cuotas_pendientes'] = $item->cuotas_pendientes == null ? Intval($item->deudatotal / $item->cuota_diaria) : $item->cuotas_pendientes;
-                            $item['cuotas_atrasadas'] = $cuotas_atrasadas;
-                            $item['estado_morosidad'] = $this->getArrearsStatusForDays($cuotas_atrasadas);
+                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsGeneral->totalFees; 
+                            $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
+                            $item['cuotas_atrasadas'] = $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
                             $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
                             $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
                             $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
-                            $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
-                            $totalacobrar = $totalacobrar + $item->cuota_diaria;
-                            switch ($item->planes->tipo) {
-                                case (0) : 
-                                    $item['tipo_plan'] = "Diario";
-                                    break;
-                                case (1) : 
-                                    $item['tipo_plan'] = "Diario";
-                                    break;
-                                case (2) : 
-                                    $item['tipo_plan'] = "Semanal";
-                                    break;
-                                case (3) : 
-                                    $item['tipo_plan'] = "Mensual";
-                                    break;
-                                default : 
-                                    $item['tipo_plan'] = "";
-                                    break;
-                            }
+
+                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');   
                         }
 
                         $datos = [];
                         $datos['total_cobrar'] = number_format($totalacobrar, 2, '.', ',');
-                        $datos['total_minimo'] = number_format($totalminimocobrar, 2, '.', ',');     
                         $datos['total_cobrado'] = number_format($this->getTotalPaymentCollector($request->input('idusuario'), $hoy), 2, '.', ',');                         
-                        $datos['registros'] = $activeCredits;
+                        $datos['registros'] = $registros;
 
                         $this->statusCode   = 200;
                         $this->result       = true;
@@ -169,4 +149,3 @@ class CobradorMovilController extends Controller {
         }
     }
 } 
-

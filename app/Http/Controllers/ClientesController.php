@@ -40,12 +40,21 @@ class ClientesController extends Controller {
             if ($registros) {
                 $registros->map(function ($customer, $key){   
                     if ($customer->status == 1) {
-                        $credits = $this->getCreditsForCustomerId($customer->id);
+                        $credits =  Creditos::with('planes')
+                                        ->where('clientes_id', $customer->id)
+                                        ->where('estado','!=',2)
+                                        ->get();
                         $countCredits = $this->getTotalActiveCompleted($credits);
                         $customer->statusCredit = $countCredits->status;
                         $customer->totalCreditsActive = $countCredits->creditsActives;
                         $customer->totalCredits = $countCredits->totalCredits;
                         if ($customer->totalCreditsActive > 0) {
+                            $credits->map(function($item, $key){
+                                if ($item->estado == 1) {
+                                    $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
+                                }
+                                return $item;
+                            });
                             $customer->categoria = $this->getGeneralStatusCustomer($credits);
                         }
                     } else {
@@ -249,8 +258,8 @@ class ClientesController extends Controller {
                     $cliente->statusCredit = $countCredits->status;
                     $cliente->totalCreditsActive = $countCredits->creditsActives;
                     $cliente->totalCredits = $countCredits->totalCredits;
-                    $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getGeneralStatusCustomer($credits) : $cliente->categoria;
                     $cliente->arrearsCredits = $this->getArrearsForCredits($credits);
+                    $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getArrearsStatus($cliente->arrearsCredits) : $cliente->categoria;
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;
@@ -334,6 +343,7 @@ class ClientesController extends Controller {
                                         ->where('id', $request->input('cliente_id'))                                        
                                         ->first();*/
                                         
+            
             $creditoCliente = Clientes::with("creditos")                                
                                         ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
                                         ->where('id', $request->input('cliente_id'))                                        
@@ -344,10 +354,14 @@ class ClientesController extends Controller {
                             ->orderBy('created_at','desc')
                             ->get();
 
-                if ($creditoCliente->creditos->count() > 0) {                                                                           
-                    $creditoCliente->categoria = $this->getGeneralStatusCustomer($creditoCliente->creditos);
-                    $creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditoCliente->creditos);
-                    $creditoCliente->cantidadCreditos = $creditoCliente->creditos->count();  
+                if ($creditoCliente->creditos->count() > 0) {
+                    $creditsFilters = $creditoCliente->creditos->filter(function ($item, $key) {
+                        return $item->estado != 2;
+                    });  
+                                                      
+                    $creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditsFilters);
+                    $creditoCliente->categoria = $this->getArrearsStatus($creditoCliente->arrearsCredits);
+                    $creditoCliente->cantidadCreditos = $creditsFilters->count();  
                     $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
                                                     if ($item->estado != 2) {                                                    
                                                         $detailsPayments = $this->getDetailsPayments($item);                                    

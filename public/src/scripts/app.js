@@ -416,5 +416,18 @@
 				}]
 			}
 		});
+
+		$routeProvider.when("/desbloqueados", {
+			templateUrl: "views/desbloqueados/desbloqueados.html",
+			controller: "UnlocksController",
+			resolve: {
+				deps: ["$ocLazyLoad", function(a) {
+					return a.load({
+						name: "app.unlocks",
+						files: ["scripts/lazyload/controllers/unlocks.js"]
+					})
+				}]
+			}
+		});
 	}])
 }())

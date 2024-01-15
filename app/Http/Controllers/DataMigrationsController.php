@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\detailsCreditsTrait;
 use App\CierreRuta;
 use App\Clientes;
+use App\Usuarios;
 use Illuminate\Support\Facades\DB;
 
 class DataMigrationsController extends Controller
@@ -82,6 +83,35 @@ class DataMigrationsController extends Controller
             $this->statusCode = 200;
             $this->result = false;
             $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
+        } finally {
+            $response = [
+                'result'    => $this->result,
+                'message'   => $this->message,
+            ];
+            return response()->json($response, $this->statusCode);
+        }
+    }
+
+    public function setCodeUser() {
+        try {
+            $users = Usuarios::where('estado',1)
+                            ->where('code', 0)
+                            ->get();
+
+            $users->map(function($item, $key) {
+                $item->code = $item->sucursales_id . $item->tipo_usuarios_id . $item->id;
+                $item->save();
+            });
+
+            $this->statusCode   = 200;
+            $this->result       = true;
+            $this->message      = "Registros consultados exitosamente";
+        
+        } catch (\Exception $e) {
+            $this->statusCode = 200;
+            $this->result = false;
+            $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
+            
         } finally {
             $response = [
                 'result'    => $this->result,

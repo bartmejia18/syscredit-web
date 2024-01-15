@@ -12,6 +12,7 @@ use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCustomerTrait;
 use App\Http\Traits\detailsCreditsTrait;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 
 class CobradorController extends Controller {
     public $statusCode  = 200;
@@ -27,30 +28,10 @@ class CobradorController extends Controller {
         try {
             $credits = $this->getCreditsForCollector($request);
 
-            if ($credits->count() > 0) {
-                
-                $totalacobrar = 0;
-                $totalminimocobrar = 0;
-                $cantidadclientes = 0;
-
-                foreach ($credits as $item) {   
-                    $detailsPayments = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));   
-                    $item['cantidad_cuotas_pagadas'] = $detailsPayments->totalFees;
-                    $item['monto_abonado'] = $detailsPayments->paymentPaid;
-                    $item['monto_pagado'] = $detailsPayments->totalPayment;
-                    $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
-                    $item['fecha_limite'] = Carbon::parse($item->fecha_limite)->format('d-m-Y');
-                    $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $request->input('fecha'));                    
-
-                    $totalacobrar = $totalacobrar + $item->cuota_diaria;
-                    $totalminimocobrar = $totalminimocobrar + $item->cuota_minima;
-                    $cantidadclientes = $cantidadclientes + 1;
-                }
-
-                $datos = [];
-                $datos['total_cobrar'] = $totalacobrar;
-                $datos['total_minimo'] = $totalminimocobrar;                             
-                $datos['registros'] = $credits;
+            if ($credits->credits->count() > 0) {
+                $datos['total_cobrar'] = $credits->totalacobrar;
+                $datos['total_minimo'] = $credits->totalminimocobrar;                             
+                $datos['registros'] = $credits->credits;
 
                 $this->statusCode   = 200;
                 $this->result       = true;
@@ -79,42 +60,19 @@ class CobradorController extends Controller {
 
         $credits = $this->getCreditsForCollector($request);
 
-        if ($credits->count() > 0 ) {
-            $totalacobrar = 0;
-            $totalminimocobrar = 0;
-            $cantidadclientes = 0;
-        
-            
-            foreach ($credits as $item) {                
-                $detailsPaymentsForDay = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));
-                $detailsPaymentsGeneral = $this->getDetailsPayments($item);   
-                $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees;
-                $item['total_cuotas'] = $item->planes->dias;
-                $item['cuotas_atrasadas'] = $item['cuotas_atrasadas'] != 0 ? $item['cuotas_atrasadas'] : $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
-                $item['cantidad_cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
-                $item['monto_abonado'] = $detailsPaymentsForDay->paymentPaid;
-                $item['monto_pagado'] = $detailsPaymentsForDay->totalPayment;
-                $item['fecha_inicio'] = \Carbon\Carbon::parse($item->fecha_inicio)->format('d-m-Y');
-                $item['fecha_limite'] = \Carbon\Carbon::parse($item->fecha_limite)->format('d-m-Y');
-                $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $request->input('fecha'));                    
-
-                $totalacobrar = $totalacobrar + $item->cuota_diaria;
-                $totalminimocobrar = $totalminimocobrar + $item->cuota_minima;
-                $cantidadclientes = $cantidadclientes + 1;
-            }
-
+        if ($credits->credits->count() > 0 ) {
             $datos = new \stdClass();
             $datos->date = $request->input('fecha');
             $datos->collector = $collector->nombre;
             $datos->branch = $branch->descripcion;
-            $datos->total_cobrar = $totalacobrar;
-            $datos->total_minimo = $totalminimocobrar;                             
+            $datos->total_cobrar = $credits->totalacobrar;
+            $datos->total_minimo = $credits->totalminimocobrar;                             
             $datos->total_cobrado = $this->getTotalPaymentCollector($request->input('idusuario'), $request->input('fecha'));   
-            $datos->total_catera = $credits->sum('deudatotal');
-            $datos->total_pendiente = $credits->sum('saldo');
-            $datos->registros = $credits;
-            
+            $datos->total_catera = $credits->credits->sum('deudatotal');
+            $datos->total_pendiente = $credits->credits->sum('saldo');
+            $datos->registros = $credits->credits;
         }
+
         if (intval($request->input("closure_id")) != 0 ) {
 
             $routeClosure = CierreRuta::find($request->input("closure_id"));
@@ -123,7 +81,7 @@ class CobradorController extends Controller {
                 $routeClosure->info_closure = json_encode($datos);
                 
                 if ($routeClosure->save() ) {
-                    $pdf = \App::make('dompdf');        
+                    $pdf = App::make('dompdf');        
                     $pdf = \PDF::loadView('pdf.resumentodaycollector', ['data' => $datos])->setPaper('legal', 'portrait');
                     return $pdf->download($collector->nombre.'.pdf');
                 }
@@ -131,49 +89,82 @@ class CobradorController extends Controller {
                 return null;
             }
         } else {            
-            $pdf = \App::make('dompdf');        
+            $pdf = App::make('dompdf');        
             $pdf = \PDF::loadView('pdf.resumentodaycollector', ['data' => $datos])->setPaper('legal', 'portrait');
             return $pdf->download($collector->nombre.'.pdf');
         }
     }
 
     function getCreditsForCollector(Request $request) {
-        $recordsFilters = [];
-        $registros = Creditos::with("cliente", "planes")
+        
+        $listCredits = new \stdClass();
+        $credits = Creditos::with("cliente", "planes")
                                 ->where("usuarios_cobrador", $request->input("idusuario"))
                                 ->where('estado', 1)
                                 ->where("fecha_inicio", "<=", $request->input('fecha'))
                                 ->get();
 
-        $registroExtra = Creditos::with("cliente", "planes")
+        $creditsExtra = Creditos::with("cliente", "planes")
                                 ->where("usuarios_cobrador", $request->input("idusuario"))
                                 ->where("fecha_finalizado", $request->input('fecha'))
                                 ->where('estado', 0)
                                 ->get();
         
-        if ($registroExtra->count() > 0) {
-            $registros = $registros->merge($registroExtra);
+        if ($creditsExtra->count() > 0) {
+            $credits = $credits->merge($creditsExtra);
         }
 
-        /*if ($registros->count() > 0 ) {
-            $recordsFilters = $registros->filter(function ($record) use ($request) {
-                $currentDate = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
-                $dateFirstPay = Carbon::createFromFormat('Y-m-d', $record->fecha_inicio);
+        if ($credits->count() > 0) {
+            $totalacobrar = 0;
+            $totalminimocobrar = 0;
+            $cantidadclientes = 0;
+        
+            foreach ($credits as $item) {                
+                $detailsPaymentsForDay = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));
+                $detailsPaymentsGeneral = $this->getDetailsPayments($item);   
+                $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees;
+                $item['total_cuotas'] = $item->planes->dias;
+                $item['cuotas_atrasadas'] = $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
+                $item['cantidad_cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
+                $item['monto_abonado'] = $detailsPaymentsForDay->paymentPaid;
+                $item['monto_pagado'] = $detailsPaymentsForDay->totalPayment;
+                $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
+                $item['fecha_limite'] = Carbon::parse($item->fecha_limite)->format('d-m-Y');
+                $item['pago_hoy'] = DetallePagos::where('credito_id', $item->id)->where('estado',1)->get()->contains('fecha_pago', $request->input('fecha'));                    
+
+                $currentDate = Carbon::parse($request->input('fecha'));
+                $dateFirstPay = Carbon::parse($item->fecha_inicio);
                 $diffDays = $currentDate->diffInDays($dateFirstPay);
-                switch ($record->planes->tipo) {
+                $sumarPayToday = false;
+                switch ($item->planes->tipo) {
+                    case (1) : 
+                        $sumarPayToday = $diffDays % 1 == 0;
+                        break;
                     case (2) : 
-                        return $diffDays % 7 == 0;
+                        $sumarPayToday = $diffDays % 7 == 0;
                         break;
                     case (3) : 
-                        return $diffDays % 30 == 0;
+                        $sumarPayToday = $diffDays % 30 == 0;
                         break;
                     default : 
-                        return $diffDays % 1 == 0;
+                        $sumarPayToday = false;
                         break;
                 }
-            })->values();
-        }*/
-        return $registros;
+
+                if ($sumarPayToday) {
+                    $totalacobrar = $totalacobrar + $item->cuota_diaria;
+                    $totalminimocobrar = $totalminimocobrar + $item->cuota_minima;
+                }
+                
+                $cantidadclientes = $cantidadclientes + 1;
+            }
+
+            $listCredits->totalacobrar = $totalacobrar;
+            $listCredits->totalminimocobrar = $totalminimocobrar;
+            $listCredits->cantidadclientes = $cantidadclientes;
+            $listCredits->credits = $credits;
+        }
+
+        return $listCredits;
     }
 } 
-

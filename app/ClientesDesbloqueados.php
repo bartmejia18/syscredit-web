@@ -10,7 +10,8 @@ class ClientesDesbloqueados extends Model {
 	protected $fillable = [
 		'cliente_id',
 		'supervisor_id',
-		'razon'
+		'razon',
+		'numero'
 	];
 
 	public function cliente(){

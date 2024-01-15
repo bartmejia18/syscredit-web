@@ -64,13 +64,56 @@
 					</div>
 				</div>
 			</div>
-			<div class="row form-group" ng-if="accion == 'crear' || accion == 'editar'">
-				<div class="col-sm-12 text-right">
-					<button class="btn btn-success" ng-if="accion == 'crear'" ng-click="saveData(usuario)" ng-disabled="form.$invalid">Registrar</button>
-					<button class="btn btn-success" ng-if="accion == 'editar'" ng-click="saveData(usuario)" ng-disabled="form.$invalid">Actualizar</button>
+			<div ng-show="userCreate == 0">
+				<div class="row form-group" ng-if="accion == 'crear' || accion == 'editar'">
+					<div class="col-sm-12 text-right">
+						<button 
+							class="btn btn-danger" 
+							ng-click="modalClose()">
+							Cancelar
+						</button>
+						<button 
+							class="btn btn-success" 
+							ng-if="accion == 'crear'" 
+							ng-click="saveData(usuario)" 
+							ng-disabled="form.$invalid">
+							Registrar
+						</button>
+						<button 
+							class="btn btn-success" 
+							ng-if="accion == 'editar'" 
+							ng-click="saveData(usuario)" 
+							ng-disabled="form.$invalid">
+							Actualizar
+						</button>
+					</div>
 				</div>
 			</div>
+			<div id="alertSuccess" class="alert alert-success hidden">
+				<strong>Error! </strong> {{message}}
+			</div>
+			<div id="alertError" class="alert alert-danger hidden">
+				<strong>Éxito! </strong> {{message}}
+			</div>
 		</form>
+
+		<div ng-show="userCreate == 1">
+			<br>
+			<div class="panel panel-default table-responsive panel-hovered mb20">
+				<div class="panel-heading">
+					<h4>El código del usuario es:</h4>
+				</div>
+				<div class="panel-body">
+					<h2><p class="text-primary text-center"><strong>{{newUser.code}}</strong></p></h2>
+					<br>
+					<div class="col-sm-12 text-center">
+						<button class="btn btn-success" ng-click="modalClose()">ACEPTAR</button>
+					</div>
+				</div>
+			</div>
+			
+
+		</div>
 		
 		<div class="row form-group" ng-if="accion == 'eliminar'">
 			<div class="col-sm-12 text-right">

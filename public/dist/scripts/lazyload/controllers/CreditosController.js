@@ -319,8 +319,6 @@
                     data.clientId = client.id
                     data.supervisorId = $scope.supervisor.id
 
-                    console.log(data)
-
                     clientUnlockService.create(data)
                         .then(function succesCallback(response) {
                             if (response.data.result) {
