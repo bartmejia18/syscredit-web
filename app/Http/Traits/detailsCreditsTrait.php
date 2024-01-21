@@ -81,7 +81,7 @@ trait detailsCreditsTrait {
     public function getArrearsStatus($arrearsCredits) {
         if ($arrearsCredits['moroso'] == 0 && $arrearsCredits['bueno'] == 0 && $arrearsCredits['excelente'] > 0) {
             return "A";
-        } else if ($arrearsCredits['moroso'] == 1 && $arrearsCredits['bueno'] >= 0 && $arrearsCredits['excelente'] >= 0) {
+        } else if ($arrearsCredits['moroso'] <= 1 && $arrearsCredits['bueno'] >= 0 && $arrearsCredits['excelente'] >= 0) {
             return "B";
         } else if ($arrearsCredits['moroso'] >= 2 && $arrearsCredits['moroso'] <= 3) {
             return "C";

@@ -10,6 +10,7 @@ use App\ClientesDesbloqueados;
 use App\Creditos;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCreditsTrait;
+use App\Usuarios;
 use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller {
@@ -252,6 +253,9 @@ class ClientesController extends Controller {
                             
             if ($cliente) {
                 if ($cliente->status == 1) {
+
+                    $unlock = ClientesDesbloqueados::where('cliente_id', $cliente->id)->count();
+                    
                     $credits = $this->getCreditsForCustomerId($cliente->id);
                     $countCredits = $this->getTotalActiveCompleted($credits);
 
@@ -260,6 +264,16 @@ class ClientesController extends Controller {
                     $cliente->totalCredits = $countCredits->totalCredits;
                     $cliente->arrearsCredits = $this->getArrearsForCredits($credits);
                     $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getArrearsStatus($cliente->arrearsCredits) : $cliente->categoria;
+                    $cliente->cobrador = Usuarios::find($credits[0]->usuarios_cobrador);
+                    $locked = false;
+                    if (in_array($cliente->arrearsCredits['moroso'], [1,2,3,4,5]) && $unlock == $cliente->arrearsCredits['moroso']) {
+                        $locked = false;
+                    } else if ($cliente->arrearsCredits['moroso'] >= 1) {
+                        $locked = true;
+                    } else {
+                        $locked = false;
+                    }
+                    $cliente->locked = $locked;
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;

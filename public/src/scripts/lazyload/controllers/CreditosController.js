@@ -333,6 +333,7 @@
                                 $("#row-detalle").removeClass("hidden");
                                 $(".btn-new-customer").prop("disabled", true);
                                 modal.close();
+                                $scope.passwordResult = 0;
                                 updateCustomer(client);
                             } else {
                                 $scope.createToast(
@@ -368,7 +369,8 @@
                             if (response.data.result) {
                                 $scope.detalle_cliente = response.data.records;
                                 $scope.detalle_cliente.nombre = response.data.records.nombre +" " + response.data.records.apellido;
-                                $scope.detalle_cliente.credito = 0;
+                                $scope.detalle_cliente.credito = response.data.records.statusCredit == 2 ? 1 : 0;
+                                $scope.detalle_cliente.usuarios_cobrador = response.data.records.cobrador;
                                 $scope.createToast(
                                     "success",
                                     "<strong>Éxito: </strong>" +
@@ -484,7 +486,7 @@
 
                 $scope.modalUnlockClient = function (customer) {
                     modal.close()
-                    
+                    $scope.passwordResult = 0;
                     $scope.cliente = customer;
                     
                     modal = $modal.open({

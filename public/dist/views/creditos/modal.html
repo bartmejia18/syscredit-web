@@ -116,19 +116,19 @@
 					<div ng-show="cliente.statusCredit != 0">		
 						<button 
 							class="btn-new-customer btn btn-info" 
-							ng-if="cliente.categoria == 'E'" 
+							ng-if="cliente.locked" 
 							ng-click="modalUnlockClient(cliente)">
 							Solicitar desbloqueo
 						</button>
 						<button 
 							class="btn-new-customer btn btn-success" 
-							ng-if="cliente.statusCredit != 2 && cliente.categoria != 'E'" 
+							ng-if="cliente.statusCredit != 2 && !cliente.locked" 
 							ng-click="addCredit(cliente)">
 							Confirmar
 						</button>
 						<button 
 							class="btn-new-customer btn btn-success" 
-							ng-if="cliente.statusCredit == 2 && cliente.categoria != 'E'" 
+							ng-if="cliente.statusCredit == 2 && !cliente.locked" 
 							ng-click="addNewCredit(cliente)">
 							Confirmar
 						</button>
