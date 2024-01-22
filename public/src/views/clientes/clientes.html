@@ -115,17 +115,6 @@
 									</div>
 								</th>
 								<th>
-									Categoría
-									<div class="th">
-										<i class="fa fa-caret-up icon-up"
-											ng-click=" order('estado_civil') "
-                              				ng-class="{active: row == 'estado_civil'}"></i>
-										<i class="fa fa-caret-down icon-down"
-											ng-click=" order('-estado_civil') "
-                              				ng-class="{active: row == '-estado_civil'}"></i>
-									</div>
-								</th>
-								<th>
 									Créditos
 									<div class="th">
 										<i class="fa fa-caret-up icon-up"
@@ -168,13 +157,6 @@
 								<td>{{ data.direccion }}</td>
 								<td>{{ data.dpi }}</td>
 								<td>{{ data.telefono }}</td>
-								<td style="text-align: center;">
-									<label ng-if="data.categoria == 'A'" class="label label-success mr5"><strong>{{data.categoria}}</strong></label>
-									<label ng-if="data.categoria == 'B'" class="label label-primary mr5"><strong>{{data.categoria}}</strong></label>
-									<label ng-if="data.categoria == 'C'" class="label label-info mr5"><strong>{{data.categoria}}</strong></label>
-									<label ng-if="data.categoria == 'D'" class="label label-warning mr5"><strong>{{data.categoria}}</strong></label>
-									<label ng-if="data.categoria == 'E'" class="label label-danger mr5"><strong>{{data.categoria}}</strong></label>
-								</td>
 								<td ng-if="data.statusCredit == 1" style="text-align: center;">Sin crédito</td>
 								<td ng-if="data.statusCredit == 2" style="text-align: center;">Pendientes:  <strong>{{data.totalCreditsActive}}</strong></td>
 								<td ng-if="data.statusCredit == 3" style="text-align: center;">Completados: <strong>{{data.totalCredits - data.totalCreditsActive}}</strong></td>							

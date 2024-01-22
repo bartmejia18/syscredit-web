@@ -49,15 +49,6 @@ class ClientesController extends Controller {
                         $customer->statusCredit = $countCredits->status;
                         $customer->totalCreditsActive = $countCredits->creditsActives;
                         $customer->totalCredits = $countCredits->totalCredits;
-                        if ($customer->totalCreditsActive > 0) {
-                            $credits->map(function($item, $key){
-                                if ($item->estado == 1) {
-                                    $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
-                                }
-                                return $item;
-                            });
-                            $customer->categoria = $this->getGeneralStatusCustomer($credits);
-                        }
                     } else {
                         $customer->statusCredit = 4;
                         $customer->totalCredits = 0;
