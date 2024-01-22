@@ -28,7 +28,9 @@ class DataMigrationsController extends Controller
                             ->get();
 
             $credits->map(function($item, $key) {
-                $this->setArrearsToCreditComplete($item);
+                if ($item->estado == 0 && $item->cuotas_atrasadas == 0) {
+                    $this->setArrearsToCreditComplete($item);
+                }
             });
 
             $this->statusCode   = 200;
