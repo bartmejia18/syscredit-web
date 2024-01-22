@@ -56,7 +56,7 @@ class ClientesDesbloqueadosController extends Controller
                                                     'cliente_id' => $request->input('clientId'),
                                                     'supervisor_id' => $request->input('supervisorId'),
                                                     'razon' => $request->input('reason'),
-                                                    'numero' => $unlocksClients ? ($unlocksClients->numero + 1) : 0
+                                                    'numero' => $unlocksClients ? ($unlocksClients->numero + 1) : 1
                                                 ]);
 
                                 if (!$nuevoRegistro) {
