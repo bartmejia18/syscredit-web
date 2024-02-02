@@ -310,7 +310,8 @@ class ClientesController extends Controller {
                                                         $item->saldo_abonado = $detailsPayments->paymentPaid;
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
-                                                        $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
+                                                        $item->cuotas_atrasadas = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPayments->totalFees);
+                                                        $item->dias_no_pagados = $this->getTotalDaysArrears($item);
                                                         $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
                                                     }
                                                     return $item;
@@ -375,7 +376,8 @@ class ClientesController extends Controller {
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
                                                         $item->porcentaje_pago = $detailsPayments->paymentPercentage;
                                                         if ($item->estado == 1) {
-                                                            $item->cuotas_atrasadas = $this->getTotalDaysArrears($item);
+                                                            $item->cuotas_atrasadas = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPayments->totalFees);
+                                                            $item->dias_no_pagados = $this->getTotalDaysArrears($item);
                                                             $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
                                                         }
                                                     }

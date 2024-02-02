@@ -101,6 +101,7 @@
                     $scope.saldo_pendiente = "Q. " + parseFloat(infoCredit.saldo).toFixed(2);
                     $scope.total_cancelado = "Q. " + parseFloat(infoCredit.total_cancelado).toFixed(2);
 					$scope.cuotas_atrasadas = infoCredit.cuotas_atrasadas;
+                    $scope.dias_no_pagados = infoCredit.dias_no_pagados;
                     $scope.credit_arrears_status = infoCredit.estado_morosidad;
                     $scope.cuotas_pagadas = infoCredit.cuotas_pagados;
                     $scope.porcentaje = parseInt(infoCredit.porcentaje_pago);

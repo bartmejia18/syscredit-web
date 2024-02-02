@@ -136,10 +136,10 @@ trait detailsCreditsTrait {
 
         $dtInit = strtotime($dateInitial);
         $dtFin = strtotime($dateFinal);
+        
         $countDaysArrears = 0;
         if ($detailsPayments->count() > 0) {
-            
-            if ($credit->planes->tipo == 0 || $credit->planes->tipo == 1) {
+            if ($credit->planes->tipo == 1) {
                 /*
                     Ciclo for que aumenta día a día (86400) para plan diario
                 */
@@ -174,9 +174,7 @@ trait detailsCreditsTrait {
             }
         } else {
             if ($dateFinal > $dateInitial) {
-                $currentDate = Carbon::createFromFormat('Y-m-d', $dateFinal);
-                $dateFirstPay = Carbon::createFromFormat('Y-m-d', $dateInitial);
-                $countDaysArrears = $currentDate->diffInDays($dateFirstPay);
+                $countDaysArrears = $this->getTotalDaysArrearsWithTotalPaid($credit, 0);
             }
         }
         return $countDaysArrears;

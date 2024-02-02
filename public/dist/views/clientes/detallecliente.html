@@ -260,86 +260,26 @@
                                 <br />
                                 <span class="clearfix"></span>
                                 <div class="row">
-                                    <div class="col-md-2 col-md-offset-2">
-                                        <div class="panel panel-default mb20 mini-box panel-hovered">
+                                    <div class="col-md-2 col-md-offset-1">
+                                        <div class="panel panel-primary mb20 mini-box panel-hovered">
                                             <div class="panel-body">
                                                 <div class="clearfix">
                                                     <div class="info left">
-                                                        <h3 class="mt0 text-danger text-bold">
+                                                        <h3 class="mt0 text-primary text-bold">
                                                             {{saldo_pendiente}}
                                                         </h3>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
+                                            <div class="panel-footer clearfix panel-footer-sm panel-footer-primary">
                                                 <p class="mt0 mb0 left">
                                                     <strong>Monto pendiente a cancelar</strong>
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- REGION DIAS ATRASASO -->
                                     <div class="col-md-2">
-                                        <div ng-if="credit_arrears_status == 'Excelente'">
-                                            <div class="panel panel-default mb20 mini-box panel-hovered">
-                                                <div class="panel-body">
-                                                    <div class="clearfix">
-                                                        <div class="info left">
-                                                            <h3 class="mt0 text-success text-bold">
-                                                                {{cuotas_atrasadas}}
-                                                            </h3>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="panel-footer clearfix panel-footer-sm panel-footer-success">
-                                                    <p class="mt0 mb0 left">
-                                                        <strong>Días Atrasados</strong>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div ng-if="credit_arrears_status == 'Bueno'">
-                                            <div class="panel panel-default mb20 mini-box panel-hovered">
-                                                <div class="panel-body">
-                                                    <div class="clearfix">
-                                                        <div class="info left">
-                                                            <h3 class="mt0 text-warning text-bold">
-                                                                {{cuotas_atrasadas}}
-                                                            </h3>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="panel-footer clearfix panel-footer-sm panel-footer-warning">
-                                                    <p class="mt0 mb0 left">
-                                                        <strong>Días Atrasados</strong>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div ng-if="credit_arrears_status == 'Moroso'">
-                                            <div class="panel panel-default mb20 mini-box panel-hovered">
-                                                <div class="panel-body">
-                                                    <div class="clearfix">
-                                                        <div class="info left">
-                                                            <h3 class="mt0 text-pink text-bold">
-                                                                {{cuotas_atrasadas}}
-                                                            </h3>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="panel-footer clearfix panel-footer-sm panel-footer-pink">
-                                                    <p class="mt0 mb0 left">
-                                                        <strong>Días Atrasados</strong>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- END REGION -->
-
-                                    <div class="col-md-2">
-                                        <div class="panel panel-default mb20 mini-box panel-hovered">
+                                        <div class="panel panel-success mb20 mini-box panel-hovered">
                                             <div class="panel-body">
                                                 <div class="clearfix">
                                                     <div class="info left">
@@ -358,7 +298,7 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <div class="panel panel-default mb20 mini-box panel-hovered">
+                                        <div class="panel panel-info mb20 mini-box panel-hovered">
                                             <div class="panel-body">
                                                 <div class="clearfix">
                                                     <div class="info left">
@@ -375,6 +315,82 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <div class="panel panel-danger mb20 mini-box panel-hovered">
+                                            <div class="panel-body">
+                                                <div class="clearfix">
+                                                    <div class="info left">
+                                                        <h3 class="mt0 text-danger text-bold">
+                                                            {{cuotas_atrasadas}}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
+                                                <p class="mt0 mb0 left">
+                                                    <strong>Cuotas atrasadas</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- REGION DIAS ATRASASO -->
+                                    <div class="col-md-2">
+                                        <div ng-if="credit_arrears_status == 'Excelente'">
+                                            <div class="panel panel-success mb20 mini-box panel-hovered">
+                                                <div class="panel-body">
+                                                    <div class="clearfix">
+                                                        <div class="info left">
+                                                            <h3 class="mt0 text-success text-bold">
+                                                                {{dias_no_pagados}}
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="panel-footer clearfix panel-footer-sm panel-footer-success">
+                                                    <p class="mt0 mb0 left">
+                                                        <strong>Días Atrasados</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div ng-if="credit_arrears_status == 'Bueno'">
+                                            <div class="panel panel-warning mb20 mini-box panel-hovered">
+                                                <div class="panel-body">
+                                                    <div class="clearfix">
+                                                        <div class="info left">
+                                                            <h3 class="mt0 text-warning text-bold">
+                                                                {{dias_no_pagados}}
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="panel-footer clearfix panel-footer-sm panel-footer-warning">
+                                                    <p class="mt0 mb0 left">
+                                                        <strong>Días Atrasados</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div ng-if="credit_arrears_status == 'Moroso'">
+                                            <div class="panel panel-pink mb20 mini-box panel-hovered">
+                                                <div class="panel-body">
+                                                    <div class="clearfix">
+                                                        <div class="info left">
+                                                            <h3 class="mt0 text-pink text-bold">
+                                                                {{dias_no_pagados}}
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="panel-footer clearfix panel-footer-sm panel-footer-pink">
+                                                    <p class="mt0 mb0 left">
+                                                        <strong>Días Atrasados</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- END REGION -->
                                 </div>
                                 <br />
                                 <div class="row">
