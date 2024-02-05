@@ -417,17 +417,20 @@
                 }
 
                 function getEndDateWithoutSunday(plan) {
-                    var dtInicial = getStartDate();
-                    if (dtInicial.getDay() === 0) {
-                        dtInicial = new Date(dtInicial.getTime() + 86400000); // se agrega un dia
-                    }
-                    for (var i = 0; i < parseInt(plan.dias - 1); i++) {
-                        if (dtInicial.getDay() === 0) {
-                            i = i - 1;
+                    var fecha = getStartDate();
+                    var addDays = parseInt(plan.dias);
+                    for (var i = 0; i < addDays - 1; i++) {
+                        var diaInvalido = false;
+                        fecha.setDate(fecha.getDate() + 1); // Sumamos de dia en dia
+                        if (fecha.getDay() == 0) { // Verificamos si es sábado o domingo
+                            console.log(fecha.getDate() + ' es sábado o domingo (Sumamos un dia)');
+                            diaInvalido = true;
                         }
-                        dtInicial = new Date(dtInicial.getTime() + 86400000); // se agrega un dia
+                        if (diaInvalido)
+                            addDays++; // Si es fin de semana o festivo le sumamos un dia
                     }
-                    return $filter("date")(dtInicial, "dd-MM-yyyy");
+                    return fecha.getDate().toString().padStart(2, '0') + '-' + (fecha.getMonth() + 1).toString().padStart(2, '0') + '-' + fecha.getFullYear();
+                    
                 }
 
                 function getEndDateWeek(plan) {
