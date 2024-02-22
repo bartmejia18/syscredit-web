@@ -174,7 +174,7 @@
 				@endforeach	
 			</tbody>
 		</table>	
-		<span class="note"><strong>Nota: </strong>SE COBRARÁ <strong>Q. {!!number_format((float)($data->amountDefault), 2, '.', '')!!}</strong> DE MORA POR DÍA ATRASADO</span>
+		<span class="note"><strong>Nota: </strong>SE COBRARÁ MORA POR DÍA ATRASADO</span>
 		<table>
 			<tr>
 				<td class="fingerprint"></td>
