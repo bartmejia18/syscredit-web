@@ -72,7 +72,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
         $infoCredit->date = $data->fecha_inicio;
-        $infoCredit->amount = $data->montos->monto;
+        $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
         $infoCredit->amountDefault = $dailyAmount/2;
         $infoCredit->arrayQuota = $row;
@@ -129,7 +129,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
         $infoCredit->date = $data->fecha_inicio;
-        $infoCredit->amount = $data->montos->monto;
+        $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
         $infoCredit->amountDefault = $dailyAmount/2;
         $infoCredit->arrayQuota = $row;
@@ -188,7 +188,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
         $infoCredit->date = $data->fecha_inicio;
-        $infoCredit->amount = $data->montos->monto;
+        $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
         $infoCredit->amountDefault = $dailyAmount/2;
         $infoCredit->arrayQuota = $row;
@@ -249,7 +249,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
         $infoCredit->date = $data->fecha_inicio;
-        $infoCredit->amount = $data->montos->monto;
+        $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
         $infoCredit->amountDefault = $dailyAmount/2;
         $infoCredit->arrayQuota = $row;
