@@ -341,15 +341,7 @@ class ClientesController extends Controller {
     }
 
     public function detalleCreditoCliente(Request $request) {
-        try {            
-            /*$creditoCliente = Clientes::with(['creditos' => function($item) {
-                                            $item->where('estado', 1);
-                                        }])                                
-                                        ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
-                                        ->where('id', $request->input('cliente_id'))                                        
-                                        ->first();*/
-                                        
-            
+        try {                        
             $creditoCliente = Clientes::with("creditos")                                
                                         ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
                                         ->where('id', $request->input('cliente_id'))                                        
@@ -364,8 +356,12 @@ class ClientesController extends Controller {
                     $creditsFilters = $creditoCliente->creditos->filter(function ($item, $key) {
                         return $item->estado != 2;
                     });  
-                                                      
-                    $creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditsFilters);
+                    
+                    $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
+                       $this->atrasos($item);
+                    });
+                    
+                    /*$creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditsFilters);
                     $creditoCliente->categoria = $this->getArrearsStatus($creditoCliente->arrearsCredits);
                     $creditoCliente->cantidadCreditos = $creditsFilters->count();  
                     $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
@@ -377,14 +373,14 @@ class ClientesController extends Controller {
                                                         $item->porcentaje_pago = $detailsPayments->paymentPercentage;
                                                         if ($item->estado == 1) {
                                                             $item->cuotas_atrasadas = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPayments->totalFees);
-                                                            $item->dias_no_pagados = $this->getTotalDaysArrears($item);
+                                                            $item->dias_no_pagados = $this->getTotalDaysArrears($item, $detailsPayments);
                                                             $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
                                                         }
                                                     }
                                                     return $item;
                                                 });
                     $creditoCliente->unlockCount = $unlocks ? $unlocks->count():0;
-                    $creditoCliente->unlocks = $unlocks ? $unlocks : [];
+                    $creditoCliente->unlocks = $unlocks ? $unlocks : [];*/
                    
                     $this->statusCode   = 200;
                     $this->result       = true;

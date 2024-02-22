@@ -97,6 +97,7 @@ trait detailsCreditsTrait {
     */
     public function getTotalDaysArrearsWithTotalPaid($credit, $feePaid) {
         $dateInitial = $credit->fecha_inicio;
+
         $dateFinal = $this->getDateFinalCredit($credit);
     
         if ($dateInitial <= date('Y-m-d')) {
@@ -180,6 +181,13 @@ trait detailsCreditsTrait {
             }
         }
         return $countDaysArrears;
+    }
+
+    public function atrasos($credit) {
+        $detailsPayments = DetallePagos::where('credito_id', $credit->id)->where('estado', 1)->get();
+        $detailsPayments->groupBy('fecha_corresponde')->map(function($item){
+            var_dump($item->sum('abono'));
+        });
     }
 
     public function findDateInPayments($detailsPayments, $date) {

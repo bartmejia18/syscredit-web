@@ -40,13 +40,13 @@ trait countDaysTrait {
         if ($withoutSunday == 1) {
             for ($i=0; $i < $totalDays; $i++) {
                 $dateTemporal = strtotime('+'.$i.'day', strtotime($dateStart));
-                    $dateTemporal = date('d-m-Y', $dateTemporal);
-                    $dateTemporalNew = new \DateTime($dateTemporal);
-                    $sundayTemporal = date("D", $dateTemporalNew->getTimestamp());
+                $dateTemporal = date('d-m-Y', $dateTemporal);
+                $dateTemporalNew = new \DateTime($dateTemporal);
+                $sundayTemporal = date("D", $dateTemporalNew->getTimestamp());
 
-                    if ($sundayTemporal == "Sun") {
-                        ++$countSundayTemporal;
-                    }
+                if ($sundayTemporal == "Sun") {
+                    ++$countSundayTemporal;
+                }
             }
         }
         return $totalDays - $countSundayTemporal;
