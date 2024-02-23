@@ -356,9 +356,9 @@ class ClientesController extends Controller {
                     $creditsFilters = $creditoCliente->creditos->filter(function ($item, $key) {
                         return $item->estado != 2;
                     });  
-                    
-                    $creditoCliente->creditos = $creditoCliente->creditos->map(function($item,$key) {
-                       $this->atrasos($item);
+                    $creditoCliente->creditos->map(function($item,$key) {
+                       $test = $this->getLatePayments($item);
+                       var_dump($test);
                     });
                     
                     /*$creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditsFilters);

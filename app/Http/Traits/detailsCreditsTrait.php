@@ -183,11 +183,18 @@ trait detailsCreditsTrait {
         return $countDaysArrears;
     }
 
-    public function atrasos($credit) {
+    public function getLatePayments($credit) {
         $detailsPayments = DetallePagos::where('credito_id', $credit->id)->where('estado', 1)->get();
-        $detailsPayments->groupBy('fecha_corresponde')->map(function($item){
-            var_dump($item->sum('abono'));
+        $paymentsStatus = $detailsPayments->groupBy('fecha_corresponde')->map(function($item, $key) {
+            $result = $item->contains(function($item, $key) {
+                return $item->valido == 2;
+            });
+            return $key = $result;
         });
+
+        return $paymentsStatus->filter(function ($item, $key) {
+            return $item;
+        })->count();
     }
 
     public function findDateInPayments($detailsPayments, $date) {

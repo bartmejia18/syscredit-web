@@ -180,7 +180,6 @@ class CreditosController extends Controller
             $savePayment = false;
 
             if ($credit) {
-
                 $routeClosure = CierreRuta::where('cobrador_id', $credit->usuarios_cobrador)
                                 ->where('fecha_cierre', date('Y-m-d'))
                                 ->where('estado', 1)
@@ -208,45 +207,40 @@ class CreditosController extends Controller
                                 $amountTotal = $totalPaymentLastDay + $amount;
                                 $quota = $amount > $missing ? $missing : $amount;
                                 
-                                $savePayment = $this->savePayments($credit, $lastPayment->fecha_corresponde, $quota, $amountTotal, $request->input('origen'));
+                                $today = date('Y-m-d');
+                                $detailPayments = new DetallePagos;
+                                $detailPayments->credito_id = $credit->id;
+                                $detailPayments->fecha_corresponde = $lastPayment->fecha_corresponde;
+                                $detailPayments->fecha_pago = $today;
+                                $detailPayments->abono = $quota;
+                                $detailPayments->valido = $this->validatePayment($lastPayment->fecha_corresponde, $today, $amountTotal, $credit->cuota_diaria);
+                                $detailPayments->origen = $request->input('origen');
+                                $detailPayments->estado = 1;
+                            
+                                $savePayment = $detailPayments->save() ? true : false;
                                 
-                                if (!$savePayment) {
-                                    throw new \Exception("Ocurrió un error al ingresar el pago");
-                                }
-
                                 $amount = $amount - $missing;
                             }
             
                             if ($amount > 0) {
-                                $arrayQuota = $this->getArrayQuota($amount, $credit->cuota_diaria);
-                                for ($i = 0; $i < count($arrayQuota); $i++) {
-
-                                    $correspondingDate = strtotime('+'.($i + 1).'day', strtotime($lastPayment->fecha_corresponde));
-                                    $correspondingDate = date('Y-m-d', $correspondingDate);
-
-                                    $savePayment = $this->savePayments($credit, $correspondingDate, $arrayQuota[$i], $arrayQuota[$i], $request->input('origen'));
-                                    if (!$savePayment) {
-                                        throw new \Exception("Ocurrió un error al ingresar el pago");
-                                    } 
-                                }
+                                $savePayment = $this->savePayments(
+                                    $credit, 
+                                    $amount, 
+                                    $request->input('origen'), 
+                                    $lastPayment->fecha_corresponde
+                                );
                             }
                         }
                     } else {
                         if ($request->input('abono') > $credit->deudatotal) {
                             throw new \Exception("El monto ingresado es mayor al saldo pendiente de pago");
                         } else { 
-                            $arrayQuota = $this->getArrayQuota($amount, $credit->cuota_diaria);
-                            for ($i = 0; $i < count($arrayQuota); $i++) {
-
-                                $correspondingDate = strtotime('+'.$i.'day', strtotime($credit->fecha_inicio));
-                                $correspondingDate = date('Y-m-d', $correspondingDate);
-
-                                $savePayment = $this->savePayments($credit, $correspondingDate, $arrayQuota[$i], $arrayQuota[$i], $request->input('origen'));
-
-                                if (!$savePayment) {
-                                    throw new \Exception("Ocurrió un error al ingresar el pago");
-                                }
-                            }
+                            $savePayment = $this->savePayments(
+                                $credit, 
+                                $amount, 
+                                $request->input('origen'), 
+                                $credit->fecha_inicio
+                            );
                         }
                     }
 
@@ -269,6 +263,8 @@ class CreditosController extends Controller
                         $this->statusCode = 200;
                         $this->result = true;
                         $this->message = "Pago realizado con éxito";
+                    } else {
+                        throw new \Exception("Ocurrió un error al ingresar el pago");
                     }
                 } else {
                     throw new \Exception("La ruta ya ha sido cerrada");
@@ -288,24 +284,52 @@ class CreditosController extends Controller
         }
     }
 
-    public function savePayments($credit, $correspondingDate, $amount, $amountValid, $origen)
+    public function savePayments($credit, $amount, $origen, $date)
     {
-        $today = date('Y-m-d');
-        $detailPayments = new DetallePagos;
-        $detailPayments->credito_id = $credit->id;
-        $detailPayments->fecha_corresponde = $correspondingDate;
-        $detailPayments->fecha_pago = $today;
-        $detailPayments->abono = $amount;
-        $detailPayments->valido = $this->validatePayment($correspondingDate, $today, $amountValid, $credit->cuota_diaria);
-        $detailPayments->origen = $origen;
-        $detailPayments->estado = 1;
+        $arrayQuota = $this->getArrayQuota($amount, $credit->cuota_diaria);
+        $daysCounter = $credit->fecha_inicio == $date ? 0 : 1;
+        $saveCounter = false;
 
-        return $detailPayments->save();
+        for ($i = 0; $i < count($arrayQuota); $i++) {
+            $correspondingDate = strtotime('+'.$daysCounter.'day', strtotime($date));
+            $correspondingDate = date('Y-m-d', $correspondingDate);
+
+            if ($credit->planes->domingo == 1) {
+                $correspondingDateTime = new \DateTime($correspondingDate);
+                $isSunday = date("D", $correspondingDateTime->getTimestamp());
+                if ($isSunday == "Sun") {
+                $daysCounter = $daysCounter + 1;
+                $correspondingDate = strtotime('+'.$daysCounter.'day', strtotime($date));
+                $correspondingDate = date('Y-m-d', $correspondingDate);
+                }
+            }
+            
+            $today = date('Y-m-d');
+            $detailPayments = new DetallePagos;
+            $detailPayments->credito_id = $credit->id;
+            $detailPayments->fecha_corresponde = $correspondingDate;
+            $detailPayments->fecha_pago = $today;
+            $detailPayments->abono = $arrayQuota[$i];
+            $detailPayments->valido = $this->validatePayment($correspondingDate, $today, $arrayQuota[$i], $credit->cuota_diaria);
+            $detailPayments->origen = $origen;
+            $detailPayments->estado = 1;
+            $detailPayments->save();
+            
+            if ($detailPayments->save()) {
+                $saveCounter = true;
+            } else {
+                $saveCounter = false;
+                return;
+            }
+
+            $daysCounter++;
+        }
+
+        return $saveCounter;
     }
 
     public function getArrayQuota($amount, $dailyQuota)
     {
-
         $whole = floor($amount);
         $fraction = $amount - $whole;
 
