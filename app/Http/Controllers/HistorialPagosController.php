@@ -10,6 +10,7 @@ use App\DetallePagos;
 use App\Clientes;
 use App\Creditos;
 use App\Http\Traits\detailsPaymentsTrait;
+use App\PagosCreditos;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -25,12 +26,16 @@ class HistorialPagosController extends Controller
     public function paymentHistory(Request $request)
     {
         try {
-            $items = DB::table('detalle_pagos')->select("detalle_pagos.*", "creditos.clientes_id")
+            /*$items = DB::table('detalle_pagos')->select("detalle_pagos.*", "creditos.clientes_id")
                         ->join('creditos', 'detalle_pagos.credito_id','=','creditos.id')
                         ->where('creditos.usuarios_cobrador',$request->input('cobrador_id'))
                         ->where('detalle_pagos.fecha_pago',$request->input('fecha_pago'))                        
                         ->where('detalle_pagos.estado', 1)
-                        ->get();
+                        ->get();*/
+
+            $items = PagosCreditos::where('usuarios_cobrador', $request->input('cobrador_id'))
+                    ->where('fecha_pago', $request->input('fecha_pago'))
+                    ->get();
 
             if ($items) {
                 $colletion = collect($items);
@@ -65,33 +70,44 @@ class HistorialPagosController extends Controller
     public function deletePayment(Request $request){
         try {
 
-            $detallePago = DetallePagos::where('id', $request->input('detalle_id'))
+            $detailsPayments = DetallePagos::where('credito_id', $request->input('creditId'))
+                                        ->where('fecha_pago', $request->input('datePayment'))
                                         ->where('estado', 1)
-                                        ->first();
+                                        ->get();
             
-            if ($detallePago) {
+            if ($detailsPayments->count() > 0) {
+                DB::beginTransaction();
+                $sumPayments = 0;
+                $totalDetails = 0;
+                foreach($detailsPayments as $detail) { 
+                    $sumPayments += $detail->abono;
+                    $detail->estado = 2;
+                    if ($detail->save()) {
+                        $totalDetails = $totalDetails + 1;
+                    }
+                };
                 
-                $detallePago->estado = 2;
-                
-                if ($detallePago->save()) {                    
-                    $credito = Creditos::find($detallePago->credito_id);
-                    $credito->saldo = $credito->saldo + $detallePago->abono;
+                if ($totalDetails == $detailsPayments->count()) {                    
+                    $credito = Creditos::find($request->input('creditId'));
+                    $credito->saldo = $credito->saldo + $sumPayments;
                     $credito->estado = 1;
                     
                     if ($credito->save()) {
+                        DB::commit();
                         $this->statusCode   = 200;
                         $this->result       = true;
                         $this->message      = "Cobro eliminado correctamente";
                     } else {
-                        throw new \Exception("Error al eliminar el pago");        
+                        throw new \Exception("Error al eliminar el pago 1");        
                     }
                 } else {
-                    throw new \Exception("Error al eliminar el pago");
+                    throw new \Exception("Error al eliminar el pago 2");
                 }    
             } else {
                 throw new \Exception("No se encontró el pago a eliminar");
             }
         } catch (\Exception $e) {
+            DB::rollback();
             $this->statusCode = 200;
             $this->result = false;
             $this->message = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los datos";
@@ -127,9 +143,8 @@ class HistorialPagosController extends Controller
 
     public function historyForCustomer(Request $request) {
         try {
-            $records = DetallePagos::where('credito_id', $request->input('credito_id'))
-                                        ->where('estado', 1)
-                                        ->get();
+            $records = PagosCreditos::where('credito_id', $request->input('credito_id'))
+                    ->get();
 
             if ($records) {
                 $colletion = collect($records);

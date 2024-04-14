@@ -99,7 +99,7 @@
 							<tr ng-repeat="data in currentPageStores track by $index">
 							<td>{{ $index + 1 }}</td>
 							<td>{{ data.customer.nombre + " " + data.customer.apellido }}</td>
-							<td>Q. {{ data.abono | number: "2"}}</td>
+							<td>Q. {{ data.totalabono | number: "2"}}</td>
 							<td>{{ data.hour_payment }}</td>							
 							<td ng-show="data.origen == 0"></td>
 							<td ng-show="data.origen == 1">Web</td>

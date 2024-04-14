@@ -38,21 +38,21 @@
 									</div>
 								</th>
 								<th>
-									Número
+									Autorización Supervisor
 									<div class="th">
 										<i class="fa fa-caret-up icon-up" ng-click=" order('numero') " ng-class="{active: row == 'numero'}"></i>
 										<i class="fa fa-caret-down icon-down" ng-click=" order('-numero') " ng-class="{active: row == '-numero'}"></i>
 									</div>
 								</th>
 								<th>
-									Autorización
+									Autorización Gerente
 									<div class="th">
 										<i class="fa fa-caret-up icon-up" ng-click=" order('supervisor.nombre') " ng-class="{active: row == 'supervisor.nombre'}"></i>
 										<i class="fa fa-caret-down icon-down" ng-click=" order('-supervisor.nombre') " ng-class="{active: row == '-supervisor.nombre'}"></i>
 									</div>
 								</th>
 								<th>
-									Fecha
+									Fecha de solicitud
 									<div class="th">
 										<i class="fa fa-caret-up icon-up" ng-click=" order('created_at') " ng-class="{active: row == 'created_at'}"></i>
 										<i class="fa fa-caret-down icon-down" ng-click=" order('-created_at') " ng-class="{active: row == '-created_at'}"></i>
@@ -68,17 +68,31 @@
 							<tr ng-repeat="data in currentPageStores track by $index">
 								<td>{{ $index + 1 }}</td>
 								<td>{{ data.cliente.nombre }} {{ data.cliente.apellido }}</td>
-								<td>{{ data.numero }}</td>
-								<td>{{ data.supervisor.nombre }}</td>
+								<td>{{ data.nombre_supervisor }} 
+									<i class="fa fa-check text-success" ng-show="data.aprobacion_supervisor == 1"></i>
+									<i class="fa fa-times text-danger" ng-show="data.aprobacion_supervisor == 2"></i>
+								</td>
+								<td>{{ data.nombre_gerente }} 
+									<i class="fa fa-check text-success" ng-show="data.aprobacion_gerente == 1"></i>
+									<i class="fa fa-times text-danger" ng-show="data.aprobacion_gerente == 2"></i>
+								</td>
 								<td>{{ data.created_at }}</td>
 								<td>{{ data.razon }}</td>
 								<td>
+									<button 
+										ng-show="data.revisado"
+										type="button" 
+										class="btn btn-success btn-xs" 
+										md-ink-ripple
+										ng-click="modalAprobacionesOpen(data)">
+										Aprobaciones
+									</button>
 									<a 
 										type="button" 
 										class="btn btn-primary btn-xs" 
 										href="#/detallecliente/{{ data.cliente_id }}"
 										md-ink-ripple>
-										Detalles cliente
+										Cliente
 									</a>
 								</td>
 							</tr>

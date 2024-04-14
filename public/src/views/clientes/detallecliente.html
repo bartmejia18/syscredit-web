@@ -328,7 +328,7 @@
                                             </div>
                                             <div class="panel-footer clearfix panel-footer-sm panel-footer-danger">
                                                 <p class="mt0 mb0 left">
-                                                    <strong>Cuotas atrasadas</strong>
+                                                    <strong>Cuotas pendientes</strong>
                                                 </p>
                                             </div>
                                         </div>
@@ -341,7 +341,7 @@
                                                     <div class="clearfix">
                                                         <div class="info left">
                                                             <h3 class="mt0 text-success text-bold">
-                                                                {{dias_no_pagados}}
+                                                                {{dias_atrasados}}
                                                             </h3>
                                                         </div>
                                                     </div>
@@ -359,7 +359,7 @@
                                                     <div class="clearfix">
                                                         <div class="info left">
                                                             <h3 class="mt0 text-warning text-bold">
-                                                                {{dias_no_pagados}}
+                                                                {{dias_atrasados}}
                                                             </h3>
                                                         </div>
                                                     </div>
@@ -377,7 +377,7 @@
                                                     <div class="clearfix">
                                                         <div class="info left">
                                                             <h3 class="mt0 text-pink text-bold">
-                                                                {{dias_no_pagados}}
+                                                                {{dias_atrasados}}
                                                             </h3>
                                                         </div>
                                                     </div>
@@ -544,25 +544,34 @@
                                                 </div>
                                             </th>
                                             <th>
-                                                Autorización
-                                                <div class="th">
-                                                    <i class="fa fa-caret-up icon-up" ng-click=" order('autorizacion') "
-                                                        ng-class="{active: row == 'autorizacion'}"></i>
-                                                    <i class="fa fa-caret-down icon-down" ng-click=" order('-autorizacion') "
-                                                        ng-class="{active: row == '-autorizacion'}"></i>
-                                                </div>
-                                            </th>
-                                            <th>
                                                 Fecha
                                                 <div class="th">
-                                                    <i class="fa fa-caret-up icon-up" ng-click=" order('fecha') "
-                                                        ng-class="{active: row == 'fecha'}"></i>
-                                                    <i class="fa fa-caret-down icon-down" ng-click=" order('-fecha') "
-                                                        ng-class="{active: row == '-fecha'}"></i>
+                                                    <i class="fa fa-caret-up icon-up" ng-click=" order('created_at') "
+                                                        ng-class="{active: row == 'created_at'}"></i>
+                                                    <i class="fa fa-caret-down icon-down" ng-click=" order('-created_at') "
+                                                        ng-class="{active: row == '-created_at'}"></i>
                                                 </div>
                                             </th>
                                             <th>
                                                 Motivo de desbloqueo
+                                                <div class="th">
+                                                    <i class="fa fa-caret-up icon-up" ng-click=" order('razon') "
+                                                        ng-class="{active: row == 'razon'}"></i>
+                                                    <i class="fa fa-caret-down icon-down" ng-click=" order('-razon') "
+                                                        ng-class="{active: row == '-razon'}"></i>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                Estado
+                                                <div class="th">
+                                                    <i class="fa fa-caret-up icon-up" ng-click=" order('abono') "
+                                                        ng-class="{active: row == 'abono'}"></i>
+                                                    <i class="fa fa-caret-down icon-down" ng-click=" order('-abono') "
+                                                        ng-class="{active: row == '-abono'}"></i>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                Acciones
                                                 <div class="th">
                                                     <i class="fa fa-caret-up icon-up" ng-click=" order('abono') "
                                                         ng-class="{active: row == 'abono'}"></i>
@@ -575,9 +584,21 @@
                                     <tbody>
                                         <tr ng-repeat="unlockList in currentPageStores track by $index">
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ unlockList.supervisor.nombre }}</td>
                                             <td>{{ unlockList.created_at }}</td>
                                             <td>{{ unlockList.razon }}</td>
+                                            <td>
+                                                <label ng-if="unlockList.aprobado" class="label label-success">APROBADO</label>
+                                                <label ng-if="!unlockList.aprobado" class="label label-danger">RECHAZADO</label>
+                                            </td>
+                                            <td>
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-info btn-xs" 
+                                                    md-ink-ripple
+                                                    ng-click="modalAprobacionesOpen(unlockList)">
+                                                    Aprobaciones
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

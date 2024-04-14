@@ -9,7 +9,6 @@ use App\Sucursales;
 use App\DetallePagos;
 use App\CierreRuta;
 use App\Http\Traits\detailsPaymentsTrait;
-use App\Http\Traits\detailsCustomerTrait;
 use App\Http\Traits\detailsCreditsTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
@@ -21,7 +20,6 @@ class CobradorController extends Controller {
     public $records     = [];
     
     use detailsPaymentsTrait;
-    use detailsCustomerTrait;
     use detailsCreditsTrait;
 
     public function listCustomers(Request $request) {

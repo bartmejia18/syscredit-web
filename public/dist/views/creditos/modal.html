@@ -102,6 +102,22 @@
 										<div ng-if="cliente.statusCredit == 3"><strong>¡Alerta! </strong> El cliente ha completado <b>{{cliente.totalCredits}}</b> crédito(s). ¿Desea agregar otro crédito?</div>
 										<div ng-if="cliente.statusCredit == 4"><strong>¡Alerta! </strong> El cliente se encuentra eliminado. ¿Desea activar y asignarle crédito? </div>
 									</div>
+									<div ng-if="cliente.unlocks.requestUnlocks > 0 && cliente.unlocks.lastUnlock.estado == 0">
+										<div ng-if="cliente.unlocks.statusUnlock != 1" class="alert alert-danger">
+											<div ng-if="cliente.unlocks.statusUnlock == 0">
+												<strong>¡Desbloqueo! </strong> 
+												La solicitud de desbloqueo aún esta <b>PENDIENTE DE REVISIÓN</b>
+											</div>
+											<div ng-if="cliente.unlocks.statusUnlock == 2">
+												<strong>¡Desbloqueo! </strong>
+												Solicitud de desbloqueo <b>RECHAZADO.</b> Cantidad de solicitudes: <b>{{cliente.unlocks.requestUnlocks}}</b>
+											</div>
+										</div>
+										<div ng-if="cliente.unlocks.statusUnlock == 1" class="alert alert-success">
+											<strong>¡Desbloqueo! </strong> 
+											Solicitud de desbloqueo <b>APROBADO.</b> Cantidad de aprobaciones: <b>{{cliente.unlocks.approvedUnlockRequests}}</b>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -111,24 +127,36 @@
 			<div class="row form-group">
 				<div class="col-sm-12 text-right">
 					<div ng-show="cliente.statusCredit == 0">
-						<button class="btn-new-customer btn btn-success" ng-if="accion == 'crear'" ng-click="saveDataNewClient(cliente)" ng-disabled="form.$invalid">Registrar</button>
+						<button 
+							class="btn-new-customer btn btn-success" 
+							ng-if="accion == 'crear'" 
+							ng-click="saveDataNewClient(cliente)" 
+							ng-disabled="form.$invalid">
+							Registrar
+						</button>
 					</div>
 					<div ng-show="cliente.statusCredit != 0">		
 						<button 
 							class="btn-new-customer btn btn-info" 
-							ng-if="cliente.locked" 
+							ng-if="cliente.locked && cliente.unlocks.lastUnlock.estado == 1" 
+							ng-click="modalUnlockClient(cliente)">
+							Solicitar desbloqueo
+						</button>
+						<button 
+							class="btn-new-customer btn btn-info" 
+							ng-if="cliente.locked && cliente.unlocks.statusUnlock == 2" 
 							ng-click="modalUnlockClient(cliente)">
 							Solicitar desbloqueo
 						</button>
 						<button 
 							class="btn-new-customer btn btn-success" 
-							ng-if="cliente.statusCredit != 2 && !cliente.locked" 
+							ng-if="cliente.statusCredit != 2 && !cliente.locked && cliente.unlocks.statusUnlock == 1" 
 							ng-click="addCredit(cliente)">
 							Confirmar
 						</button>
 						<button 
 							class="btn-new-customer btn btn-success" 
-							ng-if="cliente.statusCredit == 2 && !cliente.locked" 
+							ng-if="cliente.statusCredit == 2 && !cliente.locked && cliente.unlocks.statusUnlock == 1" 
 							ng-click="addNewCredit(cliente)">
 							Confirmar
 						</button>

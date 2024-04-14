@@ -245,7 +245,7 @@
           windowClass: "default"
         });
       }
-
+      
       $scope.modalClose = function () {
         modal.close();
       }

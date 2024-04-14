@@ -9,25 +9,30 @@
         .controller("UnlocksController", [
             "$scope",
             "$filter",
+            "$modal",
             "clientUnlockService",
             function (
                 $scope, 
                 $filter,  
+                $modal,
                 clientUnlockService
             ) {
                 
-                $scope.sucursales = Array();
-                $scope.datas = [];
+                $scope.sucursales = Array()
+                $scope.datas = []
+                $scope.aprobacion = {}
 
-                $scope.currentPageStores = [];
-                $scope.searchKeywords = "";
-                $scope.filteredData = [];
-                $scope.row = "";
-                $scope.numPerPageOpts = [5, 10, 25, 50, 100];
-                $scope.numPerPage = $scope.numPerPageOpts[1];
-                $scope.currentPage = 1;
+                $scope.currentPageStores = []
+                $scope.searchKeywords = ""
+                $scope.filteredData = []
+                $scope.row = ""
+                $scope.numPerPageOpts = [5, 10, 25, 50, 100]
+                $scope.numPerPage = $scope.numPerPageOpts[1]
+                $scope.currentPage = 1
                 
-                $scope.toasts = [];
+                $scope.toasts = []
+
+                var modal
 
                 loadData();
 
@@ -54,6 +59,25 @@
                             }    
                         );
                 };
+
+                // #region Modal
+
+                // Funciones para Modales
+                $scope.modalAprobacionesOpen = function(aprobacion) {
+                    $scope.aprobacion = aprobacion
+                    modal = $modal.open({
+                    templateUrl: "views/desbloqueados/modal.html",
+                    scope: $scope,
+                    size: "md",
+                    resolve: function () { },
+                    windowClass: "default"
+                    })
+                }
+
+                $scope.modalClose = function () {
+                    modal.close()
+                  }
+                // #endregion
 
                 // #region Function Table
                 $scope.select = function (page) {
@@ -102,7 +126,7 @@
                 // #endregion
 
                 // #region Toast
-                $scope.createToast = function (tipo, mensaje) {
+                $scope.createToast = function(tipo, mensaje) {
                     $scope.toasts.push({
                         anim: "bouncyflip",
                         type: tipo,

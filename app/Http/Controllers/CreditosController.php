@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Creditos;
 use App\DetallePagos;
 use App\CierreRuta;
+use App\VersionSistema;
 use App\Http\Traits\DatesTrait;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\generateArrayForTicketTrait;
@@ -88,11 +89,12 @@ class CreditosController extends Controller
                     'deudatotal'            => $request->input('deudatotal'),
                     'cuota_diaria'          => $request->input('cuota_diaria'),
                     'cuota_minima'          => $request->input('cuota_minima'),
-                    'cuotas_atrasadas'      => 0,
+                    'dias_atrasados'        => 0,
                     'dia_pago'              => $payDay,
                     'fecha_inicio'          => Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
                     'fecha_fin'             => Carbon::parse($request->input('fecha_limite'))->format('Y-m-d'),
                     'estado'                => 1,
+                    'version_update'        => VersionSistema::first()->version,
                 ]);
 
                 if (!$nuevoRegistro) {
@@ -291,17 +293,26 @@ class CreditosController extends Controller
         $saveCounter = false;
 
         for ($i = 0; $i < count($arrayQuota); $i++) {
-            $correspondingDate = strtotime('+'.$daysCounter.'day', strtotime($date));
-            $correspondingDate = date('Y-m-d', $correspondingDate);
-
-            if ($credit->planes->domingo == 1) {
-                $correspondingDateTime = new \DateTime($correspondingDate);
-                $isSunday = date("D", $correspondingDateTime->getTimestamp());
-                if ($isSunday == "Sun") {
-                $daysCounter = $daysCounter + 1;
+            $correspondingDate = "";
+            if ($credit->planes->tipo == 1) {
                 $correspondingDate = strtotime('+'.$daysCounter.'day', strtotime($date));
                 $correspondingDate = date('Y-m-d', $correspondingDate);
+
+                if ($credit->planes->domingo == 1) {
+                    $correspondingDateTime = new \DateTime($correspondingDate);
+                    $isSunday = date("D", $correspondingDateTime->getTimestamp());
+                    if ($isSunday == "Sun") {
+                        $daysCounter = $daysCounter + 1;
+                        $correspondingDate = strtotime('+'.$daysCounter.'day', strtotime($date));
+                        $correspondingDate = date('Y-m-d', $correspondingDate);
+                    }
                 }
+            } else if ($credit->planes->tipo == 2) {
+                $correspondingDate = strtotime('+'.($daysCounter * 7).'day', strtotime($date));
+                $correspondingDate = date('Y-m-d', $correspondingDate);
+            } else if ($credit->planes->tipo == 3) {
+                $correspondingDate = strtotime('+'.$daysCounter.'months', strtotime($date));
+                $correspondingDate = date('Y-m-d', $correspondingDate);
             }
             
             $today = date('Y-m-d');
@@ -550,42 +561,10 @@ class CreditosController extends Controller
         }
     }
 
-    public function setDaysLate($credito)
-    {
-        $daysLate = $this->getTotalDaysArrears($credito);
-
-        $credito->cuotas_atrasadas = $daysLate;
+    public function setDaysLate($credito) {
+        $daysLate = $this->getTotalDaysArrearsByVersion($credito);
+        $credito->dias_atrasados = $daysLate;
         $credito->estado_morosidad = $this->getArrearsStatusForDays($daysLate);
         $credito->save();
-    }
-
-    public function validationArrearsCredit(Request $request)
-    {
-        try {
-            DB::beginTransaction();
-            $credit = Creditos::find($request->input("credit_id"));
-            $credit->estado_morosidad = $request->input("estado_morosidad");
-            $credit->comentario_morosidad = $request->input("comentario_morosidad");
-            $credit->fecha_evaluacion_morosidad = date('Y-m-d');
-            $credit->save();
-
-            DB::commit();
-            $this->statusCode   = 200;
-            $this->result       = true;
-            $this->message      = "Registros editado correctamente";
-            $this->records      = $credit;
-        } catch (\Exception $e) {
-            DB::rollback();
-            $this->statusCode   = 200;
-            $this->result       = false;
-            $this->message      = env('APP_DEBUG') ? $e->getMessage() : "Ocurrió un problema al consultar los registros";
-        } finally {
-            $response = [
-                'result'    => $this->result,
-                'message'   => $this->message,
-                'records'   => $this->records,
-            ];
-            return response()->json($response, $this->statusCode);
-        }
     }
 }
