@@ -12,6 +12,7 @@ use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCreditsTrait;
 use App\Usuarios;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class ClientesController extends Controller {
     public $statusCode  = 200;
@@ -245,7 +246,7 @@ class ClientesController extends Controller {
             if ($cliente) {
                 if ($cliente->status == 1) {
 
-                    $unlock = ClientesDesbloqueados::where('cliente_id', $cliente->id)->count();
+                    $unlocks = $this->unlocks($cliente->id);
                     
                     $credits = $this->getCreditsForCustomerId($cliente->id);
                     $countCredits = $this->getTotalActiveCompleted($credits);
@@ -257,14 +258,19 @@ class ClientesController extends Controller {
                     $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getArrearsStatus($cliente->arrearsCredits) : $cliente->categoria;
                     $cliente->cobrador = Usuarios::find($credits[0]->usuarios_cobrador);
                     $locked = false;
-                    if (in_array($cliente->arrearsCredits['moroso'], [1,2,3,4,5]) && $unlock == $cliente->arrearsCredits['moroso']) {
+                    if (in_array($cliente->arrearsCredits['moroso'], [1,2,3,4,5]) && $unlocks->approvedUnlockRequests == $cliente->arrearsCredits['moroso']) {
                         $locked = false;
                     } else if ($cliente->arrearsCredits['moroso'] >= 1) {
-                        $locked = true;
+                        if ($unlocks->lastUnlock->estado == 0 && $unlocks->statusUnlock == 1) {
+                            $locked = false;
+                        } else {
+                            $locked = true;
+                        }
                     } else {
                         $locked = false;
                     }
                     $cliente->locked = $locked;
+                    $cliente->unlocks = $unlocks;
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;
@@ -311,7 +317,7 @@ class ClientesController extends Controller {
                                                         $item->cuotas_pagados = $detailsPayments->totalFees;
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
                                                         $item->cuotas_atrasadas = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPayments->totalFees);
-                                                        $item->dias_no_pagados = $this->getTotalDaysArrears($item);
+                                                        $item->dias_atrasados = $this->getTotalDaysArrears($item);
                                                         $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
                                                     }
                                                     return $item;
@@ -341,30 +347,29 @@ class ClientesController extends Controller {
     }
 
     public function detalleCreditoCliente(Request $request) {
-        try {            
-            /*$creditoCliente = Clientes::with(['creditos' => function($item) {
-                                            $item->where('estado', 1);
-                                        }])                                
-                                        ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
-                                        ->where('id', $request->input('cliente_id'))                                        
-                                        ->first();*/
-                                        
-            
+        try {
             $creditoCliente = Clientes::with("creditos")                                
                                         ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)
                                         ->where('id', $request->input('cliente_id'))                                        
                                         ->first();
             if ($creditoCliente) { 
-                $unlocks = ClientesDesbloqueados::with('supervisor')
+                $unlocks = ClientesDesbloqueados::with('supervisor', 'gerente')
                             ->where('cliente_id', $creditoCliente->id)
                             ->orderBy('created_at','desc')
                             ->get();
+                            
+                if ($unlocks->count() > 0) {
+                    $unlocks->map(function($item, $key) {
+                        $item->aprobado = $item->aprobacion_supervisor == 1 && $item->aprobacion_gerente == 1;
+                        return $item;
+                    });
+                }
 
                 if ($creditoCliente->creditos->count() > 0) {
                     $creditsFilters = $creditoCliente->creditos->filter(function ($item, $key) {
                         return $item->estado != 2;
                     });  
-                                                      
+                    
                     $creditoCliente->arrearsCredits = $this->getArrearsForCredits($creditsFilters);
                     $creditoCliente->categoria = $this->getArrearsStatus($creditoCliente->arrearsCredits);
                     $creditoCliente->cantidadCreditos = $creditsFilters->count();  
@@ -376,11 +381,14 @@ class ClientesController extends Controller {
                                                         $item->total_cancelado = $detailsPayments->totalPayment;
                                                         $item->porcentaje_pago = $detailsPayments->paymentPercentage;
                                                         if ($item->estado == 1) {
-                                                            $item->cuotas_atrasadas = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPayments->totalFees);
-                                                            $item->dias_no_pagados = $this->getTotalDaysArrears($item);
-                                                            $item->estado_morosidad = $this->getArrearsStatusForDays($item->cuotas_atrasadas);
+                                                            $item->cuotas_atrasadas = $item->planes->dias - $detailsPayments->totalFees;
+                                                            $item->dias_atrasados = $this->getTotalDaysArrearsByVersion($item);
+                                                            $item->estado_morosidad = $this->getArrearsStatusForDays($item->dias_atrasados);
+                                                        } else {
+                                                            $item->cuotas_pagados = $item->planes->dias;
+                                                            $item->cuotas_atrasadas = 0;
                                                         }
-                                                    }
+                                                    } 
                                                     return $item;
                                                 });
                     $creditoCliente->unlockCount = $unlocks ? $unlocks->count():0;
@@ -436,9 +444,31 @@ class ClientesController extends Controller {
         }
     }
 
-   /* public function printPDFAccountStatus(Request $request) {
-        $datos = json_decode($this->detalleCreditoCliente($request));
-        $newDatos = $datos->creditos->filter(function ($item) use ($request){return $item->id == 7;});
-        return $datos;
-    }*/
+    public function unlocks($clientId) {
+        $object = new stdClass();
+        $statusUnlock = 0;
+        $lastUnlock = "";
+        $approvedUnlocks = 0;
+
+        $unlock = ClientesDesbloqueados::where('cliente_id', $clientId)->get();
+        
+        if ($unlock->count() > 0) {
+            $lastUnlock = $unlock->last();
+            $approvedUnlocks = $unlock->where('aprobacion_supervisor', 1)->where('aprobacion_gerente', 1)->count();
+        
+            if ($lastUnlock->aprobacion_supervisor == 0 || $lastUnlock->aprobacion_gerente == 0) {
+                $statusUnlock = 0;
+            } else if ($lastUnlock->aprobacion_supervisor == 1 && $lastUnlock->aprobacion_gerente == 1) {
+                $statusUnlock = 1;
+            } else {
+                $statusUnlock = 2;
+            }    
+        }
+
+        $object->statusUnlock = $statusUnlock;
+        $object->requestUnlocks = $unlock->count() > 0 ? $unlock->count() : 0;
+        $object->lastUnlock = $lastUnlock;
+        $object->approvedUnlockRequests = $approvedUnlocks;
+        return $object;
+    }
 }

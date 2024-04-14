@@ -10,8 +10,15 @@ class ClientesDesbloqueados extends Model {
 	protected $fillable = [
 		'cliente_id',
 		'supervisor_id',
+		'gerente_id',
 		'razon',
-		'numero'
+		'aprobacion_supervisor',
+		'comentario_supervisor',
+		'fecha_supervisor',
+		'aprobacion_gerente',
+		'comentario_gerente',
+		'fecha_gerente',
+		'estado'
 	];
 
 	public function cliente(){
@@ -20,5 +27,9 @@ class ClientesDesbloqueados extends Model {
 
     public function supervisor(){
 		return $this->hasOne('App\Usuarios','id','supervisor_id');
+	}
+
+	public function gerente(){
+		return $this->hasOne('App\Usuarios','id','gerente_id');
 	}
 }

@@ -1,0 +1,23 @@
+<div class="modal-style">
+	<div class="modal-header clearfix">
+		<h4 class="modal-title">Aprobaciones: <strong>{{aprobacion.cliente.nombre}} {{aprobacion.cliente.apellido}}</strong></h4>
+		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
+	</div>
+	<div class="modal-body">
+        <div ng-show="aprobacion.supervisor != null">
+            <p><strong>{{aprobacion.supervisor.nombre}}: </strong>
+                <label ng-show="aprobacion.aprobacion_supervisor == 1" class="label label-success">APROBADO</label>
+                <label ng-show="aprobacion.aprobacion_supervisor == 2" class="label label-danger">RECHAZADO</label>
+            </p>
+            <pre>Fecha: {{aprobacion.fecha_supervisor}}<br>{{aprobacion.comentario_supervisor}}</pre>
+        </div>		
+        <br>
+        <div ng-show="aprobacion.gerente != null">
+            <p><strong>{{aprobacion.gerente.nombre}}: </strong>
+                <label ng-show="aprobacion.aprobacion_gerente == 1" class="label label-success">APROBADO</label>
+                <label ng-show="aprobacion.aprobacion_gerente == 2" class="label label-danger">RECHAZADO</label>
+            </p>
+            <pre>Fecha: {{aprobacion.fecha_gerente}}<br>{{aprobacion.comentario_gerente}}</pre>
+        </div>
+	</div>
+</div>
