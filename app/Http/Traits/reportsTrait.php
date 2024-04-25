@@ -7,13 +7,11 @@ use Illuminate\Http\Request;
 use App\Creditos;
 use App\DetallePagos;
 use App\Http\Traits\detailsPaymentsTrait;
-use App\Http\Traits\countDaysTrait;
 use Carbon\Carbon;
 
 trait reportsTrait {
 
     use detailsPaymentsTrait;
-    use countDaysTrait;
 
     public function getCountCustomers(Request $request){
     
