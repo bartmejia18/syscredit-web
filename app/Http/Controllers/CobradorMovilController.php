@@ -9,7 +9,6 @@ use App\Usuarios;
 use App\CierreRuta;
 use App\ClientesActivos;
 use App\Http\Traits\detailsPaymentsTrait;
-use App\Http\Traits\countDaysTrait;
 use App\Http\Traits\detailsCreditsTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +20,6 @@ class CobradorMovilController extends Controller {
     public $records     = null;
     
     use detailsPaymentsTrait;
-    use countDaysTrait;
     use detailsCreditsTrait;
 
     public function loginMovil (Request $request) {
