@@ -19,6 +19,9 @@ class ClientesDesbloqueadosController extends Controller
     public function index(Request $request){
         try {
             $registros = ClientesDesbloqueados::with('cliente','supervisor','gerente')
+                            ->whereHas('cliente', function($client) use ($request){
+                                $client->where('sucursal_id', $request->input('branchId'));
+                            })
                             ->orderBy('created_at', 'desc')
                             ->get();
             
@@ -44,9 +47,7 @@ class ClientesDesbloqueadosController extends Controller
                 $this->statusCode   = 200;
                 $this->result       = true;
                 $this->message      = "Registros consultados exitosamente";
-                $this->records      = $registros->filter(function ($item) use ($request) {
-                    return $item->cliente->sucursal_id == $request->input('branchId');
-                });   
+                $this->records      = $registros;
             } else {
                 throw new \Exception("No se encontraron registros");
             }
