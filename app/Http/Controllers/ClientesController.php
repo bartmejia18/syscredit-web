@@ -244,32 +244,38 @@ class ClientesController extends Controller {
                             
             if ($cliente) {
                 if ($cliente->status == 1) {
-
-                    $unlock = ClientesDesbloqueados::where('cliente_id', $cliente->id)->count();
                     
+                    $unlock = ClientesDesbloqueados::where('cliente_id', $cliente->id)->count();
                     $credits = $this->getCreditsForCustomerId($cliente->id);
-                    $countCredits = $this->getTotalActiveCompleted($credits);
-
-                    $cliente->statusCredit = $countCredits->status;
-                    $cliente->totalCreditsActive = $countCredits->creditsActives;
-                    $cliente->totalCredits = $countCredits->totalCredits;
-                    $cliente->arrearsCredits = $this->getArrearsForCredits($credits);
-                    $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getArrearsStatus($cliente->arrearsCredits) : $cliente->categoria;
-                    $cliente->cobrador = Usuarios::find($credits[0]->usuarios_cobrador);
-                    $locked = false;
-                    if (in_array($cliente->arrearsCredits['moroso'], [1,2,3,4,5]) && $unlock == $cliente->arrearsCredits['moroso']) {
-                        $locked = false;
-                    } else if ($cliente->arrearsCredits['moroso'] >= 1) {
-                        $locked = true;
+                    if ($credits->count() > 0) {
+                        $countCredits = $this->getTotalActiveCompleted($credits);
+                        $cliente->statusCredit = $countCredits->status;
+                        $cliente->totalCreditsActive = $countCredits->creditsActives;
+                        $cliente->totalCredits = $countCredits->totalCredits;
+                        $cliente->arrearsCredits = $this->getArrearsForCredits($credits);
+                        $cliente->categoria = $countCredits->creditsActives > 0 ? $this->getArrearsStatus($cliente->arrearsCredits) : $cliente->categoria;
+                        $cliente->cobrador = Usuarios::find($credits[0]->usuarios_cobrador);
+                        
+                        if (in_array($cliente->arrearsCredits['moroso'], [1,2,3,4,5]) && $unlock == $cliente->arrearsCredits['moroso']) {
+                            $cliente->locked = false;
+                        } else if ($cliente->arrearsCredits['moroso'] >= 1) {
+                            $cliente->locked = true;
+                        } else {
+                            $cliente->locked = false;
+                        }
                     } else {
-                        $locked = false;
+                        $cliente->statusCredit = 1;
+                        $cliente->totalCredits = 0;
+                        $cliente->categoria = 0;
+                        $cliente->cobrador = "";
+                        $cliente->locked = false;
                     }
-                    $cliente->locked = $locked;
                 } else {
                     $cliente->statusCredit = 4;
                     $cliente->totalCredits = 0;
                     $cliente->categoria = 0;
                     $cliente->cobrador = "";
+                    $cliente->locked = false;
                 }  
                 $this->statusCode   = 200;
                 $this->result       = true;
@@ -299,7 +305,8 @@ class ClientesController extends Controller {
                                         }])
                                         ->where('nombre', $request->input('name'))
                                         ->where('apellido', $request->input('lastname'))                                        
-                                        ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)                                    
+                                        ->where('sucursal_id', $request->session()->get('usuario')->sucursales_id)    
+                                        ->where('status','!=',2)                                
                                         ->first();
             
             if ($creditoCliente) {
