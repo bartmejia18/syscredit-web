@@ -323,17 +323,12 @@
                             if (response.data.result) {
                                 $scope.createToast(
                                     "success",
-                                    "<strong>Éxito: </strong>Se ha desbloquedo el cliente"
+                                    "<strong>Éxito: </strong>Se ha envido la solicitud de desbloqueo"
                                 );
                                 $timeout(function () {
                                     $scope.closeAlert(0);
                                 }, 3000);
-
-                                $("#row-detalle").removeClass("hidden");
-                                $(".btn-new-customer").prop("disabled", true);
                                 modal.close();
-                                $scope.passwordResult = 0;
-                                updateCustomer(client);
                             } else {
                                 $scope.createToast(
                                     "danger",
@@ -422,7 +417,6 @@
                         var diaInvalido = false;
                         fecha.setDate(fecha.getDate() + 1); // Sumamos de dia en dia
                         if (fecha.getDay() == 0) { // Verificamos si es sábado o domingo
-                            console.log(fecha.getDate() + ' es sábado o domingo (Sumamos un dia)');
                             diaInvalido = true;
                         }
                         if (diaInvalido)
@@ -457,6 +451,8 @@
                         size: "md",
                         resolve: function () {},
                         windowClass: "default",
+                        bacbackdrop: 'static',
+                        keyboard: false
                     });
                 };
 
@@ -497,6 +493,8 @@
                         size: "md",
                         resolve: function () {},
                         windowClass: "default",
+                        backdrop: 'static',
+                        keyboard: false
                     });
                 };
 

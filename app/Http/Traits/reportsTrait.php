@@ -7,13 +7,11 @@ use Illuminate\Http\Request;
 use App\Creditos;
 use App\DetallePagos;
 use App\Http\Traits\detailsPaymentsTrait;
-use App\Http\Traits\countDaysTrait;
 use Carbon\Carbon;
 
 trait reportsTrait {
 
     use detailsPaymentsTrait;
-    use countDaysTrait;
 
     public function getCountCustomers(Request $request){
     
@@ -191,7 +189,7 @@ trait reportsTrait {
         }
 
         $amountToCollected = 0;
-        foreach ($credits as $credit) {
+        /*foreach ($credits as $credit) {
             if (date($dateInit) <= date($credit->fecha_inicio) && date($dateFin) <= date($credit->fecha_fin)) {
                 $amountToCollected += $this->countDaysBetweenDates($credit->fecha_inicio, $dateFin, $credit->planes->domingo) * $credit->cuota_diaria;
             } else if (date($dateInit) >= date($credit->fecha_inicio) && date($dateFin) <= date($credit->fecha_fin)) {
@@ -201,7 +199,7 @@ trait reportsTrait {
             } else if (date($dateInit) >= date($credit->fecha_inicio) && date($dateFin) >= date($credit->fecha_fin)) {
                 $amountToCollected += $this->countDaysBetweenDates($dateInit, $credit->fecha_fin, $credit->planes->domingo) * $credit->cuota_diaria;
             }
-        }
+        }*/
 
         return $amountToCollected;
     }

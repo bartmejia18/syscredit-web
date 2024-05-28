@@ -2,12 +2,16 @@
 
 namespace App\Http\Traits;
 
-use App\Creditos;
 use App\DetallePagos;
-use Carbon\Carbon;
+use App\VersionSistema;
+use DateTime;
+use App\Http\Traits\configUtilsTrait;
 
 trait detailsPaymentsTrait {
-     public function getDetailsPayments($credit) {
+
+    use configUtilsTrait;
+
+    public function getDetailsPayments($credit) {
         
         $detailsPayments = DetallePagos::where('credito_id', $credit->id)->where('estado', 1)->get();
         
@@ -62,5 +66,125 @@ trait detailsPaymentsTrait {
         }
 
         return $detailPayment;
+    }
+
+    public function newGetTotalDaysArrears($credit) {
+        $detailsPayments = DetallePagos::where('credito_id', $credit->id)->where('estado', 1)->get();
+        $totalLatePayments = 0;
+        if ($detailsPayments->count() > 0) {
+            //Conteo de pagos atrasados
+            $paymentsLateStatus = $detailsPayments->groupBy('fecha_corresponde')->map(function($item, $key) {
+                $result = $item->contains(function($item, $key) {
+                    return $item->valido == 2;
+                });
+                return $key = $result;
+            });
+
+            $latePaymentCount = $paymentsLateStatus->filter(function ($item, $key) {
+                return $item;
+            })->count();
+        
+            //Conteo de pagos adelantados
+            $paymentsAdvanceStatus = $detailsPayments->groupBy('fecha_corresponde')->map(function($item, $key) {
+                $result = $item->contains(function($item, $key) {
+                    return $item->valido == 3;
+                });
+                return $key = $result;
+            });
+
+            $advancePaymentCount = $paymentsAdvanceStatus->filter(function ($item, $key) {
+                return $item;
+            })->count();
+
+            $latePaymentByDate = $this->countDaysBetweenDatesWithPlanes(
+                $this->sumDaysToDate($detailsPayments->last()->fecha_corresponde, 1),
+                $this->getDateFinalCredit($credit),
+                $credit->planes,
+            );
+
+            $totalLatePayments = $latePaymentCount + $latePaymentByDate;
+
+            if ($totalLatePayments == 0) {
+                $totalLatePayments = -$advancePaymentCount;
+            }
+
+        } else {
+            $totalLatePayments = $this->countDaysBetweenDatesWithPlanes(
+                $credit->fecha_inicio,
+                $this->getDateFinalCredit($credit),
+                $credit->planes,
+            );
+        }
+        return intval($totalLatePayments);
+    }
+
+    public function getTotalDaysArrears($credit) {
+        $dateInitial = $credit->fecha_inicio;
+        $dateFinal = $this->getDateFinalCredit($credit);
+
+        $detailsPayments = DetallePagos::where('credito_id',$credit->id)->get();
+
+        $dtInit = strtotime($dateInitial);
+        $dtFin = strtotime($dateFinal);
+        
+        $countDaysArrears = 0;
+        if ($detailsPayments->count() > 0) {
+            if ($credit->planes->tipo == 1) {
+                /*
+                    Ciclo for que aumenta día a día (86400) para plan diario
+                */
+                for($i = $dtInit; $i <= $dtFin; $i+=86400){
+                    
+                    $detailPayment = $this->findDateInPayments($detailsPayments, $i);
+
+                    if ($credit->planes->domingo == 1) {
+                        $sunday = new DateTime(date('d-m-Y', $i));
+                        if (date("D", $sunday->getTimestamp()) != "Sun") {
+                            if ($this->isValidPayment($detailPayment, $credit) == false) {
+                                ++$countDaysArrears;
+                            }
+                        }
+                    } else {
+                        if ($this->isValidPayment($detailPayment, $credit) == false) {
+                            ++$countDaysArrears;
+                        }
+                    }
+                }
+            } else if ($credit->planes->tipo == 2) {
+                /*
+                    Ciclo for que aumenta cada 7 día (604800) para plan semanal
+                */
+                for($i = strtotime($dateInitial); $i <= strtotime($dateFinal); $i+=604800) {
+                    $detailPayment = $this->findDateInPayments($detailsPayments, $i);
+
+                    if ($this->isValidPayment($detailPayment, $credit) == false) {
+                        ++$countDaysArrears;
+                    }                    
+                }
+            }
+        } else {
+            if ($dateFinal > $dateInitial) {
+                $countDaysArrears = $this->getTotalDaysArrearsWithTotalPaid($credit, 0);
+            }
+        }
+        return $countDaysArrears;
+    }
+
+    public function findDateInPayments($detailsPayments, $date) {
+        return $detailsPayments->filter(function($payment) use ($date) {
+                    return $payment->fecha_pago == date("Y-m-d", $date);
+                })->first();
+    }
+
+    public function isValidPayment($detailPayment, $credit) {
+        if ($detailPayment && $detailPayment->abono >= $credit->cuota_diaria && strtotime($detailPayment->fecha_pago) <= strtotime($credit->fecha_fin)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getTotalDaysArrearsByVersion($credit) {
+        return $credit->version_update == $this->getVersionSystem() ? $this->newGetTotalDaysArrears($credit) : $this->getTotalDaysArrears($credit);
     }
 }

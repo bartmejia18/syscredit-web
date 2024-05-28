@@ -7,7 +7,7 @@
             "app.service.deletecredit",
             "app.service.passwordaccess",
             "app.service.historypayment",
-            "app.service.credits"
+            "app.service.credits",
         ])
 
         .controller("DetalleClienteController", [
@@ -82,33 +82,42 @@
                     $scope.dpi = customer.dpi;
                     $scope.nombre = customer.nombre;
                     $scope.apellido = customer.apellido;
-                    $scope.nombre_completo = customer.nombre + " " + customer.apellido;
+                    $scope.nombre_completo =
+                        customer.nombre + " " + customer.apellido;
                     $scope.sexo = customer.sexo == 1 ? "Masculino" : "Femenino";
                     $scope.direccion = customer.direccion;
-                    $scope.estado_civil = customer.estado_civil == 1 ? "Soltero (a)" : "Casado (a)";
+                    $scope.estado_civil =
+                        customer.estado_civil == 1
+                            ? "Soltero (a)"
+                            : "Casado (a)";
                     $scope.telefono = customer.telefono;
                     $scope.categoria = customer.categoria;
-                    $scope.cantidadCreditos = customer.cantidadCreditos
+                    $scope.cantidadCreditos = customer.cantidadCreditos;
                     $scope.id = infoCredit.id;
                     $scope.plan = infoCredit.planes;
-                    $scope.monto_total = "Q. " + parseFloat(infoCredit.deudatotal).toFixed(2);
+                    $scope.monto_total =
+                        "Q. " + parseFloat(infoCredit.deudatotal).toFixed(2);
                     $scope.fecha_inicio = infoCredit.fecha_inicio;
                     $scope.fecha_fin = infoCredit.fecha_fin;
-                    $scope.fecha_finalizado = infoCredit.fecha_finalizado
+                    $scope.fecha_finalizado = infoCredit.fecha_finalizado;
                     $scope.cobrador = infoCredit.usuariocobrador.nombre;
-                    $scope.cuota_diaria = "Q. " + parseFloat(infoCredit.cuota_diaria).toFixed(2);
+                    $scope.cuota_diaria =
+                        "Q. " + parseFloat(infoCredit.cuota_diaria).toFixed(2);
                     $scope.status_credit = infoCredit.estado;
-                    $scope.saldo_pendiente = "Q. " + parseFloat(infoCredit.saldo).toFixed(2);
-                    $scope.total_cancelado = "Q. " + parseFloat(infoCredit.total_cancelado).toFixed(2);
-					$scope.cuotas_atrasadas = infoCredit.cuotas_atrasadas;
-                    $scope.dias_no_pagados = infoCredit.dias_no_pagados;
+                    $scope.saldo_pendiente =
+                        "Q. " + parseFloat(infoCredit.saldo).toFixed(2);
+                    $scope.total_cancelado =
+                        "Q. " +
+                        parseFloat(infoCredit.total_cancelado).toFixed(2);
+                    $scope.cuotas_atrasadas = infoCredit.cuotas_atrasadas;
+                    $scope.dias_atrasados = infoCredit.dias_atrasados;
                     $scope.credit_arrears_status = infoCredit.estado_morosidad;
                     $scope.cuotas_pagadas = infoCredit.cuotas_pagados;
                     $scope.porcentaje = parseInt(infoCredit.porcentaje_pago);
                     $scope.arrearsCredits = customer.arrearsCredits;
                     $scope.unlockCount = customer.unlockCount;
 
-                    listUnlocks(customer.unlocks)
+                    listUnlocks(customer.unlocks);
 
                     if (infoCredit.estado == 2) {
                         getCreditDeleted(infoCredit.id);
@@ -139,9 +148,9 @@
                 }
 
                 function listUnlocks(listUnlocks) {
-                    $scope.listUnlocks = listUnlocks
-                    $scope.search()
-                    $scope.select($scope.currentPage)
+                    $scope.listUnlocks = listUnlocks;
+                    $scope.search();
+                    $scope.select($scope.currentPage);
                 }
 
                 function statusText(status) {
@@ -183,26 +192,27 @@
                 $scope.validatePassword = function (password, tipo) {
                     passwordAccessService
                         .valitePasswordForAccess(password)
-                        .then(function succesCallback(response) {
-                            if (response.data == true) {
-                                modal.close();
-                                if (tipo == 1) {
-                                    $scope.modalOpen(
-                                        "views/clientes/modalEvaluateArrears.html"
-                                    );
-                                } else if (tipo == 2) {
-                                    $scope.modalOpen(
-                                        "views/clientes/modalDelete.html"
-                                    );
+                        .then(
+                            function succesCallback(response) {
+                                if (response.data == true) {
+                                    modal.close();
+                                    if (tipo == 1) {
+                                        $scope.modalOpen(
+                                            "views/clientes/modalEvaluateArrears.html"
+                                        );
+                                    } else if (tipo == 2) {
+                                        $scope.modalOpen(
+                                            "views/clientes/modalDelete.html"
+                                        );
+                                    }
+                                } else {
+                                    $scope.passwordResult = 1;
                                 }
-                            } else {
+                            },
+                            function errorCallback(response) {
                                 $scope.passwordResult = 1;
                             }
-                        },
-                        function errorCallback(response) {
-                            $scope.passwordResult = 1;
-                        }
-                    );
+                        );
                 };
 
                 $scope.creditToDelete = function (data) {
@@ -224,30 +234,28 @@
 
                 $scope.saveCreditEvaluation = function (data) {
                     data.credit_id = $scope.id;
-                    creditsService
-                        .saveEvaluateArrears(data)
-                        .then(
-                            function successCallback(response) {
-                                console.log(response)
-                                if (response.data.result == true) {
-                                    modal.close();
-                                    location.reload();
-                                } else {
-                                    $scope.infoResult = 1;
-                                }
-                            },
-                            function errorCallback(response) {
+                    creditsService.saveEvaluateArrears(data).then(
+                        function successCallback(response) {
+                            console.log(response);
+                            if (response.data.result == true) {
+                                modal.close();
+                                location.reload();
+                            } else {
                                 $scope.infoResult = 1;
                             }
-                        );
-                }
+                        },
+                        function errorCallback(response) {
+                            $scope.infoResult = 1;
+                        }
+                    );
+                };
 
-                $scope.clearListTable = function() {
-                    $scope.listTable = $scope.listUnlocks
-                    $scope.filteredData = []
+                $scope.clearListTable = function () {
+                    $scope.listTable = $scope.listUnlocks;
+                    $scope.filteredData = [];
                     $scope.search();
                     $scope.select($scope.currentPage);
-                }
+                };
 
                 //#region "modal"
                 $scope.modalOpen = function (templateUrl) {
@@ -275,7 +283,7 @@
                 };
 
                 $scope.modalValidateAccessOpen = function (tipoMessage) {
-                    $scope.tipoMessage = tipoMessage
+                    $scope.tipoMessage = tipoMessage;
                     modal = $modal.open({
                         templateUrl: "views/clientes/modalValidateAccess.html",
                         scope: $scope,
@@ -283,7 +291,19 @@
                         resolve: function () {},
                         windowClass: "default",
                     });
-                }
+                };
+
+                $scope.modalAprobacionesOpen = function (aprobacion) {
+                    console.log("entra aquí");
+                    $scope.aprobacion = aprobacion;
+                    modal = $modal.open({
+                        templateUrl: "views/desbloqueados/modal.html",
+                        scope: $scope,
+                        size: "md",
+                        resolve: function () {},
+                        windowClass: "default",
+                    });
+                };
 
                 $scope.modalClose = function () {
                     modal.close();
@@ -348,7 +368,7 @@
                     );
                     $scope.onOrderChange();
                 };
-                 //#endregion
+                //#endregion
             },
         ]);
 })();

@@ -19,14 +19,13 @@ class Creditos extends Model {
 		'cuota_diaria',
 		'cuota_minima',
 		'dia_pago',
-		'cuotas_atrasadas',
+		'dias_atrasados',
 		'fecha_inicio',
 		'fecha_fin',
 		'fecha_finalizado',
 		'estado',
 		'estado_morosidad',
-		'comentario_morosidad',
-		'fecha_evaluacion_morosidad'
+		'version_update'
 	];
 
 	public function planes() {

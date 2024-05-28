@@ -8,7 +8,7 @@ trait DatesTrait {
     public function getLastDayWithoutSunday($dateInitial, $days){
         //Esta pequeña funcion me crea una fecha de entrega sin sabados ni domingos  
         $maxDias = 20; //Cantidad de dias maximo para el prestamo, este sera util para crear el for  
-        $fechaFinal;
+        $fechaFinal = "";
         $segundos = 0;
 
         // DateTime class.
@@ -31,11 +31,5 @@ trait DatesTrait {
             }  
         }
         return $fechaFinal;
-    }
-
-    public function getLastDay($firstDate, $days){
-        $lastDate = strtotime ( '+'.($days - 1).' day', strtotime ( $firstDate ));
-        $lastDate = date ( 'j-m-Y' , $lastDate );
-        return $lastDate;
     }
 }

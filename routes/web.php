@@ -52,7 +52,6 @@ Route::prefix('ws')->group(function () {
 	Route::post('registrarabonos',			'CreditosController@registrarAbono');
 	Route::get('boletapdf',					'CreditosController@boletaPDF');
 	Route::post('payments',					'CreditosController@payments');
-	Route::post('validationArrears',		'CreditosController@validationArrearsCredit');
 	Route::get('debtrecognitionpdf',		'CreditosController@debtRecognitionPDF');
 
 	Route::get('getcreditdeleted', 			'CreditosEliminadosController@findByCreditId');
