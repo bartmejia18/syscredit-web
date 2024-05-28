@@ -96,14 +96,13 @@
 
                 $scope.calcularInteresCuota = function (plan) {
                     if (plan.id > 0) {
-                        $scope.detalle_cliente.interes =
-                            ($scope.detalle_cliente.monto_id.monto *
-                                plan.porcentaje) /
-                            100;
-                        $scope.detalle_cliente.cuota_diaria =
-                            ($scope.detalle_cliente.interes +
-                                $scope.detalle_cliente.monto_id.monto) /
-                            plan.dias;
+                        $scope.detalle_cliente.interes = ""
+                        $scope.detalle_cliente.cuota_diaria = ""
+                        $scope.detalle_cliente.fecha_inicio = ""
+                        $scope.detalle_cliente.fecha_fin = ""
+
+                        $scope.detalle_cliente.interes = ($scope.detalle_cliente.monto_id.monto * plan.porcentaje) / 100;
+                        $scope.detalle_cliente.cuota_diaria = ($scope.detalle_cliente.interes + $scope.detalle_cliente.monto_id.monto) / plan.dias;
                     }
                 };
 

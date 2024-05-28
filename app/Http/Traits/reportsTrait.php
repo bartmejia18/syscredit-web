@@ -365,6 +365,7 @@ trait reportsTrait {
                                     ->get();
             }
         }
+        
         if ($credits) {
             $datas->sumAmountCredits = $credits->sum(function ($item) { 
                 return $item->montos->monto;  
