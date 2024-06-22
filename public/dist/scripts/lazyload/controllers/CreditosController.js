@@ -116,6 +116,10 @@
                             $scope.detalle_cliente.fecha_fin =
                                 getEndDateMonth(plan);
                             break;
+                        case 4:
+                            $scope.detalle_cliente.fecha_fin =
+                                getEndDateTwoWeek(plan);
+                            break;
                         default:
                             if (plan.domingo == "1") {
                                 $scope.detalle_cliente.fecha_fin =
@@ -430,6 +434,12 @@
                     }
                     return fecha.getDate().toString().padStart(2, '0') + '-' + (fecha.getMonth() + 1).toString().padStart(2, '0') + '-' + fecha.getFullYear();
                     
+                }
+
+                function getEndDateTwoWeek(plan) {
+                    var startDate = getStartDate();
+                    startDate.setDate(startDate.getDate() + (plan.dias - 1) * 14);
+                    return $filter("date")(startDate, "dd-MM-yyyy");
                 }
 
                 function getEndDateWeek(plan) {

@@ -146,6 +146,9 @@ class CobradorController extends Controller {
                     case (3) : 
                         $sumarPayToday = $diffDays % 30 == 0;
                         break;
+                    case (4) : 
+                        $sumarPayToday = $diffDays % 14 == 0;
+                        break;
                     default : 
                         $sumarPayToday = false;
                         break;

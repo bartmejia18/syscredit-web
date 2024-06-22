@@ -198,6 +198,7 @@
                   <label ng-if="data.planes.tipo == 1" class="label label-info mr5">Diario</label>
                   <label ng-if="data.planes.tipo == 2" class="label label-info mr5">Semanal</label>
                   <label ng-if="data.planes.tipo == 3" class="label label-info mr5">Mensual</label>
+                  <label ng-if="data.planes.tipo == 4" class="label label-info mr5">Quincenal</label>
                   <label ng-if="data.planes.tipo == 2 || data.planes.tipo == 3" class="label label-primary mr5">{{data.dia_pago}}</label>
                 </td>
                 <td>Q. {{ data.cuota_diaria | number: "2"}}</td>

@@ -19,6 +19,7 @@
 						<option value="" disabled selected="selected">Seleccione un tipo de plan</option>
 						<option value="1">Diario</option>
 						<option value="2">Semanal</option>
+						<option value="4">Quincenal</option>
 						<option value="3">Mensual</option>
 					</select>
 				</div>	
@@ -32,6 +33,7 @@
 					<label ng-if="plan.tipo == undefind || plan.tipo == 1">Días</label>
 					<label ng-if="plan.tipo == 2">Semanas</label>
 					<label ng-if="plan.tipo == 3">Meses</label>
+					<label ng-if="plan.tipo == 4">Quincenas</label>
 					<input type="number" class="form-control" min="1" ng-model="plan.dias">
 				</div>
 			</div>
