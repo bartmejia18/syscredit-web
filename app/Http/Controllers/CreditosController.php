@@ -318,6 +318,9 @@ class CreditosController extends Controller
                 case 3:
                     $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayMonth($registro)])->setPaper('letter','landscape');
                     break;
+                case 4:
+                        $pdf = \PDF::loadView('pdf.ticketwithsunday', ['data' => $this->getArrayTwoWeek($registro)])->setPaper('letter','landscape');
+                        break;
                 default:
                     if($registro->planes->domingo == "1"){
                         if($registro->planes->dias >= 45){

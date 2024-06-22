@@ -71,6 +71,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->numberPhone = $data->cliente->telefono;
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
+        $infoCredit->tipoPlan = "Cuota diaria";
         $infoCredit->date = $data->fecha_inicio;
         $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
@@ -128,6 +129,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->numberPhone = $data->cliente->telefono;
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
+        $infoCredit->tipoPlan = "Cuota diaria";
         $infoCredit->date = $data->fecha_inicio;
         $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
@@ -187,6 +189,67 @@ trait generateArrayForTicketTrait {
         $infoCredit->numberPhone = $data->cliente->telefono;
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
+        $infoCredit->tipoPlan = "Cuota semanal";
+        $infoCredit->date = $data->fecha_inicio;
+        $infoCredit->amount = $data->deudatotal;
+        $infoCredit->fees = $data->cuota_diaria;
+        $infoCredit->amountDefault = $dailyAmount/2;
+        $infoCredit->arrayQuota = $row;
+        
+        return $infoCredit;
+    }
+
+    public function getArrayTwoWeek($data) {
+        $dateInitial = $data->fecha_inicio;
+        $dateFinal = $data->fecha_fin;
+        $amountTotal = $data->deudatotal;
+        $dailyAmount = $data->cuota_diaria;
+
+        $totalDays = abs($data->planes->dias); 
+        $totalDays = floor($totalDays + 1 );	
+        
+        $totalDays = ($totalDays % 2 == 0 ? $totalDays : $totalDays + 1) / 2; 
+        
+        $row = array();
+        $countOne = 0;
+        $countTwo = $totalDays;
+
+        $cantOne = 0;
+        $cantTwo = $totalDays * 14;
+
+        for ($i=0; $i<$totalDays; $i++)  {  
+            $columns = new \stdClass();            
+            
+            $dateFirst = strtotime ( '+'.$cantOne.' day' , strtotime ( $dateInitial) ) ;
+            $dateFirst = date ( 'd-m-Y' , $dateFirst );
+            $dateOne = new \DateTime($dateFirst);            
+
+            $columns->indexFirst = ++$countOne;
+            $columns->amountFirst = $amountTotal - ($dailyAmount * ($columns->indexFirst-1));
+            $columns->dateFirst = $dateFirst;
+        
+            $dateSecond = strtotime ( '+'.$cantTwo.' day' , strtotime ( $dateInitial) ) ;
+            $dateSecond = date ( 'd-m-Y' , $dateSecond );
+            $dateTwo = new \DateTime($dateSecond);
+
+            $columns->indexSecond = ++$countTwo;
+            $columns->amountSecond = $amountTotal - ($dailyAmount * ($columns->indexSecond-1));
+            $columns->dateSecond = $dateSecond;
+
+            $cantOne = $cantOne + 14;
+            $cantTwo = $cantTwo + 14;            
+            
+            array_push($row, $columns);
+        }        
+
+        $infoCredit = new \stdClass();
+        $infoCredit->name = $data->cliente->nombre." ".$data->cliente->apellido;
+        $infoCredit->dpi = $data->cliente->dpi;
+        $infoCredit->address = $data->cliente->direccion;
+        $infoCredit->numberPhone = $data->cliente->telefono;
+        $infoCredit->plan = $data->planes->descripcion;
+        $infoCredit->days = $data->planes->dias;
+        $infoCredit->tipoPlan = "Cuota quincenal";
         $infoCredit->date = $data->fecha_inicio;
         $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;
@@ -248,6 +311,7 @@ trait generateArrayForTicketTrait {
         $infoCredit->numberPhone = $data->cliente->telefono;
         $infoCredit->plan = $data->planes->descripcion;
         $infoCredit->days = $data->planes->dias;
+        $infoCredit->tipoPlan = "Cuota mensual";
         $infoCredit->date = $data->fecha_inicio;
         $infoCredit->amount = $data->deudatotal;
         $infoCredit->fees = $data->cuota_diaria;

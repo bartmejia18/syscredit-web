@@ -123,6 +123,8 @@ trait detailsCreditsTrait {
                 $totalDays = floor($totalDays / 7);
             } else if ($credit->planes->tipo == 3) {
                 $totalDays = floor($totalDays / 30);
+            } else if ($credit->planes->tipo == 4) {
+                $totalDays = floor($totalDays / 14);
             }
             return $totalDays - $feePaid;
         } else {
@@ -167,6 +169,17 @@ trait detailsCreditsTrait {
                     Ciclo for que aumenta cada 7 día (604800) para plan semanal
                 */
                 for($i = strtotime($dateInitial); $i <= strtotime($dateFinal); $i+=604800) {
+                    $detailPayment = $this->findDateInPayments($detailsPayments, $i);
+
+                    if ($this->isValidPayment($detailPayment, $credit) == false) {
+                        ++$countDaysArrears;
+                    }                    
+                }
+            } else if ($credit->planes->tipo == 4) {
+                /*
+                    Ciclo for que aumenta cada 7 día (604800) para plan semanal
+                */
+                for($i = strtotime($dateInitial); $i <= strtotime($dateFinal); $i+=1209600) {
                     $detailPayment = $this->findDateInPayments($detailsPayments, $i);
 
                     if ($this->isValidPayment($detailPayment, $credit) == false) {

@@ -136,7 +136,7 @@
 				<td class="firstcolumninfo">
 					<span><strong>Q. {!!number_format((float)$data->amount, 2, '.', '')!!}</strong></span>
 				</td>
-				<td class="secundcolumnlabel">Cuota diaria:</td>
+				<td class="secundcolumnlabel">{!! $data->tipoPlan !!}:</td>
 				<td class="secundcolumninfo">
 					<span><strong>Q. {!!number_format((float)$data->fees, 2, '.', '')!!}</strong></span>
 				</td>
