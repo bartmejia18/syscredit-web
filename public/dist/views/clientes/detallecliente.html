@@ -175,7 +175,7 @@
                                             <br />
 
                                             <label class="col-md-2 control-label">
-                                                Fecha de inicio:
+                                                Fecha primer pago:
                                             </label>
                                             <div class="col-md-4">
                                                 <input
@@ -186,7 +186,7 @@
                                                 />
                                             </div>
                                             <label class="col-md-2 control-label">
-                                                Fecha sugerida finalización:
+                                                Fecha sugerida último pago:
                                             </label>
                                             <div class="col-md-3">
                                                 <input
@@ -245,6 +245,11 @@
                                                 ng-if="plan.tipo == 3"
                                                 class="col-md-2 control-label">
                                                 Cuota mensual:
+                                            </label>
+                                            <label
+                                                ng-if="plan.tipo == 4"
+                                                class="col-md-2 control-label">
+                                                Cuota quincenal:
                                             </label>
                                             <div class="col-md-3">
                                                 <input
