@@ -122,9 +122,10 @@ class CobradorController extends Controller {
             foreach ($credits as $item) {                
                 $detailsPaymentsForDay = $this->getDetailsPaymentsForDate($item, $request->input('fecha'));
                 $detailsPaymentsGeneral = $this->getDetailsPayments($item);   
+                
                 $item['cantidad_cuotas_pagadas'] = $detailsPaymentsForDay->totalFees;
                 $item['total_cuotas'] = $item->planes->dias;
-                $item['cuotas_atrasadas'] = $this->getTotalDaysArrears($item, $detailsPaymentsGeneral->totalFees);
+                $item['cuotas_atrasadas'] = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPaymentsGeneral->totalFees);
                 $item['cantidad_cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
                 $item['monto_abonado'] = $detailsPaymentsForDay->paymentPaid;
                 $item['monto_pagado'] = $detailsPaymentsForDay->totalPayment;

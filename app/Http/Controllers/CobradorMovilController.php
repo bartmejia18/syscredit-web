@@ -104,20 +104,20 @@ class CobradorMovilController extends Controller {
                                 $totalacobrar = $totalacobrar + $item->cuota_diaria;
                             }
 
+                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsGeneral->totalFees; 
+                            $item['cuotas_atrasadas'] = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPaymentsGeneral->totalFees);
+                            $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
+                            $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
+                            $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
+                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
+                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');   
+                            $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
+
                             $item['deudatotal'] = number_format($item->deudatotal, 2, '.', '');
                             $item['saldo'] = number_format($item->saldo, 2, '.', '');
                             $item['cuota_diaria'] = number_format($item->cuota_diaria, 2, '.', '');
                             $item['cuota_minima'] = number_format($item->cuota_minima, 2, '.', ',');                                     
-                            $item['pago_hoy'] = $item->fecha_ultimo_pago == $hoy? true : false;
-                            $item['cantidad_cuotas_pagadas'] = $detailsPaymentsGeneral->totalFees; 
-                            $item['cuotas_pendientes'] = $item->planes->dias - $detailsPaymentsGeneral->totalFees;
-                            $item['cuotas_atrasadas'] = $this->getTotalDaysArrearsWithTotalPaid($item, $detailsPaymentsGeneral->totalFees);
-                            $item['monto_abonado'] = $item->monto_abonado == null ? 0 : Intval($item->monto_abonado);
-                            $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;
-                            $item['total_pagado'] = number_format($item->deudatotal - $item->saldo, 2, '.', '');
-
-                            $item['fecha_inicio'] = Carbon::parse($item->fecha_inicio)->format('d/m/Y');
-                            $item['fecha_fin'] = Carbon::parse($item->fecha_fin)->format('d/m/Y');   
+                            $item['fecha_ultimo_pago'] = $item->fecha_ultimo_pago == null ? " -- " : $item->fecha_ultimo_pago;    
                         }
 
                         $datos = [];
