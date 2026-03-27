@@ -5,34 +5,104 @@
 		<h4 ng-if="accion == 'eliminar'" class="modal-title">Eliminar sucursal</h4>
 		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
 	</div>
+
 	<div class="modal-body">
 		<div class="row form-group" ng-if="accion == 'eliminar'">
-			<h3>¿Realmente desea eliminar esta sucursal?</h3>
+			<div class="col-sm-12">
+				<h3>¿Realmente desea eliminar esta sucursal?</h3>
+			</div>
 		</div>
+
 		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'editar'" action="javascript:;">
 			<div class="row form-group">
 				<div class="col-sm-6">
 					<label>Nombre de sucursal</label>
-					<input type="text" class="form-control" ng-model="sucursal.descripcion" required>
+					<input
+						type="text"
+						class="form-control"
+						ng-model="sucursal.descripcion"
+						required>
 				</div>
-				<div class="col-sm-6">
-					<label>Dirección</label>
-					<input type="text" class="form-control" min="1" ng-model="sucursal.direccion" required>
-				</div>
-			</div>
-			<div class="row form-group">
+
 				<div class="col-sm-6">
 					<label>Teléfono</label>
-					<input type="text" class="form-control" min="0" ng-model="sucursal.telefono" required>
+					<input
+						type="text"
+						class="form-control"
+						ng-model="sucursal.telefono"
+						required>
 				</div>
 			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-12">
+					<label>Dirección</label>
+					<input
+						type="text"
+						class="form-control"
+						ng-model="sucursal.direccion"
+						required>
+				</div>
+			</div>
+
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label>Departamento</label>
+					<select
+						class="form-control"
+						ng-model="sucursal.departamento"
+						ng-options="dep.nombre as dep.nombre for dep in departamentos"
+						ng-change="onDepartamentoChange()"
+						required>
+						<option value=""></option>
+					</select>
+				</div>
+
+				<div class="col-sm-6">
+					<label>Municipio</label>
+					<select
+						class="form-control"
+						ng-model="sucursal.municipio"
+						ng-options="mun as mun for mun in municipiosFiltrados"
+						ng-disabled="!sucursal.departamento"
+						required>
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+
 			<div class="row form-group">
 				<div class="col-sm-12 text-right">
-					<button class="btn btn-success" ng-if="accion == 'crear'" ng-click="saveData(sucursal)" ng-disabled="form.$invalid">Registrar</button>
-					<button class="btn btn-success" ng-if="accion == 'editar'" ng-click="saveData(sucursal)" ng-disabled="form.$invalid">Actualizar</button>
-					<button class="btn btn-danger" ng-if="accion == 'eliminar'" ng-click="saveData(sucursal)">Confirmar</button>
+					<button
+						type="button"
+						class="btn btn-success"
+						ng-if="accion == 'crear'"
+						ng-click="saveData(sucursal)"
+						ng-disabled="form.$invalid">
+						Registrar
+					</button>
+
+					<button
+						type="button"
+						class="btn btn-success"
+						ng-if="accion == 'editar'"
+						ng-click="saveData(sucursal)"
+						ng-disabled="form.$invalid">
+						Actualizar
+					</button>
 				</div>
 			</div>
 		</form>
+
+		<div class="row" ng-if="accion == 'eliminar'">
+			<div class="col-sm-12 text-right">
+				<button
+					type="button"
+					class="btn btn-danger"
+					ng-click="saveData(sucursal)">
+					Confirmar
+				</button>
+			</div>
+		</div>
 	</div>
 </div>

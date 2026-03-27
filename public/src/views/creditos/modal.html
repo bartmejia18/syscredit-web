@@ -4,11 +4,14 @@
 		<h4 ng-if="accion == 'info'" class="modal-title">Crédito</h4>
 		<span class="close ion ion-android-close" ng-click="modalClose()"></span>
 	</div>
-	<div class="modal-body">		
+	<div class="modal-body">	
+		<div class="alert alert-warning" ng-show="clienteExists && mustUpdateBirthDate">
+			<strong>¡Atención!</strong> Este cliente ya existe en el sistema, pero es obligatorio actualizar la <strong>FECHA DE NACIMIENTO, DEPARTAMENTO Y MUNICIPIO</strong> antes de continuar.
+		</div>	
 		<form class="form-horizontal" name="form" ng-if="accion == 'crear' || accion == 'info'" action="javascript:;" novalidate>			
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>DPI</label>				
+					<label class="control-label">DPI</label>				
 					<input 
 						type="number" 
 						class="form-control" 
@@ -26,25 +29,50 @@
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Nombre</label>
+					<label class="control-label">Nombre</label>
 					<input type="text" class="form-control" ng-model="cliente.nombre" required>
 				</div>
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Apellido</label>
+					<label class="control-label">Apellido</label>
 					<input type="text" class="form-control" ng-model="cliente.apellido" required>
 				</div>
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Dirección</label>
+					<label class="control-label">Dirección</label>
 					<input type="text" class="form-control" ng-model="cliente.direccion" required>
 				</div>
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-6">
-					<label>Teléfono</label>
+					<label class="control-label">Departamento</label>
+					<select
+						class="form-control"
+						ng-model="cliente.departamento"
+						ng-options="dep.nombre as dep.nombre for dep in departamentos"
+						ng-change="onDepartamentoChange()"
+						required>
+						<option value=""></option>
+					</select>
+				</div>
+
+				<div class="col-sm-6">
+					<label class="control-label">Municipio</label>
+					<select
+						class="form-control"
+						ng-model="cliente.municipio"
+						ng-options="mun as mun for mun in municipiosFiltrados"
+						ng-disabled="!cliente.departamento"
+						required>
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label class="control-label">Teléfono</label>
 					<input type="text" class="form-control" ng-model="cliente.telefono" required maxlength="8">
 				</div>
 				<div class="col-sm-6">
@@ -62,6 +90,15 @@
 						<option value="1">Soltero (a)</option>
 						<option value="2">Casado (a)</option>
 					</select>
+				</div>
+				<div class="col-sm-6">
+					<label class="control-label">Fecha de nacimiento</label>
+					<div class="input-group date">
+						<input type="text" class="form-control" ng-model="cliente.fecha_nacimiento" required>
+						<div class="input-group-addon" >
+							<span class="glyphicon glyphicon-th"></span>
+						</div>
+					</div>	
 				</div>
 			</div>
 			<div ng-show="cliente.statusCredit != 0">
@@ -117,21 +154,27 @@
 						<button 
 							class="btn-new-customer btn btn-info" 
 							ng-if="cliente.locked" 
-							ng-click="modalUnlockClient(cliente)">
+							ng-click="modalUnlockClient(cliente)"
+							ng-disabled="form.$invalid">
 							Solicitar desbloqueo
 						</button>
+
 						<button 
 							class="btn-new-customer btn btn-success" 
 							ng-if="cliente.statusCredit != 2 && !cliente.locked" 
-							ng-click="addCredit(cliente)">
+							ng-click="addCredit(cliente)"
+							ng-disabled="form.$invalid">
 							Confirmar
 						</button>
+
 						<button 
 							class="btn-new-customer btn btn-success" 
 							ng-if="cliente.statusCredit == 2 && !cliente.locked" 
-							ng-click="addNewCredit(cliente)">
+							ng-click="addNewCredit(cliente)"
+							ng-disabled="form.$invalid">
 							Confirmar
 						</button>
+
 						<button 
 							class="btn btn-danger" 
 							ng-click="modalClose()">

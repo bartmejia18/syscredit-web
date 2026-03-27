@@ -29,6 +29,10 @@ class Creditos extends Model {
 		'fecha_evaluacion_morosidad'
 	];
 
+	public function sucursal() {
+		return $this->hasOne('App\Sucursales', 'id', 'sucursal_id');
+	}
+
 	public function planes() {
 		return $this->hasOne('App\Planes', 'id', 'planes_id');
 	}

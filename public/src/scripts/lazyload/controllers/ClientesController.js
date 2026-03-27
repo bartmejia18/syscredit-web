@@ -3,7 +3,8 @@
 
   angular.module("app.clientes", ["app.constants"])
 
-    .controller("ClientesController", ["$scope", "$filter", "$http", "$modal", "$interval", "API_URL", function ($scope, $filter, $http, $modal, $timeout, API_URL) {
+    .controller("ClientesController", ["$scope", "$filter", "$http", "$modal", "$timeout", "API_URL", function ($scope, $filter, $http, $modal, $timeout, API_URL) {
+
 
       //Variables generales
       $scope.datas = Array();
@@ -20,12 +21,62 @@
       $scope.buttonColor = "btn-danger"
       $scope.buttonText = "Mostrar clientes eliminados"
 
+      $scope.fecha_nacimiento = $filter('date')(new Date(), 'yyyy-MM-dd')
+
       var modal
       var flagShowCustomersActive = true
 
       //#region "Initializers functions"
       loadBranches()
       //#endregion
+
+      // =========================
+      // DEPARTAMENTOS / MUNICIPIOS
+      // =========================
+      $scope.departamentos = [];
+      $scope.municipiosFiltrados = [];
+
+      $scope.cargarUbicaciones = function() {
+          $http.get("../departamentos_municipios.json")
+          .then(function(response) {
+              $scope.departamentos = response.data || [];
+          }, function(error) {
+              console.error("Error cargando departamentos y municipios", error);
+          });
+      };
+
+      $scope.onDepartamentoChange = function() {
+          $scope.municipiosFiltrados = [];
+          $scope.cliente.municipio = "";
+
+          if (!$scope.cliente || !$scope.cliente.departamento) {
+              return;
+          }
+
+          var departamentoSeleccionado = $scope.departamentos.find(function(dep) {
+              return dep.nombre === $scope.cliente.departamento;
+          });
+
+          if (departamentoSeleccionado) {
+              $scope.municipiosFiltrados = departamentoSeleccionado.municipios;
+          }
+      };
+
+      $scope.cargarMunicipiosEdicion = function() {
+          $scope.municipiosFiltrados = [];
+
+          if (!$scope.cliente || !$scope.cliente.departamento) {
+              return;
+          }
+
+          var departamentoSeleccionado = $scope.departamentos.find(function(dep) {
+              return dep.nombre === $scope.cliente.departamento;
+          });
+
+          if (departamentoSeleccionado) {
+              $scope.municipiosFiltrados = departamentoSeleccionado.municipios;
+          }
+      };
 
       $scope.cargarUsuariosCobrador = function () {
         $scope.usuarios_cobrador = [];
@@ -158,6 +209,7 @@
       //#region "Initializers scope"      
       $scope.LlenarTabla();
       $scope.cargarUsuariosCobrador()
+      $scope.cargarUbicaciones()
       //#endregion
 
       function loadBranches() {
@@ -206,6 +258,53 @@
         $scope.onOrderChange();
       }
       //#endregion
+
+      function pad2(n){ return ('0' + n).slice(-2); }
+
+      function parseYMD(ymd) {
+        if (!ymd) return null;
+        var p = ymd.split('-');
+        return new Date(+p[0], (+p[1]) - 1, +p[2]);
+      }
+
+      function formatYMD(d) {
+        return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+      }
+
+      function initDatepickerWithModel() {
+        var $dp = $('.input-group.date');
+        if (!$dp.length) return;
+
+        // OJO: en bootstrap-datepicker el 'format' correcto suele ser "yyyy-mm-dd"
+        $dp.datepicker('destroy');
+        $dp.datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true,
+          todayHighlight: true,
+          container: 'body'
+        });
+
+        // Setear fecha del server
+        var d = parseYMD($scope.cliente.fecha_nacimiento);
+        if (d) {
+          $dp.datepicker('setDate', d);
+
+          // ✅ Forzar a que el input muestre yyyy-mm-dd
+          var ymd = formatYMD(d);
+          $dp.find('input').val(ymd);
+          $scope.cliente.fecha_nacimiento = ymd;
+        }
+
+        // Cuando cambie, guardar y mostrar en yyyy-mm-dd
+        $dp.off('changeDate').on('changeDate', function (e) {
+          $scope.$apply(function () {
+            var ymd = formatYMD(e.date);
+            $scope.cliente.fecha_nacimiento = ymd;
+            $dp.find('input').val(ymd);
+          });
+        });
+      }
+
       //#region "modal"
       $scope.modalCreateOpen = function () {
         $scope.cliente = {};
@@ -218,6 +317,16 @@
           resolve: function () { },
           windowClass: "default"
         });
+
+        $timeout(function () {
+          $('.input-group.date').datepicker('destroy');
+          $('.input-group.date').datepicker({
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            todayHighlight: true,
+            container: 'body'
+          });
+        }, 200); 
       }
 
       $scope.modalEditOpen = function (data) {
@@ -232,6 +341,15 @@
           resolve: function () { },
           windowClass: "default"
         });
+
+        if (modal.opened && modal.opened.then) {
+          modal.opened.then(function () {
+            $timeout(initDatepickerWithModel, 0);
+          });
+        } else {
+          // fallback por si tu versión no trae opened
+          $timeout(initDatepickerWithModel, 200);
+        }
       }
 
       $scope.modalDeleteOpen = function (data) {

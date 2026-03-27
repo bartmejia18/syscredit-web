@@ -212,8 +212,8 @@ class CreditosController extends Controller
                     }
 
                     if ($detallePagos->save()) {
-                        $detailPayment = $this->getDetailsPayments($credito);     
-                        $balance = $credito->deudatotal - $detailPayment->totalPayment;           
+                        $detailPayment = DetallePagos::where('credito_id', $credito->id)->where('estado', 1)->get()->sum('abono');
+                        $balance = $credito->deudatotal - $detailPayment;           
                         
                         if ($balance == 0) {
                             $credito->saldo = $balance;
@@ -347,10 +347,10 @@ class CreditosController extends Controller
     }
 
     public function debtRecognitionPDF(Request $request) {
-        $registro = Creditos::with('cliente','planes','montos')->find($request->input('credito_id'));
+        $registro = Creditos::with('cliente','planes','montos','sucursal')->find($request->input('credito_id'));
         if ($registro) {
             $pdf = \App::make('dompdf');
-            $pdf = \PDF::loadView('pdf.debtrecognition', ['data' => $registro])->setPaper('a4','portrait');
+            $pdf = \PDF::loadView('pdf.debtrecognition', ['data' => $this->detailsForPromissoryNote($registro)])->setPaper('letter','portrait');
             $nameBoleta = $registro->cliente->nombre." " .$registro->cliente->apellido;
             return $pdf->download($nameBoleta.'.pdf');
         }

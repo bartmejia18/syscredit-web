@@ -11,6 +11,7 @@ use App\Creditos;
 use App\Http\Traits\detailsPaymentsTrait;
 use App\Http\Traits\detailsCreditsTrait;
 use App\Usuarios;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ClientesController extends Controller {
@@ -93,7 +94,10 @@ class ClientesController extends Controller {
                                                     'estado_civil'  => $request->input('estado_civil'),
                                                     'sexo'          => $request->input('sexo'),
                                                     'categoria'     => "A",
-                                                    'status'        => 1
+                                                    'status'        => 1,
+                                                    'fecha_nacimiento' => Carbon::parse($request->input('fecha_nacimiento'))->format('Y-m-d'),
+                                                    'departamento' => $request->input('departamento'),
+                                                    'municipio' => $request->input('municipio')
                                                 ]);
 
                                 if (!$nuevoRegistro) {
@@ -164,6 +168,9 @@ class ClientesController extends Controller {
             $registro->sexo         = $request->input('sexo', $registro->sexo);
             $registro->categoria    = $request->input('categoria', $registro->categoria);
             $registro->status       = $request->input('status', 1);
+            $registro->fecha_nacimiento = Carbon::parse($request->input('fecha_nacimiento'))->format('Y-m-d');
+            $registro->departamento       = $request->input('departamento', $registro->departamento);
+            $registro->municipio       = $request->input('municipio', $registro->municipio);
             
             $credit = Creditos::where("clientes_id", $id)->where("estado",1)->get();
 

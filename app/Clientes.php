@@ -17,7 +17,10 @@ class Clientes extends Model
 		'direccion',
 		'estado_civil',
 		'sexo',
-		'status'
+		'status',
+		'fecha_nacimiento',
+		'departamento',
+		'municipio'
 	];
 
 	public function creditos() {

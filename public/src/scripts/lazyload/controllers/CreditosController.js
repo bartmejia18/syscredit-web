@@ -14,7 +14,7 @@
             "$filter",
             "$http",
             "$modal",
-            "$interval",
+            "$timeout",
             "pdfsService",
             "passwordAccessService",
             "clientUnlockService",
@@ -40,6 +40,54 @@
 
                 const CUSTOMER_DELETED = "customer_deleted";
                 const CUSTOMER_WITH_CREDIT = "customer_with_credits";
+
+                // =========================
+                // DEPARTAMENTOS / MUNICIPIOS
+                // =========================
+                $scope.departamentos = [];
+                $scope.municipiosFiltrados = [];
+
+                $scope.cargarUbicaciones = function() {
+                    $http.get("../departamentos_municipios.json")
+                    .then(function(response) {
+                        $scope.departamentos = response.data || [];
+                    }, function(error) {
+                        console.error("Error cargando departamentos y municipios", error);
+                    });
+                };
+
+                $scope.onDepartamentoChange = function() {
+                    $scope.municipiosFiltrados = [];
+                    $scope.cliente.municipio = "";
+
+                    if (!$scope.cliente || !$scope.cliente.departamento) {
+                        return;
+                    }
+
+                    var departamentoSeleccionado = $scope.departamentos.find(function(dep) {
+                        return dep.nombre === $scope.cliente.departamento;
+                    });
+
+                    if (departamentoSeleccionado) {
+                        $scope.municipiosFiltrados = departamentoSeleccionado.municipios;
+                    }
+                };
+
+                $scope.cargarMunicipiosEdicion = function() {
+                    $scope.municipiosFiltrados = [];
+
+                    if (!$scope.cliente || !$scope.cliente.departamento) {
+                        return;
+                    }
+
+                    var departamentoSeleccionado = $scope.departamentos.find(function(dep) {
+                        return dep.nombre === $scope.cliente.departamento;
+                    });
+
+                    if (departamentoSeleccionado) {
+                        $scope.municipiosFiltrados = departamentoSeleccionado.municipios;
+                    }
+                };
 
                 $scope.cargarPlanes = function () {
                     $scope.planes = [];
@@ -82,11 +130,8 @@
                         .then(function (response) {
                             if (response.data.result) {
                                 response.data.records.forEach(function (item) {
-                                    if (
-                                        item.sucursales_id ==
-                                            $scope.usuario.sucursales_id &&
-                                        item.estado == 1
-                                    ) {
+                                    console.log(item)
+                                    if (item.sucursales_id == $scope.usuario.sucursales_id && item.estado == 1) {
                                         $scope.usuarios_cobrador.push(item);
                                     }
                                 });
@@ -182,6 +227,7 @@
                     }).then(
                         function successCallback(response) {
                             if (response.data.result) {
+                                
                                 pdfsService.ticketcredit(
                                     response.data.records.id
                                 );
@@ -193,9 +239,14 @@
                                 );
                                 $("#row-detalle").addClass("hidden");
                                 $("#customerDpi").val("");
+
                                 $timeout(function () {
                                     $scope.closeAlert(0);
                                 }, 5000);
+
+                                $scope.modalReconocimientoDeuda(
+                                    response.data.records.id
+                                );
                             } else {
                                 $scope.createToast(
                                     "danger",
@@ -257,17 +308,18 @@
                     $(".btn-new-customer").prop("disabled", true);
                     modal.close();
                     updateCustomer(cliente);
-                };
+                }
 
                 $scope.addNewCredit = function (cliente) {
-                    $("#row-detalle").removeClass("hidden");
-                    $(".btn-new-customer").prop("disabled", true);
-                    modal.close();
-                    $scope.detalle_cliente = cliente;
-                    $scope.detalle_cliente.credito = cliente.statusCredit == 2 ? 1 : 0;
-                    $scope.detalle_cliente.nombre = cliente.nombre + " " + cliente.apellido;
-                    $scope.detalle_cliente.usuarios_cobrador = cliente.cobrador;
-                };
+                    $("#row-detalle").removeClass("hidden")
+                    $(".btn-new-customer").prop("disabled", true)
+                    modal.close()
+                    $scope.detalle_cliente = cliente
+                    $scope.detalle_cliente.credito = cliente.statusCredit == 2 ? 1 : 0
+                    $scope.detalle_cliente.nombre = cliente.nombre + " " + cliente.apellido
+                    $scope.detalle_cliente.usuarios_cobrador = cliente.cobrador
+                    updateCustomer(cliente)
+                }
 
                 $scope.findUser = function (dpi) {
                     if (dpi != undefined && dpi.toString().length == 13) {
@@ -277,23 +329,23 @@
                             params: { dpi: dpi },
                         }).then(function successCallback(response) {
                             if (response.data.result) {
-                                $scope.cliente.exists = true 
+                                $scope.clienteExists = true 
                                 $scope.cliente = response.data.records
+                                $scope.mustUpdateBirthDate = !$scope.cliente.fecha_nacimiento || !$scope.cliente.fecha_nacimiento.toString().trim() || !$scope.cliente.departamento || !$scope.cliente.municipio
                             } else {
-                                $scope.cliente.statusCredit = 0;
+                                $scope.cliente.statusCredit = 0
                             }
-                        });
+                        })
                     }
-                };
+                }
 
                 $scope.optionNo = function() {
                     modal.close()
                 }
 
-                $scope.optionYes = function() {
-                    pdfsService.debtrecognition(
-                        167
-                    );
+                $scope.optionYes = function(creditId) {
+                    console.log("---> creditId", creditId)
+                    pdfsService.debtrecognition(creditId)
                     modal.close()
                 }
 
@@ -301,6 +353,7 @@
                     passwordAccessService
                         .valitePasswordSupervisor(data)
                         .then(function succesCallback(response) {
+                        
                             if (response.data.result == true) {
                                 $scope.passwordResult = 1;
                                 $scope.supervisor = response.data.records
@@ -398,9 +451,10 @@
                 }
 
                 //#region "load data"
-                $scope.cargarPlanes();
-                $scope.cargarMonto();
-                $scope.cargarUsuariosCobrador();
+                $scope.cargarPlanes()
+                $scope.cargarMonto()
+                $scope.cargarUsuariosCobrador()
+                $scope.cargarUbicaciones()
                 //#endregion
 
                 //#region "dates"
@@ -453,7 +507,6 @@
                     startDate.setMonth(startDate.getMonth() + (plan.dias - 1));
                     return $filter("date")(startDate, "dd-MM-yyyy");
                 }
-
                 //#endregion
                 //#region "modal"
                 $scope.modalCreateOpen = function () {
@@ -468,6 +521,16 @@
                         resolve: function () {},
                         windowClass: "default",
                     });
+
+                    $timeout(function () {
+                    $('.input-group.date').datepicker('destroy');
+                    $('.input-group.date').datepicker({
+                        format: "yyyy-mm-dd",
+                        autoclose: true,
+                        todayHighlight: true,
+                        container: 'body'
+                    });
+                    }, 200); 
                 };
 
                 $scope.modalShowInfoCustomer = function (customer) {
@@ -483,8 +546,8 @@
                     });
                 };
 
-                $scope.modalReconocimientoDeuda = function (customer) {
-                    $scope.cliente = customer;
+                $scope.modalReconocimientoDeuda = function (creditId) {
+                    $scope.creditId = creditId;
                     $scope.accion = "info";
 
                     modal = $modal.open({

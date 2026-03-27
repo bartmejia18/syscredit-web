@@ -5,15 +5,64 @@
     </style>
     <style type="text/css" media="all">
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-size: 12px;
-            text-align: justify;
-            margin-left: 14px;
-            margin-right: 14px;
+            margin-left: 13px;
+            margin-right: 13px;
         }
+        div.title {
+			text-align: center;
+			font-size: 20px;
+			font-weight: bold;
+		}
+        div.subtitle {
+			text-align: center;
+			font-size: 20px;
+            font-weight: regular;
+		}
+        div.content {
+            font-family: 'Roboto', sans-serif;
+			font-size: 15px;
+            text-align: justify;
+            line-height: 1.5;
+		}
 	</style>
 	</head>
 	<body class="body">
-		DOCUMENTO PRIVADO.- En la ciudad de Quetzaltenango, departamento de Quetzaltenango, el día veintiocho de enero del año dos mil veintidós. 
-        Yo: {!! Str::upper($data->cliente->nombre) !!}, quien manifiesto ser de cincuenta y dos años de edad, soltero, guatemalteco, comerciante, de este domicilio y residencia en la catorce calle diez guion ochenta de la zona tres de esta ciudad, lugar que señalo para recibir notificaciones, citaciones o emplazamientos mientras no señale otro por escrito al señor PEDRO PEREZ, por el presente acto, en el libre ejercicio de mis derechos civiles, en español idioma que hablo y entiendo, me reconozco LISO Y LLANO DEUDOR del señor PEDRO PEREZ, bajo el amparo de las leyes que son aplicables, a quien en el presente documento privado se le denominara simplemente como EL ACREEDOR, obligándome conforme a las condiciones que se consignan en el presente documento privado de RECONOCIMIENTO DE DEUDA, de conformidad con las siguientes estipulaciones: PRIMERA: Yo: JUAN PEREZ, me reconozco liso y llano deudor del señor PEDRO PEREZ por la cantidad de CINCO MIL QUETZALES (Q. 5,000.00), los cuales recibo del señor PEDRO PEREZ el día de hoy a mi entera satisfacción. SEGUNDO: a) DEL PLAZO: El dinero que me es concedido en cantidad de préstamo, deberá ser cancelado en un plazo de DOS MESES, a partir de la presente fecha, por lo que vence el veintisiete de marzo del año dos mil veintidós. b) DE LAS AMORTIZACIONES: Efectuare dos pagos de capital e intereses, en forma mensual, sin necesidad de cobro o requerimiento alguno, en la dirección que es de mi pleno conocimiento, en horas hábiles y en las fechas de pago convenidas; c) DE LA FECHA DE PAGO: Me obligo a efectuar los pagos, tanto del capital como de los intereses en forma mensual, hasta su total cancelación en la fecha que corresponde al desembolso, o en todo caso la que determine EL ACREEDOR; d) DE LA TASA DE INTERESES: La deuda por la que me reconozco en este acto, devengara un interés del dos por ciento, sobre el monto del capital, conforme a liquidación que se realice; e) INTERESES MORATORIOS E INCUMPLIMIENTO:  Si yo JUAN PEREZ, el deudor incumpliere con los pagos pactados en el presente documento privado dará derecho al acreedor a cobrar el uno punto cinco por ciento de interés diario por atraso, sobre el capital; F) DEL DESTINO: El destino de la presente deuda es exclusivamente para capital de trabajo; G) DE LA CONDICION RESOLUTORIA: Me obligo que al impago de dos de las amortizaciones, es decir del atraso de pago del capital o intereses dará derecho AL ACREEDOR, a dar por resulto este documento privado sin necesidad de resolución o declaración judicial, pudiendo reclamar el pago tanto del capital, intereses, mora, costas, en forma judicial o extrajudicial, a elección del acreedor; renunciando desde ya al fuero de mi domicilio y me someto a los tribunales que el acreedor elija, señalando como lugar para recibir notificaciones la dirección antes relacionada, asimismo acepto que pueda utilizar a su elección el procedimiento que para el efecto señale el Código Procesal Civil y Mercantil o cualquier otra ley a que se emita en el futuro; H) Acepto que la parte acreedora podrá ceder, negociar o pignorar en cualquier forma el presente reconocimiento de deuda, sin aviso previo ni ulterior notificación. TERCERA: Yo, el deudor acepto desde ya como buenas y exactas la cuentas que se formulen sobre el presente documento privado de reconocimiento de deuda, así como líquido, exigible y de plazo vencido el saldo que se me exija, aceptando los gastos judiciales o extrajudiciales que se causen por mi incumplimiento y como título ejecutivo del presente documento privado de reconocimiento de deuda, además acepto que el acreedor, mandatario, depositario, e interventor que el señor PEDRO PEREZ pueda nombrar con motivo de la ejecución en mi contra no deban de prestar fianza, garantía o caución alguna y que el acreedor no es responsable de las actuaciones de estos. CUARTA: Manifiesto que para garantizar la obligación contraída por el presente documento, responderé con mis bienes y/o derechos presentes y futuros, asimismo acepto que el acreedor pueda ejercer cualquier medida precautoria establecida en la ley sobre mis bienes, salarios, cuentas bancarias o cualquiera que alcance a cubrir con  mi obligación. QUINTA: DE LA ACEPTACION: Yo JUAN PEREZ en la calidad de deudor con que actúo en el presente documento privado de reconocimiento de deuda, acepto de forma expresa el contenido íntegro de la presente obligación contraída. Leo lo escrito y enterado de su contenido, objeto, validez y demás efectos legales ratifico y dejo firmo y además dejo la huella de mi  impresión dactilar.
+		<div class="title"><strong>PAGARE</strong></div>	
+		<div class="subtitle">LIBRE DE PROTESTO</div>
+		<br>
+		<div class="content">
+			En el municipio de {!!$data->branchCity!!}, departamento de {!!$data->branchState!!}, el {!!$data->dateInWords!!}; Yo, <strong>{!!$data->name!!}</strong>, de {!!$data->age!!} años,
+			casado, guatemalteco (a), comerciante, con domicilio en el municipio de {!!$data->city!!}, departamento de {!!$data->state!!}; me identifico con el Documento Personal de
+			Identificación, código único de identificación, número {!!$data->dpiInWords!!} ({!!$data->dpi!!}),
+			extendido por el Registro Nacional de las Personas. Actúo en nombre propio y por medio del presente título de crédito consistente en <strong>PAGARÉ</strong>, PROMETO INCONDICIONALMENTE
+			PAGAR la suma de <strong>{!!$data->amountInWords!!} QUETZALES ({!!$data->amountInQuetzal!!})</strong> a la entidad mercantil denominada INVERSIONES OCCA, SOCIEDAD ANONIMA nombre a quien deberá hacerse dicho pago
+			y el lugar en que se realizará el pago es {!!$data->branchAddress!!}, municipio de {!!$data->branchCity!!}, departamento de {!!$data->branchState!!}. Las condiciones en
+			que cumpliré con la presente obligación son las siguientes: <strong>I) fecha de vencimiento y cumplimiento de la obligación:</strong> La obligación de pago de este pagaré se 
+			hará el {!!$data->completeDate!!}; <strong>II.) Intereses:</strong> La suma representada por este pagaré NO devengará interés alguno; sin embargo, en el
+			caso que no cancele la cantidad en la forma y tiempo pactado, reconozco la obligación de pagar un interés que se aplicará inmediatamente sobre el saldo del
+			crédito a razón del uno por ciento mensual, y adicionalmente me obligo a cancelar un interés moratorio sobre el saldo vencido. <strong>III.) Efectos Procesales: a)</strong> Reconozco
+			como Título Ejecutivo perfecto el presente Título de Crédito; <strong>b)</strong> La falta de pago por concepto de la obligación, dará derecho a el acreedor a dar por vencido el 
+			plazo y a exigir ejecutivamente el pago del saldo total de la obligación principal contenida en este título o en su caso el saldo adeudado; <strong>c)</strong> Cualquier controversia
+			derivada del incumplimiento del presente Título de Crédito, serán competentes los tribunales que el tenedor de este pagaré elija; renunciando al fuero de mi 
+			domicilio y señalo lugar para recibir notificaciones la siguiente dirección: {!!$data->address!!}, obligándome a comunicar por escrito al acreedor de cualquier cambio de la 
+			misma y acepto desde ya como validas y bien hecha las notificaciones judiciales o extrajudiciales que se me hagan en la dirección señalada, sino cumplo con dar 
+			el citado aviso de cambio de dirección; <strong>d)</strong> Todos los gastos originados por esta negociación, así como de su cancelación, correrán a cargo del deudor, incluyendo
+			los de cobranza extrajudical y judicial en caso de ejecutarse la obligación; <strong>e)</strong> Este pagaré se emite libre de protesto, libre de formalidades de presentación 
+			y cobro o requerimiento. Acepto como buenas, liquidas y exigibles y de plazo vencido las cuentas que el pagaré presente. En fe de lo cual firmo este pagare.
+            <br>
+            <br>
+			<strong>ACEPTO LIBRE DE PROTESTO</strong>
+            <br>
+            <br>
+            <br>
+            <br>
+			F._____________________<br>
+            <b>
+            <strong>
+			{!!$data->name!!}<br>
+			{!!$data->dpi!!}<br>
+            </strong>
+		</div>
 	</body>
