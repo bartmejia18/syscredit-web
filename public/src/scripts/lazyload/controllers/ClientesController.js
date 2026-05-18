@@ -307,8 +307,10 @@
 
       //#region "modal"
       $scope.modalCreateOpen = function () {
-        $scope.cliente = {};
-        $scope.accion = 'crear';
+        $scope.cliente = {}
+        $scope.accion = 'crear'
+
+        $scope.municipiosFiltrados = []
 
         modal = $modal.open({
           templateUrl: "views/clientes/modal.html",
@@ -333,6 +335,8 @@
         $scope.accion = 'editar';
         $scope.cliente = data;
         $scope.cliente.dpi = parseInt(data.dpi)
+
+        $scope.cargarMunicipiosEdicion();
 
         modal = $modal.open({
           templateUrl: "views/clientes/modal.html",

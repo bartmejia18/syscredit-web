@@ -26,7 +26,8 @@ class Creditos extends Model {
 		'estado',
 		'estado_morosidad',
 		'comentario_morosidad',
-		'fecha_evaluacion_morosidad'
+		'fecha_evaluacion_morosidad',
+		'renovacion'
 	];
 
 	public function sucursal() {

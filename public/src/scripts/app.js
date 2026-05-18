@@ -149,6 +149,10 @@
 				{
                     name: "app.service.clientunlock",
                     files: ["scripts/lazyload/services/clientunlock.js"]
+                },
+				{
+                    name: "app.service.company",
+                    files: ["scripts/lazyload/services/company.js"]
                 }
 			]
 		})
@@ -282,6 +286,19 @@
 					return a.load({
 						name: "app.sucursales",
 						files: ["scripts/lazyload/controllers/SucursalesController.js"]
+					})
+				}]
+			}
+		});
+
+		$routeProvider.when("/empresas", {
+			templateUrl: "views/empresas/empresas.html",
+			controller: "EmpresasController",
+			resolve: {
+				deps: ["$ocLazyLoad", function(a) {
+					return a.load({
+						name: "app.empresas",
+						files: ["scripts/lazyload/controllers/EmpresasController.js"]
 					})
 				}]
 			}

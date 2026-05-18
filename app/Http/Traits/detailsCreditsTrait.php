@@ -234,6 +234,7 @@ trait detailsCreditsTrait {
         $formatDate = $date->format('Y-m-d');
 
         $infoCredit = new \stdClass();
+        $infoCredit->number = $data->sucursal->id . $data->id;
         $infoCredit->name = $data->cliente->nombre." ".$data->cliente->apellido;
         $infoCredit->dpi = $this->splitDPI($data->cliente->dpi);
         $infoCredit->dpiInWords = $this->convertirDPITexto($infoCredit->dpi);
@@ -249,6 +250,7 @@ trait detailsCreditsTrait {
         $infoCredit->branchAddress = $data->sucursal->direccion;
         $infoCredit->branchState = $data->sucursal->departamento;
         $infoCredit->branchCity = $data->sucursal->municipio;
+        $infoCredit->company = strtoupper($data->sucursal->empresa->nombre);
         return $infoCredit;
     }
 

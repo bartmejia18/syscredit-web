@@ -89,6 +89,7 @@ class CreditosController extends Controller
                                                     'fecha_inicio'          => Carbon::parse($request->input('fecha_inicio'))->format('Y-m-d'),
                                                     'fecha_fin'             => Carbon::parse($request->input('fecha_limite'))->format('Y-m-d'),
                                                     'estado'                => 1,
+                                                    'renovacion'            => $request->input('renovacion')
                                                 ]);
 
                                 if (!$nuevoRegistro) {
@@ -342,7 +343,7 @@ class CreditosController extends Controller
             
     
             $nameBoleta = $registro->cliente->nombre." " .$registro->cliente->apellido;
-            return $pdf->download($nameBoleta.'.pdf');
+            return $pdf->download('Boleta - '.$nameBoleta.'.pdf');
         }
     }
 
@@ -352,7 +353,7 @@ class CreditosController extends Controller
             $pdf = \App::make('dompdf');
             $pdf = \PDF::loadView('pdf.debtrecognition', ['data' => $this->detailsForPromissoryNote($registro)])->setPaper('letter','portrait');
             $nameBoleta = $registro->cliente->nombre." " .$registro->cliente->apellido;
-            return $pdf->download($nameBoleta.'.pdf');
+            return $pdf->download('Pagare - '.$nameBoleta.'.pdf');
         }
     }
 

@@ -380,6 +380,7 @@ trait reportsTrait {
             $datas->credits = $credits->map(function($item, $key){
                 $item->fecha_inicio = Carbon::parse($item->fecha_inicio)->format('d-m-Y');
                 $item->fecha_creacion = Carbon::parse($item->created_at)->format('d-m-Y');
+                $item->typeRenew = $item->renovacion == 1 ? "R" : "N";
                 return $item;
             });
         }

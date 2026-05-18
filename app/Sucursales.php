@@ -12,6 +12,11 @@ class Sucursales extends Model
         'direccion',
         'telefono',
         'departamento',
-        'municipio'
+        'municipio',
+        'empresa_id'
     ];
+
+    public function empresa(){
+		return $this->hasOne('App\Empresas','id','empresa_id');
+	}
 }

@@ -36,7 +36,9 @@
                 $scope.usuarios_cobrador = Array();
                 $scope.passwordResult = 0;
                 $scope.supervisor = {};
-                var modal;
+                
+                var isRenew = 0
+                var modal
 
                 const CUSTOMER_DELETED = "customer_deleted";
                 const CUSTOMER_WITH_CREDIT = "customer_with_credits";
@@ -130,7 +132,6 @@
                         .then(function (response) {
                             if (response.data.result) {
                                 response.data.records.forEach(function (item) {
-                                    console.log(item)
                                     if (item.sucursales_id == $scope.usuario.sucursales_id && item.estado == 1) {
                                         $scope.usuarios_cobrador.push(item);
                                     }
@@ -219,6 +220,7 @@
                         cuota_minima: detalleCredito.monto_id.monto / detalleCredito.planes_id.dias,
                         fecha_inicio: detalleCredito.fecha_inicio,
                         fecha_limite: detalleCredito.fecha_fin,
+                        renovacion: isRenew
                     };
                     $http({
                         method: "POST",
@@ -277,7 +279,9 @@
                                     $scope.detalle_cliente = response.data.records;
                                     $scope.detalle_cliente.credito = 0;
                                     $scope.detalle_cliente.nombre = response.data.records.nombre + " " + response.data.records.apellido;
-
+                                    
+                                    isRenew = 0
+                                    
                                     modal.close();
                                     $scope.createToast(
                                         "success",
@@ -304,10 +308,13 @@
                 };
 
                 $scope.addCredit = function (cliente) {
-                    $("#row-detalle").removeClass("hidden");
-                    $(".btn-new-customer").prop("disabled", true);
-                    modal.close();
-                    updateCustomer(cliente);
+                    $("#row-detalle").removeClass("hidden")
+                    $(".btn-new-customer").prop("disabled", true)
+                    modal.close()
+                    
+                    isRenew = 1
+                    
+                    updateCustomer(cliente)
                 }
 
                 $scope.addNewCredit = function (cliente) {
@@ -316,8 +323,10 @@
                     modal.close()
                     $scope.detalle_cliente = cliente
                     $scope.detalle_cliente.credito = cliente.statusCredit == 2 ? 1 : 0
-                    $scope.detalle_cliente.nombre = cliente.nombre + " " + cliente.apellido
                     $scope.detalle_cliente.usuarios_cobrador = cliente.cobrador
+
+                    isRenew = 1
+
                     updateCustomer(cliente)
                 }
 
@@ -331,6 +340,7 @@
                             if (response.data.result) {
                                 $scope.clienteExists = true 
                                 $scope.cliente = response.data.records
+                                $scope.cargarMunicipiosEdicion()
                                 $scope.mustUpdateBirthDate = !$scope.cliente.fecha_nacimiento || !$scope.cliente.fecha_nacimiento.toString().trim() || !$scope.cliente.departamento || !$scope.cliente.municipio
                             } else {
                                 $scope.cliente.statusCredit = 0
@@ -344,7 +354,6 @@
                 }
 
                 $scope.optionYes = function(creditId) {
-                    console.log("---> creditId", creditId)
                     pdfsService.debtrecognition(creditId)
                     modal.close()
                 }
@@ -480,7 +489,6 @@
                         var diaInvalido = false;
                         fecha.setDate(fecha.getDate() + 1); // Sumamos de dia en dia
                         if (fecha.getDay() == 0) { // Verificamos si es sábado o domingo
-                            console.log(fecha.getDate() + ' es sábado o domingo (Sumamos un dia)');
                             diaInvalido = true;
                         }
                         if (diaInvalido)
@@ -510,9 +518,9 @@
                 //#endregion
                 //#region "modal"
                 $scope.modalCreateOpen = function () {
-                    $scope.cliente = {};
-                    $scope.cliente.statusCredit = 0;
-                    $scope.accion = "crear";
+                    $scope.cliente = {}
+                    $scope.cliente.statusCredit = 0
+                    $scope.accion = "crear"
 
                     modal = $modal.open({
                         templateUrl: "views/creditos/modal.html",

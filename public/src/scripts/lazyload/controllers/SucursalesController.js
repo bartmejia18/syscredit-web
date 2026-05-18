@@ -1,268 +1,354 @@
-;(function() 
-{
-	"use strict";
+(function () {
+    "use strict";
 
-	angular.module("app.sucursales", ["app.constants"])
+    angular
+        .module("app.sucursales", ["app.constants", "app.service.company"])
 
-	.controller("SucursalesController", ["$scope", "$filter", "$http", "$modal", "$timeout", "API_URL", function($scope, $filter, $http, $modal, $timeout, API_URL)  {	
-		
-		// Variables generales
-		$scope.datas = [];
-		$scope.currentPageStores = [];
-		$scope.searchKeywords = "";
-		$scope.filteredData = [];	
-		$scope.row = "";
-		$scope.numPerPageOpts = [5, 10, 25, 50, 100];
-		$scope.numPerPage = $scope.numPerPageOpts[1];
-		$scope.currentPage = 1;
-		$scope.positionModel = "topRight";
-		$scope.toasts = [];
-		var modal;
+        .controller("SucursalesController", [
+            "$scope",
+            "$filter",
+            "$http",
+            "$modal",
+            "$timeout",
+			"companyService",
+            "API_URL",
+            function ($scope, $filter, $http, $modal, $timeout, companyService, API_URL) {
+                // Variables generales
+                $scope.datas = [];
+				$scope.companies = [];
+                $scope.currentPageStores = [];
+                $scope.searchKeywords = "";
+                $scope.filteredData = [];
+                $scope.row = "";
+                $scope.numPerPageOpts = [5, 10, 25, 50, 100];
+                $scope.numPerPage = $scope.numPerPageOpts[1];
+                $scope.currentPage = 1;
+                $scope.positionModel = "topRight";
+                $scope.toasts = [];
+                var modal;
 
-		// =========================
-		// DEPARTAMENTOS / MUNICIPIOS
-		// =========================
-		$scope.departamentos = [];
-		$scope.municipiosFiltrados = [];
+                // =========================
+                // DEPARTAMENTOS / MUNICIPIOS
+                // =========================
+                $scope.departamentos = [];
+                $scope.municipiosFiltrados = [];
 
-		$scope.cargarUbicaciones = function() {
-			$http.get("../departamentos_municipios.json")
-			.then(function(response) {
-				$scope.departamentos = response.data || [];
-			}, function(error) {
-				console.error("Error cargando departamentos y municipios", error);
-			});
-		};
+                $scope.cargarUbicaciones = function () {
+                    $http.get("../departamentos_municipios.json").then(
+                        function (response) {
+                            $scope.departamentos = response.data || [];
+                        },
+                        function (error) {
+                            console.error(
+                                "Error cargando departamentos y municipios",
+                                error,
+                            );
+                        }
+                    )
+                }
 
-		$scope.onDepartamentoChange = function() {
-			$scope.municipiosFiltrados = [];
-			$scope.sucursal.municipio = "";
+                $scope.onDepartamentoChange = function () {
+                    $scope.municipiosFiltrados = [];
+                    $scope.sucursal.municipio = "";
 
-			if (!$scope.sucursal || !$scope.sucursal.departamento) {
-				return;
-			}
+                    if (!$scope.sucursal || !$scope.sucursal.departamento) {
+                        return;
+                    }
 
-			var departamentoSeleccionado = $scope.departamentos.find(function(dep) {
-				return dep.nombre === $scope.sucursal.departamento;
-			});
+                    var departamentoSeleccionado = $scope.departamentos.find(
+                        function (dep) {
+                            return dep.nombre === $scope.sucursal.departamento;
+                        },
+                    );
 
-			if (departamentoSeleccionado) {
-				$scope.municipiosFiltrados = departamentoSeleccionado.municipios;
-			}
-		};
+                    if (departamentoSeleccionado) {
+                        $scope.municipiosFiltrados =
+                            departamentoSeleccionado.municipios;
+                    }
+                };
 
-		$scope.cargarMunicipiosEdicion = function() {
-			$scope.municipiosFiltrados = [];
+                $scope.cargarMunicipiosEdicion = function () {
+                    $scope.municipiosFiltrados = [];
 
-			if (!$scope.sucursal || !$scope.sucursal.departamento) {
-				return;
-			}
+                    if (!$scope.sucursal || !$scope.sucursal.departamento) {
+                        return;
+                    }
 
-			var departamentoSeleccionado = $scope.departamentos.find(function(dep) {
-				return dep.nombre === $scope.sucursal.departamento;
-			});
+                    var departamentoSeleccionado = $scope.departamentos.find(
+                        function (dep) {
+                            return dep.nombre === $scope.sucursal.departamento;
+                        },
+                    );
 
-			if (departamentoSeleccionado) {
-				$scope.municipiosFiltrados = departamentoSeleccionado.municipios;
-			}
-		};
+                    if (departamentoSeleccionado) {
+                        $scope.municipiosFiltrados =
+                            departamentoSeleccionado.municipios;
+                    }
+                };
 
-		$scope.LlenarTabla = function()
-		{
-			$scope.datas = [];
-			$http({
-				method: 'GET',
-			  	url: API_URL + 'sucursales'
-			})
-			.then(function successCallback(response)  {
-			    $scope.datas = response.data.records;
-				$scope.search();
-				$scope.select($scope.currentPage);
-			}, 
-			function errorCallback(response)  {			
-			   console.log(response.data.message);
-			});
-		};
+				$scope.loadCompanies = function() {
+					$scope.companies = [];
+					companyService.companies().then(
+						function successCallback(response) {
+							if (response.data.result) {
+								$scope.companies = response.data.records
+							}
+						}
+					)
+				}
 
-		// FUNCIONES DE DATATABLE
-		$scope.select = function(page) {
-			var start = (page - 1) * $scope.numPerPage,
-				end = start + $scope.numPerPage;
+                $scope.LlenarTabla = function () {
+                    $scope.datas = [];
+                    $http({
+                        method: "GET",
+                        url: API_URL + "sucursales",
+                    }).then(
+                        function successCallback(response) {
+                            $scope.datas = response.data.records;
+                            $scope.search();
+                            $scope.select($scope.currentPage);
+                        },
+                        function errorCallback(response) {
+                            console.log(response.data.message);
+                        },
+                    );
+                };
 
-			$scope.currentPageStores = $scope.filteredData.slice(start, end);
-		};
+				$scope.LlenarTabla()
+                $scope.cargarUbicaciones()
+				$scope.loadCompanies()
 
-		$scope.onFilterChange = function() {
-			$scope.select(1);
-			$scope.currentPage = 1;
-			$scope.row = '';
-		};
+                // FUNCIONES DE DATATABLE
+                $scope.select = function (page) {
+                    var start = (page - 1) * $scope.numPerPage,
+                        end = start + $scope.numPerPage;
 
-		$scope.onNumPerPageChange = function() {
-			$scope.select(1);
-			$scope.currentPage = 1;
-		};
+                    $scope.currentPageStores = $scope.filteredData.slice(
+                        start,
+                        end,
+                    );
+                };
 
-		$scope.onOrderChange = function() {
-			$scope.select(1);
-			$scope.currentPage = 1;
-		};
+                $scope.onFilterChange = function () {
+                    $scope.select(1);
+                    $scope.currentPage = 1;
+                    $scope.row = "";
+                };
 
-		$scope.search = function() {
-			$scope.filteredData = $filter("filter")($scope.datas, $scope.searchKeywords);
-			$scope.onFilterChange();		
-		};
+                $scope.onNumPerPageChange = function () {
+                    $scope.select(1);
+                    $scope.currentPage = 1;
+                };
 
-		$scope.order = function(rowName) {
-			if ($scope.row == rowName) return;
-			$scope.row = rowName;
-			$scope.filteredData = $filter('orderBy')($scope.datas, rowName);
-			$scope.onOrderChange();
-		};
+                $scope.onOrderChange = function () {
+                    $scope.select(1);
+                    $scope.currentPage = 1;
+                };
 
-		$scope.LlenarTabla();
-		$scope.cargarUbicaciones();
+                $scope.search = function () {
+                    $scope.filteredData = $filter("filter")(
+                        $scope.datas,
+                        $scope.searchKeywords,
+                    );
+                    $scope.onFilterChange();
+                };
 
-		// Función para Toast
-		$scope.createToast = function(tipo, mensaje) {
-			$scope.toasts.push({
-				anim: "bouncyflip",
-				type: tipo,
-				msg: mensaje
-			});
-		};
+                $scope.order = function (rowName) {
+                    if ($scope.row == rowName) return;
+                    $scope.row = rowName;
+                    $scope.filteredData = $filter("orderBy")(
+                        $scope.datas,
+                        rowName,
+                    );
+                    $scope.onOrderChange();
+                };
 
-		$scope.closeAlert = function(index) {
-			$scope.toasts.splice(index, 1);
-		};
+                // Función para Toast
+                $scope.createToast = function (tipo, mensaje) {
+                    $scope.toasts.push({
+                        anim: "bouncyflip",
+                        type: tipo,
+                        msg: mensaje,
+                    });
+                };
 
-		$scope.saveData = function(sucursal) {
-			if ($scope.accion == 'crear') {
-				$http({
-					method: 'POST',
-				  	url: API_URL + 'sucursales',
-				  	data: { 
-				  		descripcion: sucursal.descripcion,
-				  		direccion: sucursal.direccion,
-				  		telefono: sucursal.telefono,
-				  		departamento: sucursal.departamento,
-				  		municipio: sucursal.municipio
-				  	}
-				})
-				.then(function successCallback(response) {
-					if (response.data.result) {
-					    $scope.LlenarTabla();
-					    modal.close();
-					    $scope.createToast("success", "<strong>Éxito: </strong>" + response.data.message);
-					    $timeout(function(){ $scope.closeAlert(0); }, 5000);
-					} else {
-						$scope.createToast("danger", "<strong>Error: </strong>" + response.data.message);
-					    $timeout(function(){ $scope.closeAlert(0); }, 5000);	
-					}
-				}, function errorCallback(response) {
-				   console.log(response.data.message);
-				});
-			}
-			else if ($scope.accion == 'editar') {
-				$http({
-					method: 'PUT',
-				  	url: API_URL + 'sucursales/' + sucursal.id,
-				  	data: { 
-				  		descripcion: sucursal.descripcion,
-				  		direccion: sucursal.direccion,
-				  		telefono: sucursal.telefono,
-				  		departamento: sucursal.departamento,
-				  		municipio: sucursal.municipio
-				  	}
-				})
-				.then(function successCallback(response) {
-					if (response.data.result) {
-					    $scope.LlenarTabla();
-					    modal.close();
-					    $scope.createToast("success", "<strong>Éxito: </strong>" + response.data.message);
-					    $timeout(function(){ $scope.closeAlert(0); }, 3000);
-					} else {
-						$scope.createToast("danger", "<strong>Error: </strong>" + response.data.message);
-					    $timeout(function(){ $scope.closeAlert(0); }, 5000);	
-					}
-				}, function errorCallback(response) {
-				   console.log(response.data.message);
-				});
-			}
-			else if ($scope.accion == 'eliminar') {
-				$http({
-					method: 'DELETE',
-				  	url: API_URL + 'sucursales/' + sucursal.id
-				})
-				.then(function successCallback(response) {
-					if (response.data.result) {
-					    $scope.LlenarTabla();
-					    modal.close();
-					    $scope.createToast("success", "<strong>Éxito: </strong>" + response.data.message);
-					    $timeout(function(){ $scope.closeAlert(0); }, 3000);
-					} else {
-						$scope.createToast("danger", "<strong>Error: </strong>" + response.data.message);
-					    $timeout(function(){ $scope.closeAlert(0); }, 5000);	
-					}
-				}, function errorCallback(response) {
-				   console.log(response.data.message);
-				});
-			}
-		};
+                $scope.closeAlert = function (index) {
+                    $scope.toasts.splice(index, 1);
+                };
 
-		// Funciones para Modales
-		$scope.modalCreateOpen = function() {
-			$scope.sucursal = {
-				descripcion: "",
-				telefono: "",
-				direccion: "",
-				departamento: "",
-				municipio: ""
-			};
-			$scope.municipiosFiltrados = [];
-			$scope.accion = 'crear';
+                $scope.saveData = function (sucursal) {
+                    if ($scope.accion == "crear") {
+                        $http({
+                            method: "POST",
+                            url: API_URL + "sucursales",
+                            data: {
+                                descripcion: sucursal.descripcion,
+                                direccion: sucursal.direccion,
+                                telefono: sucursal.telefono,
+                                departamento: sucursal.departamento,
+                                municipio: sucursal.municipio,
+								empresa_id: sucursal.empresa_id
+                            },
+                        }).then(
+                            function successCallback(response) {
+                                if (response.data.result) {
+                                    $scope.LlenarTabla();
+                                    modal.close();
+                                    $scope.createToast(
+                                        "success",
+                                        "<strong>Éxito: </strong>" +
+                                            response.data.message,
+                                    );
+                                    $timeout(function () {
+                                        $scope.closeAlert(0);
+                                    }, 5000);
+                                } else {
+                                    $scope.createToast(
+                                        "danger",
+                                        "<strong>Error: </strong>" +
+                                            response.data.message,
+                                    );
+                                    $timeout(function () {
+                                        $scope.closeAlert(0);
+                                    }, 5000);
+                                }
+                            },
+                            function errorCallback(response) {
+                                console.log(response.data.message);
+                            },
+                        );
+                    } else if ($scope.accion == "editar") {
+                        $http({
+                            method: "PUT",
+                            url: API_URL + "sucursales/" + sucursal.id,
+                            data: {
+                                descripcion: sucursal.descripcion,
+                                direccion: sucursal.direccion,
+                                telefono: sucursal.telefono,
+                                departamento: sucursal.departamento,
+                                municipio: sucursal.municipio,
+								empresa_id: sucursal.empresa_id
+                            },
+                        }).then(
+                            function successCallback(response) {
+                                if (response.data.result) {
+                                    $scope.LlenarTabla();
+                                    modal.close();
+                                    $scope.createToast(
+                                        "success",
+                                        "<strong>Éxito: </strong>" +
+                                            response.data.message,
+                                    );
+                                    $timeout(function () {
+                                        $scope.closeAlert(0);
+                                    }, 3000);
+                                } else {
+                                    $scope.createToast(
+                                        "danger",
+                                        "<strong>Error: </strong>" +
+                                            response.data.message,
+                                    );
+                                    $timeout(function () {
+                                        $scope.closeAlert(0);
+                                    }, 5000);
+                                }
+                            },
+                            function errorCallback(response) {
+                                console.log(response.data.message);
+                            },
+                        );
+                    } else if ($scope.accion == "eliminar") {
+                        $http({
+                            method: "DELETE",
+                            url: API_URL + "sucursales/" + sucursal.id,
+                        }).then(
+                            function successCallback(response) {
+                                if (response.data.result) {
+                                    $scope.LlenarTabla();
+                                    modal.close();
+                                    $scope.createToast(
+                                        "success",
+                                        "<strong>Éxito: </strong>" +
+                                            response.data.message,
+                                    );
+                                    $timeout(function () {
+                                        $scope.closeAlert(0);
+                                    }, 3000);
+                                } else {
+                                    $scope.createToast(
+                                        "danger",
+                                        "<strong>Error: </strong>" +
+                                            response.data.message,
+                                    );
+                                    $timeout(function () {
+                                        $scope.closeAlert(0);
+                                    }, 5000);
+                                }
+                            },
+                            function errorCallback(response) {
+                                console.log(response.data.message);
+                            },
+                        );
+                    }
+                };
 
-			modal = $modal.open({
-				templateUrl: "views/sucursales/modal.html",
-				scope: $scope,
-				size: "md",
-				resolve: function() {},
-				windowClass: "default"
-			});
-		};
+                // Funciones para Modales
+                $scope.modalCreateOpen = function () {
+                    $scope.sucursal = {
+                        descripcion: "",
+                        telefono: "",
+                        direccion: "",
+                        departamento: "",
+                        municipio: "",
+						empresa: "",
+                    };
+                    $scope.municipiosFiltrados = []
+                    $scope.accion = "crear"
 
-		$scope.modalEditOpen = function(data) {			
-			$scope.accion = 'editar';
+                    modal = $modal.open({
+                        templateUrl: "views/sucursales/modal.html",
+                        scope: $scope,
+                        size: "md",
+                        resolve: function () {},
+                        windowClass: "default",
+                    })
+                }
 
-			// Copia para no modificar la fila directamente antes de guardar
-			$scope.sucursal = angular.copy(data);
+                $scope.modalEditOpen = function (data) {
+                    $scope.accion = "editar"
 
-			$scope.cargarMunicipiosEdicion();
+                    // Copia para no modificar la fila directamente antes de guardar
+                    $scope.sucursal = angular.copy(data)
 
-			modal = $modal.open({
-				templateUrl: "views/sucursales/modal.html",
-				scope: $scope,
-				size: "md",
-				resolve: function() {},
-				windowClass: "default"
-			});
-		};
+					console.log($scope.sucursal)
 
-		$scope.modalDeleteOpen = function(data) {			
-			$scope.accion = 'eliminar';
-			$scope.sucursal = data;
+                    $scope.cargarMunicipiosEdicion()
 
-			modal = $modal.open({
-				templateUrl: "views/sucursales/modal.html",
-				scope: $scope,
-				size: "md",
-				resolve: function() {},
-				windowClass: "default"
-			});
-		};
+                    modal = $modal.open({
+                        templateUrl: "views/sucursales/modal.html",
+                        scope: $scope,
+                        size: "md",
+                        resolve: function () {},
+                        windowClass: "default",
+                    })
+                }
 
-		$scope.modalClose = function() {
-			modal.close();
-		};
-	}]);
-}());
+                $scope.modalDeleteOpen = function (data) {
+                    $scope.accion = "eliminar"
+                    $scope.sucursal = data
+
+                    modal = $modal.open({
+                        templateUrl: "views/sucursales/modal.html",
+                        scope: $scope,
+                        size: "md",
+                        resolve: function () {},
+                        windowClass: "default",
+                    })
+                };
+
+                $scope.modalClose = function () {
+                    modal.close();
+                }
+            },
+        ])
+})();

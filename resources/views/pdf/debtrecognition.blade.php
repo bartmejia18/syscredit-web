@@ -29,7 +29,7 @@
 	</style>
 	</head>
 	<body class="body">
-		<div class="title"><strong>PAGARE</strong></div>	
+		<div class="title"><strong>PAGARE No. {!!$data->number!!}</strong></div>	
 		<div class="subtitle">LIBRE DE PROTESTO</div>
 		<br>
 		<div class="content">
@@ -37,7 +37,7 @@
 			casado, guatemalteco (a), comerciante, con domicilio en el municipio de {!!$data->city!!}, departamento de {!!$data->state!!}; me identifico con el Documento Personal de
 			Identificación, código único de identificación, número {!!$data->dpiInWords!!} ({!!$data->dpi!!}),
 			extendido por el Registro Nacional de las Personas. Actúo en nombre propio y por medio del presente título de crédito consistente en <strong>PAGARÉ</strong>, PROMETO INCONDICIONALMENTE
-			PAGAR la suma de <strong>{!!$data->amountInWords!!} QUETZALES ({!!$data->amountInQuetzal!!})</strong> a la entidad mercantil denominada INVERSIONES OCCA, SOCIEDAD ANONIMA nombre a quien deberá hacerse dicho pago
+			PAGAR la suma de <strong>{!!$data->amountInWords!!} QUETZALES ({!!$data->amountInQuetzal!!})</strong> a la entidad mercantil denominada {!!$data->company!!} nombre a quien deberá hacerse dicho pago
 			y el lugar en que se realizará el pago es {!!$data->branchAddress!!}, municipio de {!!$data->branchCity!!}, departamento de {!!$data->branchState!!}. Las condiciones en
 			que cumpliré con la presente obligación son las siguientes: <strong>I) fecha de vencimiento y cumplimiento de la obligación:</strong> La obligación de pago de este pagaré se 
 			hará el {!!$data->completeDate!!}; <strong>II.) Intereses:</strong> La suma representada por este pagaré NO devengará interés alguno; sin embargo, en el

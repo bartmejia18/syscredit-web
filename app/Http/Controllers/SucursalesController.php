@@ -18,7 +18,7 @@ class SucursalesController extends Controller
     public function index()
     {
         try {
-            $registros = Sucursales::all();
+            $registros = Sucursales::with('empresa')->get();
 
             if($registros)
             {
@@ -62,7 +62,8 @@ class SucursalesController extends Controller
                                     'direccion'         =>  $request->input("direccion"),
                                     'telefono'          =>  $request->input("telefono"),    
                                     'departamento'   =>  $request->input("departamento"),
-                                    'municipio'      =>  $request->input("municipio")
+                                    'municipio'      =>  $request->input("municipio"),
+                                    'empresa_id'    => $request->input("empresa_id")
                                 ]);
 
                                 if ( !$nuevoRegistro )
@@ -143,6 +144,7 @@ class SucursalesController extends Controller
             $registro->telefono     = $request->input('telefono', $registro->telefono);
             $registro->departamento = $request->input('departamento', $registro->departamento);
             $registro->municipio = $request->input('municipio', $registro->municipio_id);
+            $registro->empresa_id = $request->input('empresa_id', $registro->empresa_id);
             $registro->save();
 
             \DB::commit();

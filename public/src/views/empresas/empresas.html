@@ -3,10 +3,10 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="panel panel-default table-responsive panel-hovered mb20"  >
-					<div class="panel-heading"><h4>Sucursales</h4></div>
+					<div class="panel-heading"><h4>Empresas</h4></div>
 					<div class="panel-body">
 						<div class="row">
-							<button type="button" class="btn btn-success btn-rounded" ng-click="modalCreateOpen()" md-ink-ripple><i class="fa fa-plus"></i> Crear sucursal</button>						
+							<button type="button" class="btn btn-success btn-rounded" ng-click="modalCreateOpen()" md-ink-ripple><i class="fa fa-plus"></i> Crear empresa</button>						
 						</div>
 						<br>
 						<div class="row">
@@ -38,7 +38,7 @@
 									</div>
 								</th>
 								<th>
-									Sucursal
+									Empresa
 									<div class="th">
 										<i class="fa fa-caret-up icon-up"
 											ng-click=" order('descripcion') "
@@ -48,49 +48,13 @@
                               				ng-class="{active: row == '-descripcion'}"></i>
 									</div>
 								</th>
-								<th>
-									Dirección
-									<div class="th">
-										<i class="fa fa-caret-up icon-up"
-											ng-click=" order('direccion') "
-                              				ng-class="{active: row == 'direccion'}"></i>
-										<i class="fa fa-caret-down icon-down"
-											ng-click=" order('-direccion') "
-                              				ng-class="{active: row == '-direccion'}"></i>
-									</div>
-								</th>
-								<th>
-									Teléfono
-									<div class="th">
-										<i class="fa fa-caret-up icon-up"
-											ng-click=" order('telefono') "
-                              				ng-class="{active: row == 'telefono'}"></i>
-										<i class="fa fa-caret-down icon-down"
-											ng-click=" order('-telefono') "
-                              				ng-class="{active: row == '-telefono'}"></i>
-									</div>
-								</th>
-								<th>
-									Empresa
-									<div class="th">
-										<i class="fa fa-caret-up icon-up"
-											ng-click=" order('empresa') "
-                              				ng-class="{active: row == 'empresa'}"></i>
-										<i class="fa fa-caret-down icon-down"
-											ng-click=" order('-empresa') "
-                              				ng-class="{active: row == '-empresa'}"></i>
-									</div>
-								</th>
 								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr ng-repeat="data in currentPageStores track by $index">
 								<td>{{ $index + 1 }}</td>
-								<td>{{ data.descripcion }}</td>
-								<td>{{ data.direccion }}, {{data.municipio}}, {{data.departamento}}</td>
-								<td>{{ data.telefono }}</td>
-								<td>{{ data.empresa.nombre }}</td>
+								<td>{{ data.nombre }}</td>
 								<td>
 									<div class="btn-group">
 					                    <button type="button" class="btn btn-info ion ion-edit" ng-click="modalEditOpen(data)" md-ink-ripple></button>
