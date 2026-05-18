@@ -199,18 +199,20 @@
                                 )
                                 .then(function (response) {
                                     if (response.data.result) {
-                                        $(".panel-detalle").removeClass(
-                                            "hidden"
-                                        );
+                                        $(".panel-detalle").removeClass("hidden");
 
-                                        $scope.datas = response.data.records.credits;
+                                        $scope.datas = response.data.records.credits.map(function (item) {
+                                            item.tipoRenovacion = item.renovacion == 1 ? "Renovación" : "Nuevo";
+                                            return item;
+                                        });
+
                                         $scope.sumAmountCredits = response.data.records.sumAmountCredits;
                                         $scope.sumAmountTotalCredit = response.data.records.sumAmountTotalCredit;
+
                                         $scope.search();
                                         $scope.select($scope.currentPage);
                                     }
                                 });
-
                             break;
                         default:
                             break;

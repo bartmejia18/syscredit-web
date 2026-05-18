@@ -59,6 +59,27 @@
 				})
 		}
 
+		$scope.today = function () {
+			var fechaInput = $("#fechainicio").val();
+
+			if (!fechaInput) {
+				return false;
+			}
+
+			var partes = fechaInput.split("-");
+			var fecha = new Date(
+				parseInt(partes[0]),
+				parseInt(partes[1]) - 1,
+				parseInt(partes[2])
+			);
+
+			var hoy = new Date();
+
+			return fecha.getFullYear() === hoy.getFullYear()
+				&& fecha.getMonth() === hoy.getMonth()
+				&& fecha.getDate() === hoy.getDate();
+		};
+
 		$scope.selectCollector = function (collector) {
 			showPanelPayments = true;
 			collectorSelected = collector;
@@ -98,6 +119,7 @@
 					});
 			}
 		}
+
 		// #region Modals		
 		$scope.createToast = function(tipo, mensaje) {
 			$scope.toasts.push({

@@ -41,7 +41,7 @@
                         function (error) {
                             console.error(
                                 "Error cargando departamentos y municipios",
-                                error,
+                                error
                             );
                         }
                     )
@@ -58,7 +58,7 @@
                     var departamentoSeleccionado = $scope.departamentos.find(
                         function (dep) {
                             return dep.nombre === $scope.sucursal.departamento;
-                        },
+                        }
                     );
 
                     if (departamentoSeleccionado) {
@@ -77,7 +77,7 @@
                     var departamentoSeleccionado = $scope.departamentos.find(
                         function (dep) {
                             return dep.nombre === $scope.sucursal.departamento;
-                        },
+                        }
                     );
 
                     if (departamentoSeleccionado) {
@@ -101,7 +101,7 @@
                     $scope.datas = [];
                     $http({
                         method: "GET",
-                        url: API_URL + "sucursales",
+                        url: API_URL + "sucursales"
                     }).then(
                         function successCallback(response) {
                             $scope.datas = response.data.records;
@@ -110,7 +110,7 @@
                         },
                         function errorCallback(response) {
                             console.log(response.data.message);
-                        },
+                        }
                     );
                 };
 
@@ -125,7 +125,7 @@
 
                     $scope.currentPageStores = $scope.filteredData.slice(
                         start,
-                        end,
+                        end
                     );
                 };
 
@@ -148,7 +148,7 @@
                 $scope.search = function () {
                     $scope.filteredData = $filter("filter")(
                         $scope.datas,
-                        $scope.searchKeywords,
+                        $scope.searchKeywords
                     );
                     $scope.onFilterChange();
                 };
@@ -158,7 +158,7 @@
                     $scope.row = rowName;
                     $scope.filteredData = $filter("orderBy")(
                         $scope.datas,
-                        rowName,
+                        rowName
                     );
                     $scope.onOrderChange();
                 };
@@ -168,7 +168,7 @@
                     $scope.toasts.push({
                         anim: "bouncyflip",
                         type: tipo,
-                        msg: mensaje,
+                        msg: mensaje
                     });
                 };
 
@@ -197,7 +197,7 @@
                                     $scope.createToast(
                                         "success",
                                         "<strong>Éxito: </strong>" +
-                                            response.data.message,
+                                            response.data.message
                                     );
                                     $timeout(function () {
                                         $scope.closeAlert(0);
@@ -206,7 +206,7 @@
                                     $scope.createToast(
                                         "danger",
                                         "<strong>Error: </strong>" +
-                                            response.data.message,
+                                            response.data.message
                                     );
                                     $timeout(function () {
                                         $scope.closeAlert(0);
@@ -215,7 +215,7 @@
                             },
                             function errorCallback(response) {
                                 console.log(response.data.message);
-                            },
+                            }
                         );
                     } else if ($scope.accion == "editar") {
                         $http({
@@ -237,7 +237,7 @@
                                     $scope.createToast(
                                         "success",
                                         "<strong>Éxito: </strong>" +
-                                            response.data.message,
+                                            response.data.message
                                     );
                                     $timeout(function () {
                                         $scope.closeAlert(0);
@@ -246,7 +246,7 @@
                                     $scope.createToast(
                                         "danger",
                                         "<strong>Error: </strong>" +
-                                            response.data.message,
+                                            response.data.message
                                     );
                                     $timeout(function () {
                                         $scope.closeAlert(0);
@@ -255,7 +255,7 @@
                             },
                             function errorCallback(response) {
                                 console.log(response.data.message);
-                            },
+                            }
                         );
                     } else if ($scope.accion == "eliminar") {
                         $http({
@@ -269,7 +269,7 @@
                                     $scope.createToast(
                                         "success",
                                         "<strong>Éxito: </strong>" +
-                                            response.data.message,
+                                            response.data.message
                                     );
                                     $timeout(function () {
                                         $scope.closeAlert(0);
@@ -278,7 +278,7 @@
                                     $scope.createToast(
                                         "danger",
                                         "<strong>Error: </strong>" +
-                                            response.data.message,
+                                            response.data.message
                                     );
                                     $timeout(function () {
                                         $scope.closeAlert(0);
@@ -287,7 +287,7 @@
                             },
                             function errorCallback(response) {
                                 console.log(response.data.message);
-                            },
+                            }
                         );
                     }
                 };
@@ -300,7 +300,7 @@
                         direccion: "",
                         departamento: "",
                         municipio: "",
-						empresa: "",
+						empresa: ""
                     };
                     $scope.municipiosFiltrados = []
                     $scope.accion = "crear"
@@ -310,7 +310,7 @@
                         scope: $scope,
                         size: "md",
                         resolve: function () {},
-                        windowClass: "default",
+                        windowClass: "default"
                     })
                 }
 
@@ -329,7 +329,7 @@
                         scope: $scope,
                         size: "md",
                         resolve: function () {},
-                        windowClass: "default",
+                        windowClass: "default"
                     })
                 }
 
@@ -342,7 +342,7 @@
                         scope: $scope,
                         size: "md",
                         resolve: function () {},
-                        windowClass: "default",
+                        windowClass: "default"
                     })
                 };
 

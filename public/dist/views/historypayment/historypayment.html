@@ -106,7 +106,7 @@
 							<td ng-show="data.origen == 2">Móvil</td>
 							<td>
 								<div class="btn-group">
-								<button type="button" class="btn btn-danger ion ion-close" ng-click="modalDeleteOpen(data)" md-ink-ripple></button>
+								<button ng-show="today()" type="button" class="btn btn-danger ion ion-close" ng-click="modalDeleteOpen(data)" md-ink-ripple></button>
 								</div>
 							</td>
 							</tr>

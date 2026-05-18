@@ -19,29 +19,29 @@
 			<input type="hidden" class="form-control"  ng-model="cliente.credito">
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>DPI</label>
+					<label class="control-label">DPI</label>
 					<input type="number" class="form-control" ng-model="cliente.dpi" required minlength="13" maxlength="13" ng-change="findUser(cliente.dpi)">
 				</div>
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Nombre</label>
+					<label class="control-label">Nombre</label>
 					<input type="text" class="form-control" ng-model="cliente.nombre" required>
 				</div>
 				<div class="col-sm-12">
-					<label>Apellido</label>
+					<label class="control-label">Apellido</label>
 					<input type="text" class="form-control" ng-model="cliente.apellido" required>
 				</div>
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-12">
-					<label>Dirección</label>
+					<label class="control-label">Dirección</label>
 					<input type="text" class="form-control" ng-model="cliente.direccion" required>
 				</div>
 			</div>
 			<div class="row form-group">
 				<div class="col-sm-6">
-					<label>Teléfono</label>
+					<label class="control-label">Teléfono</label>
 					<input type="text" class="form-control" ng-model="cliente.telefono" required>
 				</div>
 				<div class="col-sm-6">
@@ -58,6 +58,40 @@
 					<select class="form-control" ng-model="cliente.estado_civil" required>
 						<option value="1">Soltero (a)</option>
 						<option value="2">Casado (a)</option>
+					</select>
+				</div>
+				<div class="col-sm-6">
+					<label>Fecha de nacimiento</label>
+					<div class="input-group date">
+						<input  type="text" ng-model="cliente.fecha_nacimiento" class="form-control">
+						<div class="input-group-addon" >
+							<span class="glyphicon glyphicon-th"></span>
+						</div>
+					</div>	
+				</div>
+			</div>
+			<div class="row form-group">
+				<div class="col-sm-6">
+					<label>Departamento</label>
+					<select
+						class="form-control"
+						ng-model="cliente.departamento"
+						ng-options="dep.nombre as dep.nombre for dep in departamentos"
+						ng-change="onDepartamentoChange()"
+						required>
+						<option value=""></option>
+					</select>
+				</div>
+
+				<div class="col-sm-6">
+					<label>Municipio</label>
+					<select
+						class="form-control"
+						ng-model="cliente.municipio"
+						ng-options="mun as mun for mun in municipiosFiltrados"
+						ng-disabled="!cliente.departamento"
+						required>
+						<option value=""></option>
 					</select>
 				</div>
 			</div>
