@@ -18,7 +18,7 @@ class SucursalesController extends Controller
     public function index()
     {
         try {
-            $registros = Sucursales::all();
+            $registros = Sucursales::with('empresa')->get();
 
             if($registros)
             {
@@ -58,9 +58,12 @@ class SucursalesController extends Controller
         {
             $nuevoRegistro = \DB::transaction(function() use ($request){
                                 $nuevoRegistro = Sucursales::create([
-                                    'descripcion'   =>  $request->input("descripcion"),
-                                    'direccion'     =>  $request->input("direccion"),
-                                    'telefono'      =>  $request->input("telefono"),     
+                                    'descripcion'       =>  $request->input("descripcion"),
+                                    'direccion'         =>  $request->input("direccion"),
+                                    'telefono'          =>  $request->input("telefono"),    
+                                    'departamento'   =>  $request->input("departamento"),
+                                    'municipio'      =>  $request->input("municipio"),
+                                    'empresa_id'    => $request->input("empresa_id")
                                 ]);
 
                                 if ( !$nuevoRegistro )
@@ -139,6 +142,9 @@ class SucursalesController extends Controller
             $registro->descripcion  = $request->input('descripcion', $registro->descripcion);
             $registro->direccion    = $request->input('direccion', $registro->direccion);
             $registro->telefono     = $request->input('telefono', $registro->telefono);
+            $registro->departamento = $request->input('departamento', $registro->departamento);
+            $registro->municipio = $request->input('municipio', $registro->municipio_id);
+            $registro->empresa_id = $request->input('empresa_id', $registro->empresa_id);
             $registro->save();
 
             \DB::commit();

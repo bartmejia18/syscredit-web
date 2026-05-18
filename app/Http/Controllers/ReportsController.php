@@ -57,7 +57,7 @@ class ReportsController extends Controller
             $general->totalPendingReceivable =  $resumenOfCredits->pendingReceivable;
             $general->totalReceivable =  $resumenOfCredits->totalReceivable;
             $general->totalGeneratedInterests = $resumenOfCredits->generatedInterests;
-            $general->totalAmountToCollected = $this->getAmountToColletedForCollector($request);
+            $general->totalAmountToCollected = 0;
 
             $this->statusCode   = 200;
             $this->result       = true;

@@ -8,6 +8,7 @@ use stdClass;
 use App\Http\Traits\datesUtilsTrait;
 use Carbon\Carbon;
 use DateTime;
+use Luecano\NumeroALetras\NumeroALetras;
 
 trait detailsCreditsTrait {
 
@@ -225,5 +226,120 @@ trait detailsCreditsTrait {
         } else {
             return 'Excelente';
         }
+    }
+
+    public function detailsForPromissoryNote($data) {
+        
+        $date = new DateTime();
+        $formatDate = $date->format('Y-m-d');
+
+        $infoCredit = new \stdClass();
+        $infoCredit->number = $data->sucursal->id . $data->id;
+        $infoCredit->name = $data->cliente->nombre." ".$data->cliente->apellido;
+        $infoCredit->dpi = $this->splitDPI($data->cliente->dpi);
+        $infoCredit->dpiInWords = $this->convertirDPITexto($infoCredit->dpi);
+        $infoCredit->address = $data->cliente->direccion;
+        $infoCredit->state = $data->cliente->departamento;
+        $infoCredit->city = $data->cliente->municipio;
+        $infoCredit->maritalSatus = $data->cliente->estado_civil;
+        $infoCredit->age = $this->ageInWords($data->cliente->fecha_nacimiento);
+        $infoCredit->dateInWords = $this->dateInWords($formatDate);
+        $infoCredit->amountInWords = $this->amountInWords($data->deudatotal);
+        $infoCredit->amountInQuetzal = $this->amountInQuetzal($data->deudatotal);
+        $infoCredit->completeDate = $this->dateInWords($data->fecha_fin);
+        $infoCredit->branchAddress = $data->sucursal->direccion;
+        $infoCredit->branchState = $data->sucursal->departamento;
+        $infoCredit->branchCity = $data->sucursal->municipio;
+        $infoCredit->company = strtoupper($data->sucursal->empresa->nombre);
+        return $infoCredit;
+    }
+
+    public function splitDPI($dpi) {
+        $parte1 = substr($dpi, 0, 4);
+        $parte2 = substr($dpi, 4, 5);
+        $parte3 = substr($dpi, 9, 4);
+
+        return "$parte1 $parte2 $parte3";
+    }
+
+    public function amountInWords(string $amount): string {
+        $conv = new NumeroALetras();
+        return $conv->toWords($amount);
+    }
+
+    public function amountInQuetzal(string $amont): string {
+         return "Q. " . number_format((float)$amont, 2, '.', ',');
+    }
+
+    function bloqueEnLetrasConCeros(string $bloque, NumeroALetras $conv): string {
+       $bloque = trim($bloque);
+
+        // contar ceros al inicio
+        preg_match('/^0+/', $bloque, $m);
+        $ceros = isset($m[0]) ? strlen($m[0]) : 0;
+
+        $numero = (int)$bloque; // "00002" -> 2
+
+        // Si todo era ceros (ej: "0000") => "cero cero cero cero"
+        if ($numero === 0 && $ceros > 0) {
+            return trim(str_repeat("cero ", $ceros));
+        }
+
+        $texto = $conv->toWords($numero);
+        return trim(str_repeat("cero ", $ceros) . $texto);
+    }
+
+    function convertirDPITexto(string $cadena): string {
+        $conv = new NumeroALetras();
+        $bloques = preg_split('/\s+/', trim($cadena));
+
+        $resultado = [];
+
+        foreach ($bloques as $i => $b) {
+            $texto = $this->bloqueEnLetrasConCeros($b, $conv);
+
+            // 1er y 3er bloque, si empieza con '1' => "un " + texto
+            if (($i === 0 || $i === 2) && $b !== '' && $b[0] === '1') {
+                $texto = "un " . $texto;
+            }
+
+            $resultado[] = $texto;
+        }
+
+        return mb_strtolower(implode(", ", $resultado), 'UTF-8');
+    }
+
+    public function ageInWords(string $birthdate): string {
+        $birthdateDT = new DateTime($birthdate);
+        $today = new DateTime();
+
+        $age = $today->diff($birthdateDT)->y;
+
+        $conv = new NumeroALetras();
+        return mb_strtolower($conv->toWords($age), 'UTF-8');
+    }
+
+    public function dateInWords(string $dateString): string {
+
+        $date = new DateTime($dateString);
+
+        $day = (int)$date->format('d');
+        $month = (int)$date->format('m');
+        $year = (int)$date->format('Y');
+
+        $conv = new NumeroALetras();
+
+        $dayInWords = $conv->toWords($day);
+        $yearInWords = $conv->toWords($year);
+
+        $months = [
+            1 => "enero", 2 => "febrero", 3 => "marzo", 4 => "abril",
+            5 => "mayo", 6 => "junio", 7 => "julio", 8 => "agosto",
+            9 => "septiembre", 10 => "octubre", 11 => "noviembre", 12 => "diciembre"
+        ];
+
+        $monthInWords = $months[$month];
+
+        return mb_strtolower("$dayInWords de $monthInWords del año $yearInWords", 'UTF-8');
     }
 }

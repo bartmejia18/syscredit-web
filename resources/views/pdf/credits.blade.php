@@ -88,6 +88,7 @@
 					<th class="head-column" width="12%">Plan</th>
 					<th class="head-column" width="12%">Fecha crecación</th>		
 					<th class="head-column" width="12%">Fecha de inicio</th>		
+					<th class="head-column" width="12%">Renovación</th>	
                     <th class="head-column" width="20%">Cobrador</th>				
 				</tr>
 			</thead>
@@ -101,6 +102,7 @@
 					<td class="td-payment">{!! $item->planes->descripcion !!}</td>
 					<td class="td-payment">{!! $item->fecha_creacion !!}</td>
 					<td class="td-payment">{!! $item->fecha_inicio !!}</td>
+					<td class="td-payment">{!! $item->typeRenew !!}</td>
                     <td class="td-payment">{!! $item->usuariocobrador->nombre !!}</td>
                 </tr>	
             @endforeach
@@ -108,7 +110,7 @@
                     <td class="td-payment" colspan="1"></td>
                     <td class="td-payment" style="text-align: right;">Total: </td>
                     <td class="td-payment" style="background-color:#8FCFF9">Q. {!! number_format((float)($data->credits->sumAmountCredits), 2, '.', '') !!}</td>
-                    <td class="td-payment" colspan="4"></td>
+                    <td class="td-payment" colspan="5"></td>
                 </tr>
 			</tbody>
 		</table>

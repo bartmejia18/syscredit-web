@@ -26,8 +26,13 @@ class Creditos extends Model {
 		'estado',
 		'estado_morosidad',
 		'comentario_morosidad',
-		'fecha_evaluacion_morosidad'
+		'fecha_evaluacion_morosidad',
+		'renovacion'
 	];
+
+	public function sucursal() {
+		return $this->hasOne('App\Sucursales', 'id', 'sucursal_id');
+	}
 
 	public function planes() {
 		return $this->hasOne('App\Planes', 'id', 'planes_id');

@@ -74,7 +74,7 @@
 						</form>
 					</div>
 					<div class="panel-body hidden panel-detalle">
-						<div class="col-sm-9">
+						<div class="col-sm-10">
 							<div class="row">
 								<div class="small text-bold left mt5">
 									Mostrar&nbsp;
@@ -148,6 +148,15 @@
 											</div>
 										</th>
 										<th>
+											Tipo de crédito
+											<div class="th">
+												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
+													ng-class="{active: row == 'nombre'}"></i>
+												<i class="fa fa-caret-down icon-down" ng-click=" order('-nombre') "
+													ng-class="{active: row == '-nombre'}"></i>
+											</div>
+										</th>
+										<th>
 											Cobrador
 											<div class="th">
 												<i class="fa fa-caret-up icon-up" ng-click=" order('nombre') "
@@ -168,6 +177,7 @@
 										<td>{{ data.planes.descripcion }}</td>
 										<td>{{ data.fecha_creacion }}</td>
 										<td>{{ data.fecha_inicio }}</td>
+										<td>{{ data.tipoRenovacion }}</td>
 										<td>{{ data.usuariocobrador.nombre }}</td>
 									</tr>
 								</tbody>
@@ -186,13 +196,13 @@
 									last-text="&raquo;"></pagination>
 							</div>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<div class="panel panel-default mb20 mini-box panel-hovered">
 								<div class="panel-body">
 									<div class="clearfix">
 										<div class="info left">
 											<h4 class="mt0 text-success text-bold">Suma total de inversión</h4>
-											<h2 class="text-light mb0">Q. {{ sumAmountCredits | number: "2"}}</h2>
+											<h3 class="text-light mb0">Q. {{ sumAmountCredits | number: "2"}}</h3>
 										</div>
 										<div class="right ion ion-cash icon"></div>
 									</div>
@@ -208,7 +218,7 @@
 									<div class="clearfix">
 										<div class="info left">
 											<h4 class="mt0 text-success text-bold">Suma total de créditos</h4>
-											<h2 class="text-light mb0">Q. {{ sumAmountTotalCredit | number: "2"}}</h2>
+											<h3 class="text-light mb0">Q. {{ sumAmountTotalCredit | number: "2"}}</h3>
 										</div>
 										<div class="right ion ion-cash icon"></div>
 									</div>

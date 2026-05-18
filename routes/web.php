@@ -36,6 +36,7 @@ Route::prefix('ws')->group(function () {
 	Route::resource('referenciasclientes',	'ReferenciasPersonalesClientesController');
 	Route::resource('creditos',				'CreditosController');
 	Route::resource('usuarios',				'UsuariosController');
+	Route::resource('empresas',				'EmpresasController');
 	Route::resource('creditoeliminado',     'CreditosEliminadosController');
 	Route::post('login',					'UsuariosController@login');
 	Route::resource('cierreruta',			'CierreRutaController');
