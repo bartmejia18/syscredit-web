@@ -114,4 +114,19 @@
                 </tr>
 			</tbody>
 		</table>
+		<br>
+		<table class="table-resumen">
+			<tr>
+				<td>Total créditos NUEVOS:</td>
+				<td>
+					<span><strong>{!!$data->credits->totalNews!!}</strong></span>
+                </td>            
+            </tr>
+            <tr>
+				<td>Total créditos RENOVADOS:</td>
+				<td>
+					<span><strong>{!!$data->credits->totalRenews!!}</strong></span>
+                </td>
+            </tr>	
+		</table>
 	</body>

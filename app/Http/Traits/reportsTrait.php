@@ -53,7 +53,7 @@ trait reportsTrait {
             $creditsFilteredDate = new \stdClass();     
             if ($dateFin != "") {                                    
                 $creditsFilteredDate = $credits->filter(function ($item) use ($dateFin){
-                                                    return $item->fecha_inicio <= date($dateFin) && $item->estado == 1;
+                                                    return $item->fecha_inicio <= date($dateFin);
                                                 });                                            
             } else {
                 $creditsFilteredDate = $credits;
@@ -167,26 +167,22 @@ trait reportsTrait {
         if ($request->input('collector') != 0 && $request->input('plan') != 0) {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', '!=', 2)
                                 ->where('usuarios_cobrador', $request->input('collector'))
                                 ->where('planes_id', $request->input('plan'))
                                 ->get();
         } else if ($request->input('plan') != 0) {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', '!=', 2)
                                 ->where('planes_id', $request->input('plan'))
                                 ->get();
         } else if ($request->input('collector') != 0) {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', '!=', 2)
                                 ->where('usuarios_cobrador', $request->input('collector'))
                                 ->get();
         } else {
             $credits = Creditos::with('cliente','planes','montos','usuariocobrador')
                                 ->where('sucursal_id', $request->input('branch'))
-                                ->where('estado', '!=', 2)
                                 ->get();
         }
 
@@ -270,17 +266,14 @@ trait reportsTrait {
         if ($collector != "") {
             $credits = Creditos::where('sucursal_id', $branch)
                             ->where('usuarios_cobrador', $collector)
-                            ->where('estado','!=',2)
                             ->with('planes', 'montos')
                             ->get();
         } else if ($branch != 0) {            
             $credits = Creditos::where('sucursal_id', $branch)                            
-                            ->where('estado','!=',2)
                             ->with('planes', 'montos')
                             ->get();
         } else {
-            $credits = Creditos::where('estado','!=',2)
-                            ->with('planes', 'montos')
+            $credits = Creditos::with('planes', 'montos')
                             ->get();
         }
         
@@ -376,6 +369,9 @@ trait reportsTrait {
             $datas->sumAmountTotalCredit = $credits->sum(function ($item) {
                 return $item->deudatotal;
             });
+
+            $datas->totalNews = $credits->where('renovacion', 0)->count();
+            $datas->totalRenews = $credits->where('renovacion', 1)->count();
             
             $datas->credits = $credits->map(function($item, $key){
                 $item->fecha_inicio = Carbon::parse($item->fecha_inicio)->format('d-m-Y');

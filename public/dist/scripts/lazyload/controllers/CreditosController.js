@@ -280,7 +280,11 @@
                                     $scope.detalle_cliente.credito = 0;
                                     $scope.detalle_cliente.nombre = response.data.records.nombre + " " + response.data.records.apellido;
                                     
-                                    isRenew = 0
+                                    if (cliente.statusCredit == 0) {
+                                        isRenew = 0
+                                    } else {
+                                        isRenew = 1
+                                    }
                                     
                                     modal.close();
                                     $scope.createToast(
@@ -313,7 +317,7 @@
                     modal.close()
                     
                     isRenew = 1
-                    
+                
                     updateCustomer(cliente)
                 }
 
@@ -399,6 +403,7 @@
                                 $(".btn-new-customer").prop("disabled", true);
                                 modal.close();
                                 $scope.passwordResult = 0;
+                                isRenew = 1
                                 updateCustomer(client);
                             } else {
                                 $scope.createToast(

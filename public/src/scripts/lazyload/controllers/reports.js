@@ -187,7 +187,7 @@
                             }
                             break;
                         case "credits":
-                            $scope.datas = [];
+                            $scope.datas = []
                             reportService
                                 .credits(
                                     data.statusCredit,
@@ -199,18 +199,23 @@
                                 )
                                 .then(function (response) {
                                     if (response.data.result) {
-                                        $(".panel-detalle").removeClass("hidden");
 
-                                        $scope.datas = response.data.records.credits.map(function (item) {
-                                            item.tipoRenovacion = item.renovacion == 1 ? "Renovación" : "Nuevo";
-                                            return item;
+                                        var data = response.data.records
+
+                                        $(".panel-detalle").removeClass("hidden")
+
+                                        $scope.datas = data.credits.map(function (item) {
+                                            item.tipoRenovacion = item.renovacion == 1 ? "Renovación" : "Nuevo"
+                                            return item
                                         });
 
-                                        $scope.sumAmountCredits = response.data.records.sumAmountCredits;
-                                        $scope.sumAmountTotalCredit = response.data.records.sumAmountTotalCredit;
+                                        $scope.sumAmountCredits = data.sumAmountCredits
+                                        $scope.sumAmountTotalCredit = data.sumAmountTotalCredit
+                                        $scope.totalNews = data.totalNews
+                                        $scope.totalRenews = data.totalRenews
 
                                         $scope.search();
-                                        $scope.select($scope.currentPage);
+                                        $scope.select($scope.currentPage)
                                     }
                                 });
                             break;
